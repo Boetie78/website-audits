@@ -67,6 +67,15 @@
 </head>
 <body>
     <div class="form-container">
+        <!-- Navigation -->
+        <div class="text-center mb-6">
+            <div class="flex justify-center gap-4 text-white/80 text-sm">
+                <a href="index.html" class="hover:text-white transition-colors">← Portfolio</a>
+                <span>|</span>
+                <a href="crm-dashboard.html" class="hover:text-white transition-colors">👥 CRM</a>
+            </div>
+        </div>
+        
         <!-- Header -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-white mb-4">🚀 New Customer Audit</h1>
@@ -386,14 +395,19 @@ website optimization"></textarea>
             
             // Process the audit request
             processAuditRequest(auditData).then(() => {
-                showSuccess('Audit request submitted successfully! Creating customer folder and starting SEO analysis...');
+                showSuccess('Audit request submitted successfully! Customer added to CRM and audit process started.');
                 
-                // Reset form after delay
+                // Show success actions
                 setTimeout(() => {
-                    e.target.reset();
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }, 3000);
+                    const continueActions = confirm('Customer added successfully!\n\nClick OK to view CRM Dashboard\nClick Cancel to submit another audit');
+                    if (continueActions) {
+                        window.location.href = 'crm-dashboard.html';
+                    } else {
+                        e.target.reset();
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                }, 2000);
                 
             }).catch(error => {
                 showError('Error submitting audit request: ' + error.message);
@@ -403,9 +417,12 @@ website optimization"></textarea>
         });
         
         async function processAuditRequest(data) {
-            // Store audit data in localStorage for now (would be replaced with API call)
+            // Store audit data in localStorage
             const auditId = 'audit_' + Date.now();
             localStorage.setItem(auditId, JSON.stringify(data));
+            
+            // Add customer to CRM system
+            addCustomerToCRM(data);
             
             // In production, this would make an API call to:
             // 1. Create customer folder structure
@@ -419,6 +436,65 @@ website optimization"></textarea>
             await new Promise(resolve => setTimeout(resolve, 2000));
             
             return { auditId, customerFolder: data.customerFolder };
+        }
+        
+        function addCustomerToCRM(auditData) {
+            // Load existing CRM data
+            let crmCustomers = [];
+            const existingData = localStorage.getItem('crm_customers');
+            if (existingData) {
+                crmCustomers = JSON.parse(existingData);
+            }
+            
+            // Check if customer already exists
+            const existingCustomer = crmCustomers.find(c => 
+                c.primaryDomain === auditData.primaryDomain || 
+                c.contactEmail === auditData.contactEmail
+            );
+            
+            if (existingCustomer) {
+                // Update existing customer with new audit request
+                existingCustomer.lastUpdate = new Date().toISOString().split('T')[0];
+                existingCustomer.status = 'active';
+                existingCustomer.notes = (existingCustomer.notes || '') + '\n\nNew audit request: ' + new Date().toLocaleDateString();
+                
+                // Update competitors and keywords if provided
+                if (auditData.competitor1) existingCustomer.competitors = [auditData.competitor1, auditData.competitor2, auditData.competitor3, auditData.competitor4].filter(Boolean);
+                if (auditData.targetKeywords) existingCustomer.targetKeywords = auditData.targetKeywords.split('\n').filter(Boolean);
+                if (auditData.objectives) existingCustomer.objectives = Array.isArray(auditData.objectives) ? auditData.objectives : [auditData.objectives];
+            } else {
+                // Create new customer record
+                const newCustomer = {
+                    id: auditData.customerFolder,
+                    customerName: auditData.customerName,
+                    contactEmail: auditData.contactEmail,
+                    primaryDomain: auditData.primaryDomain,
+                    industry: auditData.industry,
+                    location: auditData.location,
+                    status: 'active',
+                    seoScore: 0,
+                    progress: {
+                        seoAudit: 0,
+                        competitorAnalysis: 0,
+                        keywordStrategy: 0
+                    },
+                    dateAdded: new Date().toISOString().split('T')[0],
+                    lastUpdate: new Date().toISOString().split('T')[0],
+                    notes: auditData.additionalNotes || 'Customer added via audit intake form',
+                    auditHistory: [],
+                    competitors: [auditData.competitor1, auditData.competitor2, auditData.competitor3, auditData.competitor4].filter(Boolean),
+                    targetKeywords: auditData.targetKeywords ? auditData.targetKeywords.split('\n').filter(Boolean) : [],
+                    objectives: Array.isArray(auditData.objectives) ? auditData.objectives : [auditData.objectives].filter(Boolean),
+                    geoTarget: auditData.geoTarget,
+                    language: auditData.language,
+                    additionalPages: auditData.additionalPages ? auditData.additionalPages.split('\n').filter(Boolean) : []
+                };
+                
+                crmCustomers.push(newCustomer);
+            }
+            
+            // Save updated CRM data
+            localStorage.setItem('crm_customers', JSON.stringify(crmCustomers));
         }
         
         function saveDraft() {

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer CRM - Professional Client Management</title>
+    <meta name="description" content="Comprehensive customer relationship management system for website audit clients">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background: #f8fafc;
+        }
+        
+        .hero-gradient { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .card-shadow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
+        }
+        
+        .status-active { 
+            background: linear-gradient(135deg, #10B981, #059669); 
+            color: white;
+        }
+        
+        .status-pending { 
+            background: linear-gradient(135deg, #F59E0B, #D97706); 
+            color: white;
+        }
+        
+        .status-inactive { 
+            background: linear-gradient(135deg, #6B7280, #4B5563); 
+            color: white;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .filter-btn.active {
+            background: #3B82F6;
+            color: white;
+        }
+        
+        .filter-btn:not(.active) {
+            background: #E5E7EB;
+            color: #6B7280;
+        }
+        
+        .filter-btn:not(.active):hover {
+            background: #D1D5DB;
+        }
+        
+        .customer-row {
+            transition: all 0.3s ease;
+        }
+        
+        .customer-row:hover {
+            background: #F8FAFC;
+            transform: scale(1.01);
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6B7280;
+        }
+        
+        .metric-change {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .progress-ring-circle {
+            stroke: #e5e7eb;
+            fill: transparent;
+            stroke-width: 4;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .progress-ring-progress {
+            stroke-dasharray: 157;
+            stroke-dashoffset: 157;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold">📊</span>
+                        </div>
+                        <h1 class="text-xl font-bold text-gray-800">Customer CRM</h1>
+                    </div>
+                    
+                    <div class="hidden md:flex items-center gap-6">
+                        <a href="index.html" class="text-gray-600 hover:text-blue-600 transition-colors">Portfolio</a>
+                        <a href="audit-intake-form.html" class="text-gray-600 hover:text-blue-600 transition-colors">New Audit</a>
+                        <a href="#" class="text-blue-600 font-semibold">CRM</a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button onclick="exportAllData()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        📊 Export Data
+                    </button>
+                    <button onclick="showAddCustomerModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        ➕ Add Customer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Stats -->
+    <section class="hero-gradient text-white py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Customer Relationship Management</h2>
+                <p class="text-xl opacity-90">Comprehensive client data and audit tracking</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="metric-card text-gray-800">
+                    <div class="metric-value text-blue-600" id="totalCustomers">0</div>
+                    <div class="metric-label">Total Customers</div>
+                    <div class="metric-change text-green-600">↗ +0 this month</div>
+                </div>
+                
+                <div class="metric-card text-gray-800">
+                    <div class="metric-value text-green-600" id="activeProjects">0</div>
+                    <div class="metric-label">Active Projects</div>
+                    <div class="metric-change text-green-600">↗ +0 in progress</div>
+                </div>
+                
+                <div class="metric-card text-gray-800">
+                    <div class="metric-value text-purple-600" id="completedAudits">0</div>
+                    <div class="metric-label">Completed Audits</div>
+                    <div class="metric-change text-green-600">↗ +0 this month</div>
+                </div>
+                
+                <div class="metric-card text-gray-800">
+                    <div class="metric-value text-orange-600" id="avgScore">0</div>
+                    <div class="metric-label">Avg SEO Score</div>
+                    <div class="metric-change text-blue-600">→ Overall rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters and Search -->
+    <section class="py-8 bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div class="flex flex-wrap gap-3">
+                    <button class="filter-btn active" onclick="filterCustomers('all')">All Customers</button>
+                    <button class="filter-btn" onclick="filterCustomers('active')">Active</button>
+                    <button class="filter-btn" onclick="filterCustomers('pending')">Pending</button>
+                    <button class="filter-btn" onclick="filterCustomers('completed')">Completed</button>
+                    <button class="filter-btn" onclick="filterCustomers('inactive')">Inactive</button>
+                </div>
+                
+                <div class="flex gap-4 w-full lg:w-auto">
+                    <div class="flex-1 lg:w-80">
+                        <input type="text" id="searchInput" placeholder="Search customers..." 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               oninput="searchCustomers()">
+                    </div>
+                    <select id="sortSelect" onchange="sortCustomers()" 
+                            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="name">Sort by Name</option>
+                        <option value="date">Sort by Date</option>
+                        <option value="status">Sort by Status</option>
+                        <option value="score">Sort by Score</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Table -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div class="bg-white rounded-2xl card-shadow overflow-hidden">
+            <div class="px-8 py-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-800">Customer Database</h3>
+                    <div class="flex gap-2">
+                        <button onclick="exportCustomerList()" class="text-gray-600 hover:text-blue-600 transition-colors">
+                            📋 Export List
+                        </button>
+                        <button onclick="refreshData()" class="text-gray-600 hover:text-green-600 transition-colors">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wide">Customer</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wide">Domain</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wide">Industry</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wide">Status</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wide">Progress</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wide">SEO Score</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wide">Last Update</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wide">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTableBody" class="divide-y divide-gray-200">
+                        <!-- Customer rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-16 hidden">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="text-4xl text-gray-400">👥</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-4">No customers yet</h3>
+                <p class="text-gray-500 mb-8">Start by adding your first customer or importing audit data</p>
+                <div class="flex gap-4 justify-center">
+                    <button onclick="showAddCustomerModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        ➕ Add First Customer
+                    </button>
+                    <a href="audit-intake-form.html" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        🚀 Start New Audit
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Add New Customer</h2>
+                <button onclick="closeModal('addCustomerModal')" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+            </div>
+            
+            <form id="addCustomerForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Customer Name *</label>
+                        <input type="text" name="customerName" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Contact Email *</label>
+                        <input type="email" name="contactEmail" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Primary Domain *</label>
+                        <input type="url" name="primaryDomain" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Industry</label>
+                        <select name="industry" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Industry</option>
+                            <option value="Technology">Technology/Software</option>
+                            <option value="E-commerce">E-commerce/Retail</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Finance">Finance/Banking</option>
+                            <option value="Real Estate">Real Estate</option>
+                            <option value="Legal">Legal Services</option>
+                            <option value="Education">Education</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Consulting">Consulting</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                        <input type="text" name="location"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                        <select name="status" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="pending">Pending</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
+                    <textarea name="notes" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="Additional notes about this customer..."></textarea>
+                </div>
+                
+                <div class="flex gap-4">
+                    <button type="button" onclick="closeModal('addCustomerModal')"
+                            class="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Add Customer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Detail Modal -->
+    <div id="customerDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800" id="customerDetailTitle">Customer Details</h2>
+                <button onclick="closeModal('customerDetailModal')" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+            </div>
+            
+            <div id="customerDetailContent">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data structure
+        let customers = [
+            {
+                id: 'intelliminds',
+                customerName: 'IntelliMinds',
+                contactEmail: 'contact@intelliminds.co.za',
+                primaryDomain: 'https://intelliminds.co.za',
+                industry: 'Technology',
+                location: 'Cape Town, South Africa',
+                status: 'active',
+                seoScore: 91.59,
+                progress: {
+                    seoAudit: 100,
+                    competitorAnalysis: 0,
+                    keywordStrategy: 0
+                },
+                dateAdded: '2025-09-07',
+                lastUpdate: '2025-09-07',
+                notes: 'AI automation and ranking services company. Completed SEO audit with excellent score.',
+                auditHistory: [
+                    {
+                        type: 'SEO Audit',
+                        date: '2025-09-07',
+                        score: 91.59,
+                        status: 'completed',
+                        reportUrl: 'customers/intelliminds/seo-audit/'
+                    }
+                ],
+                competitors: [
+                    'https://example-competitor1.com',
+                    'https://example-competitor2.com',
+                    'https://example-competitor3.com'
+                ],
+                targetKeywords: ['ai ranking', 'seo automation', 'digital marketing'],
+                objectives: ['increase_traffic', 'improve_rankings', 'beat_competitors']
+            }
+        ];
+
+        // Load data from localStorage if available
+        function loadCustomerData() {
+            const stored = localStorage.getItem('crm_customers');
+            if (stored) {
+                customers = JSON.parse(stored);
+            }
+            updateStats();
+            renderCustomerTable();
+        }
+
+        // Save data to localStorage
+        function saveCustomerData() {
+            localStorage.setItem('crm_customers', JSON.stringify(customers));
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalCustomers = customers.length;
+            const activeProjects = customers.filter(c => c.status === 'active').length;
+            const completedAudits = customers.reduce((sum, c) => {
+                return sum + c.auditHistory.filter(a => a.status === 'completed').length;
+            }, 0);
+            const avgScore = customers.length > 0 ? 
+                customers.reduce((sum, c) => sum + (c.seoScore || 0), 0) / customers.length : 0;
+
+            document.getElementById('totalCustomers').textContent = totalCustomers;
+            document.getElementById('activeProjects').textContent = activeProjects;
+            document.getElementById('completedAudits').textContent = completedAudits;
+            document.getElementById('avgScore').textContent = avgScore.toFixed(1);
+        }
+
+        // Render customer table
+        function renderCustomerTable() {
+            const tbody = document.getElementById('customerTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (customers.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            tbody.innerHTML = customers.map(customer => {
+                const overallProgress = Math.round((customer.progress.seoAudit + customer.progress.competitorAnalysis + customer.progress.keywordStrategy) / 3);
+                const statusColors = {
+                    active: 'bg-green-100 text-green-800',
+                    pending: 'bg-yellow-100 text-yellow-800',
+                    completed: 'bg-blue-100 text-blue-800',
+                    inactive: 'bg-gray-100 text-gray-800'
+                };
+                
+                return `
+                    <tr class="customer-row" data-customer-id="${customer.id}">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                                    ${customer.customerName.substring(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-gray-800">${customer.customerName}</div>
+                                    <div class="text-sm text-gray-500">${customer.contactEmail}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="${customer.primaryDomain}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">
+                                ${customer.primaryDomain.replace(/https?:\/\/(www\.)?/, '')}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-gray-800">${customer.industry || 'Not specified'}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusColors[customer.status]}">
+                                ${customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="progress-ring">
+                                    <svg class="progress-ring" width="40" height="40">
+                                        <circle class="progress-ring-circle" stroke="#e5e7eb" stroke-width="3" fill="transparent" r="16" cx="20" cy="20"/>
+                                        <circle class="progress-ring-progress" stroke="#3b82f6" stroke-width="3" fill="transparent" r="16" cx="20" cy="20"
+                                                style="stroke-dashoffset: ${157 - (157 * overallProgress / 100)}"/>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-semibold text-gray-700">${overallProgress}%</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg font-bold ${customer.seoScore >= 90 ? 'text-green-600' : customer.seoScore >= 70 ? 'text-yellow-600' : 'text-red-600'}">
+                                    ${customer.seoScore || 'N/A'}
+                                </span>
+                                ${customer.seoScore ? '<span class="text-sm text-gray-500">/100</span>' : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-gray-600">${new Date(customer.lastUpdate).toLocaleDateString()}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <button onclick="viewCustomerDetails('${customer.id}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    View
+                                </button>
+                                <button onclick="editCustomer('${customer.id}')" class="text-green-600 hover:text-green-800 text-sm font-medium">
+                                    Edit
+                                </button>
+                                <button onclick="exportCustomer('${customer.id}')" class="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                                    Export
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Modal functions
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function showAddCustomerModal() {
+            showModal('addCustomerModal');
+        }
+
+        // Add customer form handling
+        document.getElementById('addCustomerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const customerData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                customerData[key] = value;
+            }
+            
+            // Generate customer ID
+            const customerId = customerData.customerName.toLowerCase()
+                                .replace(/[^a-z0-9]/g, '-')
+                                .replace(/-+/g, '-')
+                                .replace(/^-|-$/g, '');
+            
+            const newCustomer = {
+                id: customerId,
+                ...customerData,
+                seoScore: 0,
+                progress: {
+                    seoAudit: 0,
+                    competitorAnalysis: 0,
+                    keywordStrategy: 0
+                },
+                dateAdded: new Date().toISOString().split('T')[0],
+                lastUpdate: new Date().toISOString().split('T')[0],
+                auditHistory: [],
+                competitors: [],
+                targetKeywords: [],
+                objectives: []
+            };
+            
+            customers.push(newCustomer);
+            saveCustomerData();
+            updateStats();
+            renderCustomerTable();
+            closeModal('addCustomerModal');
+            showNotification('Customer added successfully!', 'success');
+            e.target.reset();
+        });
+
+        // Filter and search functions
+        function filterCustomers(filter) {
+            // Update filter button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter logic would go here
+            // For now, just show all customers
+            renderCustomerTable();
+        }
+
+        function searchCustomers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            // Search logic would go here
+            // For now, just show all customers
+            renderCustomerTable();
+        }
+
+        function sortCustomers() {
+            const sortBy = document.getElementById('sortSelect').value;
+            // Sort logic would go here
+            // For now, just show all customers
+            renderCustomerTable();
+        }
+
+        // Export functions
+        function exportAllData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(customers, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `crm-data-${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showNotification('CRM data exported successfully!', 'success');
+        }
+
+        function exportCustomerList() {
+            const csv = convertToCSV(customers);
+            const dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `customer-list-${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showNotification('Customer list exported successfully!', 'success');
+        }
+
+        function convertToCSV(data) {
+            const headers = ['Customer Name', 'Email', 'Domain', 'Industry', 'Location', 'Status', 'SEO Score', 'Progress', 'Date Added', 'Last Update'];
+            const rows = data.map(customer => [
+                customer.customerName,
+                customer.contactEmail,
+                customer.primaryDomain,
+                customer.industry,
+                customer.location,
+                customer.status,
+                customer.seoScore,
+                Math.round((customer.progress.seoAudit + customer.progress.competitorAnalysis + customer.progress.keywordStrategy) / 3) + '%',
+                customer.dateAdded,
+                customer.lastUpdate
+            ]);
+            
+            return [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+        }
+
+        function exportCustomer(customerId) {
+            const customer = customers.find(c => c.id === customerId);
+            if (customer) {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(customer, null, 2));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", `${customer.customerName}-data-${new Date().toISOString().split('T')[0]}.json`);
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+                showNotification(`${customer.customerName} data exported successfully!`, 'success');
+            }
+        }
+
+        // Customer detail functions
+        function viewCustomerDetails(customerId) {
+            const customer = customers.find(c => c.id === customerId);
+            if (customer) {
+                document.getElementById('customerDetailTitle').textContent = `${customer.customerName} - Details`;
+                
+                const overallProgress = Math.round((customer.progress.seoAudit + customer.progress.competitorAnalysis + customer.progress.keywordStrategy) / 3);
+                
+                document.getElementById('customerDetailContent').innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-3">Contact Information</h3>
+                                <div class="space-y-2">
+                                    <div><strong>Name:</strong> ${customer.customerName}</div>
+                                    <div><strong>Email:</strong> <a href="mailto:${customer.contactEmail}" class="text-blue-600">${customer.contactEmail}</a></div>
+                                    <div><strong>Domain:</strong> <a href="${customer.primaryDomain}" target="_blank" class="text-blue-600">${customer.primaryDomain}</a></div>
+                                    <div><strong>Industry:</strong> ${customer.industry || 'Not specified'}</div>
+                                    <div><strong>Location:</strong> ${customer.location || 'Not specified'}</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-3">Project Status</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span>SEO Audit:</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-24 h-2 bg-gray-200 rounded-full">
+                                                <div class="h-2 bg-green-500 rounded-full" style="width: ${customer.progress.seoAudit}%"></div>
+                                            </div>
+                                            <span class="text-sm">${customer.progress.seoAudit}%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Competitor Analysis:</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-24 h-2 bg-gray-200 rounded-full">
+                                                <div class="h-2 bg-blue-500 rounded-full" style="width: ${customer.progress.competitorAnalysis}%"></div>
+                                            </div>
+                                            <span class="text-sm">${customer.progress.competitorAnalysis}%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Keyword Strategy:</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-24 h-2 bg-gray-200 rounded-full">
+                                                <div class="h-2 bg-purple-500 rounded-full" style="width: ${customer.progress.keywordStrategy}%"></div>
+                                            </div>
+                                            <span class="text-sm">${customer.progress.keywordStrategy}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-3">Performance Metrics</h3>
+                                <div class="space-y-2">
+                                    <div><strong>SEO Score:</strong> <span class="text-2xl font-bold text-green-600">${customer.seoScore || 'N/A'}</span></div>
+                                    <div><strong>Overall Progress:</strong> ${overallProgress}%</div>
+                                    <div><strong>Status:</strong> <span class="capitalize">${customer.status}</span></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-3">Audit History</h3>
+                                <div class="space-y-2">
+                                    ${customer.auditHistory.length > 0 ? customer.auditHistory.map(audit => `
+                                        <div class="p-3 bg-gray-50 rounded-lg">
+                                            <div class="font-medium">${audit.type}</div>
+                                            <div class="text-sm text-gray-600">
+                                                ${new Date(audit.date).toLocaleDateString()} - 
+                                                Score: ${audit.score || 'N/A'} - 
+                                                Status: ${audit.status}
+                                            </div>
+                                            ${audit.reportUrl ? `<a href="${audit.reportUrl}" target="_blank" class="text-blue-600 text-sm">View Report</a>` : ''}
+                                        </div>
+                                    `).join('') : '<p class="text-gray-500">No audits completed yet</p>'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${customer.notes ? `
+                        <div class="mt-8">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Notes</h3>
+                            <p class="text-gray-600 bg-gray-50 p-4 rounded-lg">${customer.notes}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="flex gap-4 mt-8 pt-6 border-t border-gray-200">
+                        <a href="customers/${customer.id}/" target="_blank" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                            📊 View Dashboard
+                        </a>
+                        <button onclick="exportCustomer('${customer.id}')" class="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                            📄 Export Data
+                        </button>
+                        <button onclick="editCustomer('${customer.id}')" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                            ✏️ Edit Customer
+                        </button>
+                    </div>
+                `;
+                
+                showModal('customerDetailModal');
+            }
+        }
+
+        function editCustomer(customerId) {
+            // Edit functionality would go here
+            showNotification('Edit functionality coming soon!', 'info');
+        }
+
+        function refreshData() {
+            loadCustomerData();
+            showNotification('Data refreshed successfully!', 'success');
+        }
+
+        // Notification function
+        function showNotification(message, type) {
+            const colors = {
+                success: 'bg-green-600',
+                error: 'bg-red-600',
+                info: 'bg-blue-600'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg font-semibold z-50 transition-all transform translate-x-full ${colors[type]} text-white max-w-md`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            loadCustomerData();
+        });
+
+        // Auto-save data periodically
+        setInterval(saveCustomerData, 30000);
+    </script>
+</body>
+</html>
