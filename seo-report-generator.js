@@ -527,7 +527,7 @@ class SEOReportGenerator {
                         </svg>
                         Export PDF
                     </button>
-                    <button onclick="generateDetailedIssuesReport()" class="action-button bg-red-600 text-white hover:bg-red-700">
+                    <button onclick="openDetailedIssuesReport()" class="action-button bg-red-600 text-white hover:bg-red-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
@@ -691,8 +691,8 @@ class SEOReportGenerator {
                 <!-- Issue Distribution Chart -->
                 <div>
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Issue Distribution</h3>
-                    <div class="chart-container">
-                        <canvas id="issueChart"></canvas>
+                    <div class="chart-container" style="width: 100%; height: 300px; position: relative;">
+                        <canvas id="issueChart" style="max-width: 100%; max-height: 300px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -1157,6 +1157,29 @@ class SEOReportGenerator {
             } catch (error) {
                 console.error('Error generating detailed report:', error);
                 showNotification('❌ Error generating detailed report: ' + error.message);
+            }
+        }
+        
+        function openDetailedIssuesReport() {
+            console.log('🔧 Opening detailed issues report...');
+            
+            try {
+                // Get customer data for URL parameters
+                const customerData = window.currentCustomerData || ${JSON.stringify(customer)};
+                
+                // Save data to localStorage for the detailed report to access
+                window.currentCustomer = customerData;
+                window.currentAuditData = window.currentAuditData || ${JSON.stringify(data)};
+                window.currentSeoAnalysisData = window.currentSeoAnalysisData || ${data.seoAnalysis ? JSON.stringify(data.seoAnalysis) : 'null'};
+                
+                // Open the separate detailed report file
+                const reportUrl = 'detailed-issues-report.html?customerId=' + encodeURIComponent(customerData.id || 'default');
+                window.open(reportUrl, '_blank');
+                
+                showNotification('✅ Opening detailed issues report in new tab...');
+            } catch (error) {
+                console.error('Error opening detailed report:', error);
+                showNotification('❌ Error opening detailed report: ' + error.message);
             }
         }
         

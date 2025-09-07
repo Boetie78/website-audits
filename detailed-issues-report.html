@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Issues Report - Loading...</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="seo-report-generator.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="loadingMessage" class="min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <h2 class="text-xl font-semibold text-gray-800">Loading Detailed Issues Report...</h2>
+            <p class="text-gray-600 mt-2">Please wait while we generate your comprehensive issues analysis</p>
+        </div>
+    </div>
+    
+    <div id="reportContent" class="hidden">
+        <!-- Report content will be injected here -->
+    </div>
+
+    <script>
+        // Load detailed report when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDetailedReport();
+        });
+
+        function loadDetailedReport() {
+            try {
+                // Get customer data from localStorage or URL params
+                const customerData = getCustomerData();
+                const auditData = getAuditData();
+                const seoAnalysisData = getSeoAnalysisData();
+
+                if (!customerData) {
+                    showError('No customer data found. Please run an audit first.');
+                    return;
+                }
+
+                // Generate the detailed report
+                if (typeof generateDetailedReportHTML !== 'undefined') {
+                    const reportHTML = generateDetailedReportHTML(customerData, auditData, seoAnalysisData);
+                    
+                    // Extract just the body content (remove html/head tags)
+                    const bodyMatch = reportHTML.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+                    const bodyContent = bodyMatch ? bodyMatch[1] : reportHTML;
+                    
+                    // Update page title
+                    document.title = `Detailed Issues Report - ${customerData.customerName || 'Client'}`;
+                    
+                    // Inject content
+                    document.getElementById('loadingMessage').classList.add('hidden');
+                    document.getElementById('reportContent').innerHTML = bodyContent;
+                    document.getElementById('reportContent').classList.remove('hidden');
+                } else {
+                    showError('Report generator not available. Please refresh the page.');
+                }
+            } catch (error) {
+                console.error('Error loading detailed report:', error);
+                showError('Error loading report: ' + error.message);
+            }
+        }
+
+        function getCustomerData() {
+            // Try to get from URL parameters first
+            const urlParams = new URLSearchParams(window.location.search);
+            const customerId = urlParams.get('customerId');
+            
+            if (customerId) {
+                // Get from localStorage
+                const crmData = localStorage.getItem('crm_customers');
+                if (crmData) {
+                    const customers = JSON.parse(crmData);
+                    return customers.find(c => c.id === customerId);
+                }
+            }
+            
+            // Fallback: get from global variables or localStorage
+            if (typeof window.currentCustomer !== 'undefined') {
+                return window.currentCustomer;
+            }
+            
+            // Last resort: get most recent customer
+            const crmData = localStorage.getItem('crm_customers');
+            if (crmData) {
+                const customers = JSON.parse(crmData);
+                return customers[customers.length - 1]; // Return most recent
+            }
+            
+            return null;
+        }
+
+        function getAuditData() {
+            if (typeof window.currentAuditData !== 'undefined') {
+                return window.currentAuditData;
+            }
+            
+            // Return sample data if not available
+            return {
+                technicalIssues: [
+                    {
+                        issue: 'Page Load Speed',
+                        severity: 'High',
+                        description: 'Pages are loading slower than recommended',
+                        recommendation: 'Optimize images and enable compression'
+                    }
+                ]
+            };
+        }
+
+        function getSeoAnalysisData() {
+            if (typeof window.currentSeoAnalysisData !== 'undefined') {
+                return window.currentSeoAnalysisData;
+            }
+            return null;
+        }
+
+        function showError(message) {
+            document.getElementById('loadingMessage').innerHTML = `
+                <div class="text-center">
+                    <div class="text-red-500 text-4xl mb-4">⚠️</div>
+                    <h2 class="text-xl font-semibold text-red-600">Error Loading Report</h2>
+                    <p class="text-gray-600 mt-2">${message}</p>
+                    <button onclick="window.history.back()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        Go Back
+                    </button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
