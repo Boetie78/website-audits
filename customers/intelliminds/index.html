@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliMinds - Website Audit Dashboard</title>
+    <meta name="description" content="Professional website audit dashboard for IntelliMinds - SEO, Competitor Analysis, and Keyword Research reports">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        
+        .hero-gradient { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .card-shadow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-complete { 
+            background: linear-gradient(135deg, #10B981, #059669); 
+            color: white;
+        }
+        
+        .status-pending { 
+            background: linear-gradient(135deg, #F59E0B, #D97706); 
+            color: white;
+        }
+        
+        .audit-card {
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .audit-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: #E5E7EB;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="hero-gradient text-white py-12">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <span class="text-2xl font-bold">IM</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-4">IntelliMinds</h1>
+                <p class="text-xl opacity-90 mb-2">Professional Website Audit Dashboard</p>
+                <p class="text-sm opacity-75">Domain: <strong>intelliminds.co.za</strong></p>
+                <div class="w-20 h-1 bg-white mx-auto mt-6"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="max-w-6xl mx-auto px-6 py-16">
+        
+        <!-- Audit Overview -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Audit Portfolio</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- SEO Audit Card -->
+                <div class="audit-card card-shadow bg-white p-8 text-center">
+                    <div class="audit-icon bg-green-100 text-green-600 mx-auto">📈</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">SEO Audit</h3>
+                    <p class="text-gray-600 text-sm mb-6">Comprehensive technical SEO analysis with 13 issues identified and actionable recommendations</p>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-600">Completion</span>
+                            <span class="font-semibold text-green-600">100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-green-500" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-6 text-sm">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="status-complete px-3 py-1 rounded-full font-semibold">✓ Complete</span>
+                    </div>
+                    
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Overall Score:</span>
+                            <span class="font-bold text-green-600">91.59/100</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Pages Analyzed:</span>
+                            <span class="font-semibold">3</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Issues Found:</span>
+                            <span class="font-semibold text-red-600">13</span>
+                        </div>
+                    </div>
+                    
+                    <a href="seo-audit/" class="block w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        📊 View Full Report
+                    </a>
+                </div>
+
+                <!-- Competitor Analysis Card -->
+                <div class="audit-card card-shadow bg-white p-8 text-center">
+                    <div class="audit-icon bg-blue-100 text-blue-600 mx-auto">🎯</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Competitor Analysis</h3>
+                    <p class="text-gray-600 text-sm mb-6">In-depth analysis of competitor strategies, market positioning, and opportunities</p>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-600">Completion</span>
+                            <span class="font-semibold text-yellow-600">Scheduled</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-yellow-500" style="width: 15%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-6 text-sm">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="status-pending px-3 py-1 rounded-full font-semibold">📅 Pending</span>
+                    </div>
+                    
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Competitors:</span>
+                            <span class="font-semibold">5-10</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Analysis Depth:</span>
+                            <span class="font-semibold">Comprehensive</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Timeline:</span>
+                            <span class="font-semibold">2-3 weeks</span>
+                        </div>
+                    </div>
+                    
+                    <button class="block w-full bg-gray-400 text-white py-3 px-6 rounded-lg font-semibold cursor-not-allowed">
+                        ⏳ Coming Soon
+                    </button>
+                </div>
+
+                <!-- Keyword Research Card -->
+                <div class="audit-card card-shadow bg-white p-8 text-center">
+                    <div class="audit-icon bg-purple-100 text-purple-600 mx-auto">🔍</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Keyword Research</h3>
+                    <p class="text-gray-600 text-sm mb-6">Strategic keyword analysis and content optimization opportunities</p>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-600">Completion</span>
+                            <span class="font-semibold text-yellow-600">Scheduled</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-yellow-500" style="width: 10%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-6 text-sm">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="status-pending px-3 py-1 rounded-full font-semibold">📅 Pending</span>
+                    </div>
+                    
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Keywords:</span>
+                            <span class="font-semibold">200-500</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Content Ideas:</span>
+                            <span class="font-semibold">10-20</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Timeline:</span>
+                            <span class="font-semibold">1-2 weeks</span>
+                        </div>
+                    </div>
+                    
+                    <button class="block w-full bg-gray-400 text-white py-3 px-6 rounded-lg font-semibold cursor-not-allowed">
+                        ⏳ Coming Soon
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="bg-white rounded-2xl card-shadow p-8 mb-16">
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-8">Quick Actions</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <a href="seo-audit/" class="flex items-center gap-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center text-white">📊</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">SEO Report</h4>
+                        <p class="text-xs text-gray-600">View full analysis</p>
+                    </div>
+                </a>
+                
+                <button onclick="downloadReport()" class="flex items-center gap-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white">📄</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Export PDF</h4>
+                        <p class="text-xs text-gray-600">Download report</p>
+                    </div>
+                </button>
+                
+                <button onclick="shareReport()" class="flex items-center gap-3 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center text-white">🔗</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Share Link</h4>
+                        <p class="text-xs text-gray-600">Copy dashboard URL</p>
+                    </div>
+                </button>
+                
+                <button onclick="scheduleCall()" class="flex items-center gap-3 p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+                    <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-white">📞</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Schedule Call</h4>
+                        <p class="text-xs text-gray-600">Discuss results</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- Summary Stats -->
+        <section class="bg-white rounded-2xl card-shadow p-8">
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-8">Summary Statistics</h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center p-6 bg-green-50 rounded-xl">
+                    <div class="text-3xl font-bold text-green-600 mb-2">91.59</div>
+                    <div class="text-sm font-semibold text-green-800 uppercase tracking-wide">SEO Score</div>
+                    <div class="text-xs text-gray-600 mt-1">Overall Performance</div>
+                </div>
+                
+                <div class="text-center p-6 bg-red-50 rounded-xl">
+                    <div class="text-3xl font-bold text-red-600 mb-2">13</div>
+                    <div class="text-sm font-semibold text-red-800 uppercase tracking-wide">Issues Found</div>
+                    <div class="text-xs text-gray-600 mt-1">Need Attention</div>
+                </div>
+                
+                <div class="text-center p-6 bg-blue-50 rounded-xl">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">3</div>
+                    <div class="text-sm font-semibold text-blue-800 uppercase tracking-wide">Pages Audited</div>
+                    <div class="text-xs text-gray-600 mt-1">Complete Analysis</div>
+                </div>
+                
+                <div class="text-center p-6 bg-purple-50 rounded-xl">
+                    <div class="text-3xl font-bold text-purple-600 mb-2">16</div>
+                    <div class="text-sm font-semibold text-purple-800 uppercase tracking-wide">Week Timeline</div>
+                    <div class="text-xs text-gray-600 mt-1">Implementation</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="mb-4">
+                <h5 class="text-lg font-semibold mb-2">IntelliMinds Audit Dashboard</h5>
+                <p class="text-gray-400 text-sm">Professional website analysis and optimization services</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
+                <span>Domain: intelliminds.co.za</span>
+                <span>•</span>
+                <span>Generated: <span id="currentDate"></span></span>
+                <span>•</span>
+                <span>Status: Active</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        // Interactive functions
+        function downloadReport() {
+            showNotification('Redirecting to SEO report for PDF export...', 'info');
+            setTimeout(() => {
+                window.location.href = 'seo-audit/';
+            }, 1000);
+        }
+
+        function shareReport() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showNotification('Dashboard link copied to clipboard! 🔗', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy link. Please copy manually from address bar.', 'error');
+            });
+        }
+
+        function scheduleCall() {
+            showNotification('Contact your audit specialist to schedule a results discussion call! 📞', 'info');
+        }
+
+        function showNotification(message, type) {
+            const colors = {
+                success: 'bg-green-600',
+                error: 'bg-red-600',
+                info: 'bg-blue-600'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg font-semibold z-50 transition-all transform translate-x-full ${colors[type]} text-white`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

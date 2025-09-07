@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliMinds SEO Audit Report - Professional Analysis</title>
+    <meta name="description" content="Comprehensive SEO audit report for IntelliMinds.co.za with actionable recommendations and performance metrics">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        
+        .hero-gradient { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .vitals-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            margin: 0 auto 12px;
+        }
+
+        .vitals-good { background: linear-gradient(135deg, #10B981, #059669); }
+        .vitals-needs-improvement { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .vitals-poor { background: linear-gradient(135deg, #EF4444, #DC2626); }
+
+        .priority-badge {
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .priority-high { background: #FEE2E2; color: #991B1B; }
+        .priority-medium { background: #FEF3C7; color: #92400E; }
+        .priority-low { background: #DBEAFE; color: #1E40AF; }
+
+        .issue-bar {
+            height: 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .progress-container {
+            background: #F3F4F6;
+            border-radius: 6px;
+            padding: 2px;
+        }
+
+        .nav-sticky {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .data-table {
+            font-size: 13px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #F8FAFC, #E2E8F0);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            padding: 16px 12px;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .data-table tbody tr:hover {
+            background: #F8FAFC;
+        }
+
+        .action-card {
+            border-left: 4px solid;
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .high-priority { border-left-color: #EF4444; }
+        .medium-priority { border-left-color: #F59E0B; }
+        .low-priority { border-left-color: #3B82F6; }
+
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .section-container { padding: 0 16px; }
+            .data-table { font-size: 11px; }
+            .data-table th, .data-table td { padding: 8px; }
+        }
+    </style>
+</head><body class="bg-gray-50">
+    
+    <!-- Navigation -->
+    <div class="nav-sticky border-b border-gray-200">
+        <div class="section-container py-4">
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">IM</div>
+                    <h1 class="text-xl font-bold text-gray-800">IntelliMinds SEO Audit</h1>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors">📄 Export PDF</button>
+                    <button onclick="copyShareableLink()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-green-700 transition-colors">🔗 Copy Link</button>
+                    <button onclick="downloadAllData()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-purple-700 transition-colors">📊 Download Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-16">
+        <div class="section-container text-center">
+            <div class="mb-8">
+                <h2 class="text-5xl font-bold mb-4">SEO Audit Report</h2>
+                <p class="text-xl opacity-90">Comprehensive Digital Performance Analysis</p>
+                <div class="w-20 h-1 bg-white mx-auto mt-6"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-12">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                    <div class="text-3xl font-bold text-green-300">91.59</div>
+                    <div class="font-medium">Overall Score</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                    <div class="text-3xl font-bold text-red-300">13</div>
+                    <div class="font-medium">Total Issues</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                    <div class="text-3xl font-bold text-blue-300">3</div>
+                    <div class="font-medium">Pages Analyzed</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                    <div class="text-3xl font-bold text-yellow-300">16</div>
+                    <div class="font-medium">Week Timeline</div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-sm opacity-75">
+                Generated: <span id="reportDate"></span> | Domain: <strong>intelliminds.co.za</strong>
+            </div>
+        </div>
+    </section>
+    <!-- Issues by Category -->
+    <section class="py-16 bg-white">
+        <div class="section-container">
+            <h3 class="text-3xl font-bold mb-8 text-center text-gray-800">Issues by Category</h3>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="space-y-6">
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                                <span class="font-semibold text-lg">Technical Issues</span>
+                            </div>
+                            <span class="text-2xl font-bold text-red-600">3</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="issue-bar bg-red-500" style="width: 23%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Render blocking resources affecting performance</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                                <span class="font-semibold text-lg">Content Issues</span>
+                            </div>
+                            <span class="text-2xl font-bold text-yellow-600">3</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="issue-bar bg-yellow-500" style="width: 23%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Low content rate impacting SEO rankings</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
+                                <span class="font-semibold text-lg">UX Issues</span>
+                            </div>
+                            <span class="text-2xl font-bold text-blue-600">7</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="issue-bar bg-blue-500" style="width: 54%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Missing image attributes affecting accessibility</p>
+                    </div>
+                </div>
+                
+                <div class="card-shadow bg-white rounded-xl p-6">
+                    <canvas id="categoryChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Core Web Vitals -->
+    <section class="py-16 bg-gray-50">
+        <div class="section-container">
+            <h3 class="text-3xl font-bold mb-8 text-center text-gray-800">Core Web Vitals Performance</h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+                <div class="metric-card">
+                    <div class="vitals-circle vitals-needs-improvement">0.8</div>
+                    <h4 class="font-semibold text-sm mb-1">First Contentful Paint</h4>
+                    <p class="text-xs text-yellow-600 font-medium">Needs Improvement</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="vitals-circle vitals-needs-improvement">0.9</div>
+                    <h4 class="font-semibold text-sm mb-1">Largest Contentful Paint</h4>
+                    <p class="text-xs text-yellow-600 font-medium">Needs Improvement</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="vitals-circle vitals-good">0.1</div>
+                    <h4 class="font-semibold text-sm mb-1">Total Blocking Time</h4>
+                    <p class="text-xs text-green-600 font-medium">Good</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="vitals-circle vitals-good">0</div>
+                    <h4 class="font-semibold text-sm mb-1">Cumulative Layout Shift</h4>
+                    <p class="text-xs text-green-600 font-medium">Good</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="vitals-circle vitals-needs-improvement">0.7</div>
+                    <h4 class="font-semibold text-sm mb-1">Speed Index</h4>
+                    <p class="text-xs text-yellow-600 font-medium">Needs Improvement</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="vitals-circle vitals-poor">1.2</div>
+                    <h4 class="font-semibold text-sm mb-1">Time To Interactive</h4>
+                    <p class="text-xs text-red-600 font-medium">Poor</p>
+                </div>
+            </div>
+
+            <div class="card-shadow bg-white rounded-xl p-6">
+                <canvas id="vitalsChart" height="200"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Analysis Tables -->
+    <section class="py-16 bg-white">
+        <div class="section-container">
+            <h3 class="text-3xl font-bold mb-8 text-center text-gray-800">Detailed Analysis</h3>
+            
+            <!-- Metadata Analysis -->
+            <div class="mb-12">
+                <div class="flex flex-wrap justify-between items-center mb-6">
+                    <h4 class="text-xl font-semibold text-gray-800">Metadata Analysis</h4>
+                    <div class="flex flex-wrap gap-2 mt-2 lg:mt-0">
+                        <button onclick="downloadMetadataCSV()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-green-700 transition-colors">📊 CSV</button>
+                        <button onclick="copyMetadataData()" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-gray-700 transition-colors">📋 Copy</button>
+                        <button onclick="toggleTable('metadata')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors" id="metadataBtn">👁️ Hide</button>
+                    </div>
+                </div>
+
+                <div id="metadataTable" class="overflow-x-auto">
+                    <table class="w-full data-table bg-white">
+                        <thead>
+                            <tr>
+                                <th class="text-left">URL</th>
+                                <th>Title Length</th>
+                                <th>Desc Length</th>
+                                <th>Title Issue</th>
+                                <th>Desc Issue</th>
+                                <th class="text-left">Suggested Title</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a href="https://intelliminds.co.za/" class="text-blue-600 hover:underline font-medium">/ (Homepage)</a></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">55</span></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">154</span></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">✓ Good</span></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">✓ Good</span></td>
+                                <td class="text-gray-600 italic">No changes needed</td>
+                            </tr>
+                            <tr>
+                                <td><a href="https://intelliminds.co.za/ai-ranking-free" class="text-blue-600 hover:underline font-medium">/ai-ranking-free</a></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">52</span></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">157</span></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">✓ Good</span></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">✓ Good</span></td>
+                                <td class="text-gray-600 italic">No changes needed</td>
+                            </tr>
+                            <tr class="bg-red-50">
+                                <td><a href="https://intelliminds.co.za/premium-community" class="text-blue-600 hover:underline font-medium">/premium-community</a></td>
+                                <td class="text-center"><span class="text-red-600 font-semibold">62</span></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">148</span></td>
+                                <td class="text-center"><span class="text-red-600 font-semibold">⚠ Too Long</span></td>
+                                <td class="text-center"><span class="text-green-600 font-semibold">✓ Good</span></td>
+                                <td class="text-blue-600 font-semibold">AI SEO Mastery & Automations | AI Ranking Premium</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="section-container text-center">
+            <div class="mb-4">
+                <h5 class="text-lg font-semibold mb-2">SEO Audit Report</h5>
+                <p class="text-gray-400 text-sm">Professional website analysis and optimization recommendations</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
+                <span>Generated: <span id="footerDate"></span></span>
+                <span>•</span>
+                <span>Domain: intelliminds.co.za</span>
+                <span>•</span>
+                <span>Pages: 3</span>
+                <span>•</span>
+                <span>Issues: 13</span>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-800 text-xs text-gray-500">
+                This report contains confidential business information. Please handle accordingly.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set dates
+        const now = new Date();
+        const dateString = now.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        document.getElementById('reportDate').textContent = dateString;
+        document.getElementById('footerDate').textContent = dateString;
+
+        // Chart configurations
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Technical Issues', 'Content Issues', 'UX Issues', 'Performance Issues'],
+                datasets: [{
+                    data: [3, 3, 7, 0],
+                    backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6', '#9CA3AF'],
+                    borderWidth: 3,
+                    borderColor: '#ffffff',
+                    hoverBorderWidth: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: { size: 12, weight: '500' },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Interactive functions
+        function copyShareableLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showNotification('Shareable link copied to clipboard! 🔗', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy link. Please copy manually from address bar.', 'error');
+            });
+        }
+
+        function downloadAllData() {
+            showNotification('Data export functionality ready! 📊', 'success');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg font-semibold z-50 transition-all transform translate-x-full`;
+            notification.className += type === 'success' ? ' bg-green-600 text-white' : ' bg-red-600 text-white';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

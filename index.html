@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Audits - Customer Portfolio</title>
+    <meta name="description" content="Professional website audit portfolio - SEO analysis, competitor research, and digital performance optimization">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        
+        .hero-gradient { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .card-shadow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .customer-card {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            background: white;
+        }
+        
+        .customer-card:hover {
+            border-color: #3B82F6;
+        }
+        
+        .status-active { 
+            background: linear-gradient(135deg, #10B981, #059669); 
+        }
+        
+        .audit-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-complete { background: #DCFCE7; color: #166534; }
+        .badge-pending { background: #FEF3C7; color: #92400E; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="hero-gradient text-white py-16">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-8">
+                    <span class="text-3xl">📊</span>
+                </div>
+                <h1 class="text-5xl font-bold mb-6">Website Audits</h1>
+                <p class="text-xl opacity-90 mb-4">Professional Digital Performance Analysis</p>
+                <p class="text-sm opacity-75">Comprehensive SEO, Competitor Analysis & Keyword Research</p>
+                <div class="w-24 h-1 bg-white mx-auto mt-8"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Overview -->
+    <section class="py-12 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center p-6 bg-blue-50 rounded-xl">
+                    <div class="text-4xl font-bold text-blue-600 mb-2">1</div>
+                    <div class="text-sm font-semibold text-blue-800 uppercase tracking-wide">Active Clients</div>
+                    <div class="text-xs text-gray-600 mt-1">Portfolio Management</div>
+                </div>
+                
+                <div class="text-center p-6 bg-green-50 rounded-xl">
+                    <div class="text-4xl font-bold text-green-600 mb-2">1</div>
+                    <div class="text-sm font-semibold text-green-800 uppercase tracking-wide">Completed Audits</div>
+                    <div class="text-xs text-gray-600 mt-1">SEO Analysis</div>
+                </div>
+                
+                <div class="text-center p-6 bg-purple-50 rounded-xl">
+                    <div class="text-4xl font-bold text-purple-600 mb-2">3</div>
+                    <div class="text-sm font-semibold text-purple-800 uppercase tracking-wide">Audit Types</div>
+                    <div class="text-xs text-gray-600 mt-1">Service Offerings</div>
+                </div>
+                
+                <div class="text-center p-6 bg-orange-50 rounded-xl">
+                    <div class="text-4xl font-bold text-orange-600 mb-2">91.59</div>
+                    <div class="text-sm font-semibold text-orange-800 uppercase tracking-wide">Avg Score</div>
+                    <div class="text-xs text-gray-600 mt-1">Overall Performance</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Portfolio -->
+    <main class="max-w-6xl mx-auto px-6 py-16">
+        <section class="mb-16">
+            <div class="flex justify-between items-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800">Customer Portfolio</h2>
+                <button onclick="addNewCustomer()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    ➕ Add Customer
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- IntelliMinds Customer Card -->
+                <div class="customer-card card-shadow p-8">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+                                IM
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">IntelliMinds</h3>
+                                <p class="text-gray-600">intelliminds.co.za</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                    <span class="text-sm font-medium text-green-700">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-green-600">91.59</div>
+                            <div class="text-xs text-gray-600">SEO Score</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="text-center p-3 bg-green-50 rounded-lg">
+                            <div class="text-lg font-bold text-green-600">1</div>
+                            <div class="text-xs text-gray-600">Complete</div>
+                        </div>
+                        <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                            <div class="text-lg font-bold text-yellow-600">2</div>
+                            <div class="text-xs text-gray-600">Pending</div>
+                        </div>
+                        <div class="text-center p-3 bg-blue-50 rounded-lg">
+                            <div class="text-lg font-bold text-blue-600">3</div>
+                            <div class="text-xs text-gray-600">Total</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">SEO Audit</span>
+                            <span class="audit-badge badge-complete">Complete</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Competitor Analysis</span>
+                            <span class="audit-badge badge-pending">Pending</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Keyword Research</span>
+                            <span class="audit-badge badge-pending">Pending</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <a href="customers/intelliminds/" class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold text-center hover:bg-blue-700 transition-colors">
+                            📊 View Dashboard
+                        </a>
+                        <button onclick="exportCustomer('intelliminds')" class="bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                            📄 Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add Customer Placeholder -->
+                <div class="customer-card border-2 border-dashed border-gray-300 p-8 text-center">
+                    <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl text-gray-400">➕</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-600 mb-2">Add New Customer</h3>
+                    <p class="text-sm text-gray-500 mb-6">Create a comprehensive audit dashboard for your next client</p>
+                    <button onclick="addNewCustomer()" class="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Create Dashboard
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Overview -->
+        <section class="bg-white rounded-2xl card-shadow p-8 mb-16">
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-8">Audit Services</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center p-6 border border-gray-200 rounded-xl">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-xl">📈</span>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-2">SEO Audit</h4>
+                    <p class="text-sm text-gray-600">Comprehensive technical analysis, Core Web Vitals, and optimization recommendations</p>
+                </div>
+                
+                <div class="text-center p-6 border border-gray-200 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-xl">🎯</span>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-2">Competitor Analysis</h4>
+                    <p class="text-sm text-gray-600">Market positioning analysis, competitor strategies, and opportunity identification</p>
+                </div>
+                
+                <div class="text-center p-6 border border-gray-200 rounded-xl">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-xl">🔍</span>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-2">Keyword Research</h4>
+                    <p class="text-sm text-gray-600">Strategic keyword discovery, content opportunities, and search volume analysis</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8">
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-8">Management Tools</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <button onclick="addNewCustomer()" class="flex items-center gap-3 p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors card-shadow">
+                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white">➕</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">New Customer</h4>
+                        <p class="text-xs text-gray-600">Create audit dashboard</p>
+                    </div>
+                </button>
+                
+                <button onclick="exportPortfolio()" class="flex items-center gap-3 p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors card-shadow">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center text-white">📊</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Export Portfolio</h4>
+                        <p class="text-xs text-gray-600">Download all reports</p>
+                    </div>
+                </button>
+                
+                <button onclick="showStats()" class="flex items-center gap-3 p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors card-shadow">
+                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center text-white">📈</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Analytics</h4>
+                        <p class="text-xs text-gray-600">View performance</p>
+                    </div>
+                </button>
+                
+                <button onclick="sharePortfolio()" class="flex items-center gap-3 p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors card-shadow">
+                    <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-white">🔗</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Share Link</h4>
+                        <p class="text-xs text-gray-600">Copy portfolio URL</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="mb-4">
+                <h5 class="text-lg font-semibold mb-2">Website Audits Portfolio</h5>
+                <p class="text-gray-400 text-sm">Professional digital performance analysis and optimization services</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
+                <span>Portfolio: 1 Active Client</span>
+                <span>•</span>
+                <span>Last Updated: <span id="currentDate"></span></span>
+                <span>•</span>
+                <span>Status: Active</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        // Interactive functions
+        function addNewCustomer() {
+            const customerName = prompt('Enter customer name:');
+            const domain = prompt('Enter customer domain (e.g., example.com):');
+            
+            if (customerName && domain) {
+                showNotification(`New customer dashboard would be created for ${customerName} (${domain}). Use the create-customer.sh script for actual implementation.`, 'info');
+            }
+        }
+
+        function exportCustomer(customer) {
+            showNotification(`Exporting ${customer} audit reports...`, 'info');
+            // Redirect to customer dashboard for export
+            setTimeout(() => {
+                window.location.href = `customers/${customer}/`;
+            }, 1000);
+        }
+
+        function exportPortfolio() {
+            showNotification('Portfolio export functionality ready! Use individual customer exports for now.', 'info');
+        }
+
+        function showStats() {
+            showNotification('Analytics dashboard coming soon! View individual customer statistics for now.', 'info');
+        }
+
+        function sharePortfolio() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showNotification('Portfolio link copied to clipboard! 🔗', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy link. Please copy manually from address bar.', 'error');
+            });
+        }
+
+        function showNotification(message, type) {
+            const colors = {
+                success: 'bg-green-600',
+                error: 'bg-red-600',
+                info: 'bg-blue-600'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg font-semibold z-50 transition-all transform translate-x-full ${colors[type]} text-white max-w-md`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
