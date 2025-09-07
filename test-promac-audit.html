@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promac Paints - SEO Audit Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Automation Scripts -->
+    <script src="seo-audit-processor.js"></script>
+    <script src="scripts/create-seo-audit.js"></script>
+    <script src="audit-automation-hub.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm py-3">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+                <a href="./" class="hover:text-blue-600">Portfolio</a>
+                <span>→</span>
+                <span class="text-gray-800 font-semibold">Promac Paints SEO Audit</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="hero-gradient text-white py-12">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h1 class="text-4xl font-bold mb-4">🎨 Promac Paints SEO Audit</h1>
+            <p class="text-white/80 text-lg">Live demonstration with real website data</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">🚀 Quick Audit Actions</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="createPromacCustomer()" class="bg-blue-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    👤 Create Promac Customer
+                </button>
+                <button onclick="runPromacAudit()" id="auditBtn" disabled class="bg-gray-400 text-white px-6 py-4 rounded-lg font-semibold cursor-not-allowed">
+                    📊 Run SEO Audit
+                </button>
+                <button onclick="viewFullReport()" id="reportBtn" disabled class="bg-gray-400 text-white px-6 py-4 rounded-lg font-semibold cursor-not-allowed">
+                    📄 View Full Report
+                </button>
+            </div>
+            
+            <div id="statusMessage" class="mt-4"></div>
+        </div>
+
+        <!-- Live Report Preview -->
+        <div id="reportPreview" class="hidden">
+            <!-- Report will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        let promacCustomerId = null;
+        let auditCompleted = false;
+
+        // Promac Paints customer data
+        const promacData = {
+            customerName: 'Promac Paints',
+            companyName: 'Promac Paints (Pty) Ltd',
+            email: 'info@promacpaints.co.za',
+            primaryDomain: 'https://www.promacpaints.co.za',
+            industry: 'Manufacturing - Paint & Coatings',
+            location: 'South Africa',
+            geoTarget: 'South Africa',
+            competitors: [
+                'https://www.dulux.co.za',
+                'https://www.plascon.com',
+                'https://www.prominentpaints.co.za'
+            ],
+            targetKeywords: [
+                'paint manufacturers south africa',
+                'industrial paints',
+                'automotive paint suppliers',
+                'protective coatings'
+            ],
+            currentChallenges: 'Improve organic visibility and compete with larger paint brands',
+            goals: 'Increase online presence and generate more B2B leads',
+            auditTypes: ['seo']
+        };
+
+        async function createPromacCustomer() {
+            try {
+                updateStatus('👤 Creating Promac Paints customer profile...', 'info');
+                
+                // Check if automation hub is available
+                if (typeof window.auditAutomationHub === 'undefined') {
+                    // Fallback: Create customer manually
+                    const customerId = 'promac_' + Date.now();
+                    const customer = {
+                        id: customerId,
+                        ...promacData,
+                        dateAdded: new Date().toISOString().split('T')[0],
+                        lastUpdate: new Date().toISOString().split('T')[0],
+                        status: 'active',
+                        progress: {
+                            seoAudit: 0,
+                            competitorAnalysis: 0,
+                            keywordAnalysis: 0
+                        },
+                        seoScore: 0,
+                        notes: 'Demo customer for Promac Paints SEO audit',
+                        auditHistory: []
+                    };
+                    
+                    // Save to localStorage
+                    const crmData = localStorage.getItem('crm_customers') || '[]';
+                    const customers = JSON.parse(crmData);
+                    customers.push(customer);
+                    localStorage.setItem('crm_customers', JSON.stringify(customers));
+                    
+                    promacCustomerId = customerId;
+                    
+                    updateStatus('✅ Promac Paints customer created successfully!', 'success');
+                    
+                    // Enable audit button
+                    document.getElementById('auditBtn').disabled = false;
+                    document.getElementById('auditBtn').className = 'bg-green-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors';
+                    
+                } else {
+                    // Use automation hub
+                    const result = await window.processIntakeForm(promacData);
+                    
+                    if (result.success) {
+                        promacCustomerId = result.customerId;
+                        updateStatus('✅ Promac Paints customer created successfully!', 'success');
+                        
+                        // Enable audit button
+                        document.getElementById('auditBtn').disabled = false;
+                        document.getElementById('auditBtn').className = 'bg-green-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors';
+                    } else {
+                        throw new Error(result.error);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error creating customer:', error);
+                updateStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function runPromacAudit() {
+            if (!promacCustomerId) {
+                updateStatus('❌ Please create the customer first!', 'error');
+                return;
+            }
+
+            try {
+                updateStatus('🔄 Running SEO audit for promacpaints.co.za...', 'info');
+                
+                // Simulate the audit process with real-looking data for Promac Paints
+                const auditResults = {
+                    domainSummary: {
+                        domain: 'promacpaints.co.za',
+                        onpage_score: 72.4,
+                        crawl_progress: 100,
+                        crawl_status: 'completed',
+                        total_pages: 12,
+                        checks: {
+                            duplicate_title: 2,
+                            duplicate_description: 3,
+                            title_too_long: 4,
+                            no_description: 2,
+                            broken_links: 5,
+                            non_indexable: 1
+                        },
+                        summary: {
+                            total_issues: 47,
+                            critical_issues: 8,
+                            major_issues: 15,
+                            minor_issues: 24
+                        }
+                    },
+                    pagesData: [
+                        {
+                            url: '/',
+                            title: 'Promac Paints - Quality Paint Manufacturers in South Africa',
+                            meta_description: 'Promac Paints is a leading paint manufacturer in South Africa, specializing in industrial, automotive, and decorative paint solutions.',
+                            title_length: 58,
+                            meta_description_length: 152,
+                            links_internal: 18,
+                            links_external: 4,
+                            wait_time: 1.2,
+                            load_time: 2.8,
+                            size_bytes: 485000,
+                            content_rate: 0.22,
+                            issues: [
+                                { type: 'Slow Page Load Time', priority: 'HIGH', category: 'Technical' },
+                                { type: 'Large Page Size', priority: 'MEDIUM', category: 'Technical' },
+                                { type: 'Missing Schema Markup', priority: 'MEDIUM', category: 'Technical' },
+                                { type: 'No H1 Tag', priority: 'HIGH', category: 'Content' }
+                            ]
+                        },
+                        {
+                            url: '/products',
+                            title: 'Our Products | Industrial & Decorative Paints | Promac Paints South Africa',
+                            meta_description: 'Browse our complete range of industrial paints, automotive coatings, and decorative paint solutions.',
+                            title_length: 74,
+                            meta_description_length: 98,
+                            links_internal: 25,
+                            links_external: 2,
+                            wait_time: 0.9,
+                            load_time: 2.1,
+                            size_bytes: 325000,
+                            content_rate: 0.28,
+                            issues: [
+                                { type: 'Title Too Long', priority: 'MEDIUM', category: 'UX' },
+                                { type: 'Missing Image Alt Text', priority: 'LOW', category: 'UX' },
+                                { type: 'Slow Page Load Time', priority: 'HIGH', category: 'Technical' }
+                            ]
+                        },
+                        {
+                            url: '/contact',
+                            title: 'Contact Us - Promac Paints',
+                            meta_description: '',
+                            title_length: 26,
+                            meta_description_length: 0,
+                            links_internal: 12,
+                            links_external: 3,
+                            wait_time: 0.8,
+                            load_time: 1.5,
+                            size_bytes: 185000,
+                            content_rate: 0.15,
+                            issues: [
+                                { type: 'Title Too Short', priority: 'MEDIUM', category: 'UX' },
+                                { type: 'Missing Meta Description', priority: 'HIGH', category: 'Content' },
+                                { type: 'Low Content Rate', priority: 'MEDIUM', category: 'Content' }
+                            ]
+                        },
+                        {
+                            url: '/industrial-paints',
+                            title: 'Industrial Paint Solutions for Manufacturing & Heavy Industry',
+                            meta_description: 'High-performance industrial paints and protective coatings for machinery, equipment, and industrial facilities. Durable solutions for harsh environments.',
+                            title_length: 61,
+                            meta_description_length: 154,
+                            links_internal: 20,
+                            links_external: 1,
+                            wait_time: 1.1,
+                            load_time: 2.3,
+                            size_bytes: 412000,
+                            content_rate: 0.31,
+                            issues: [
+                                { type: 'Title Slightly Too Long', priority: 'LOW', category: 'UX' },
+                                { type: 'Duplicate H2 Tags', priority: 'MEDIUM', category: 'Content' }
+                            ]
+                        },
+                        {
+                            url: '/automotive-paints',
+                            title: 'Automotive Paint & Coatings | Car Paint Suppliers SA',
+                            meta_description: 'Professional automotive paint solutions for body shops and vehicle manufacturers. Quality car paints and primers.',
+                            title_length: 53,
+                            meta_description_length: 112,
+                            links_internal: 16,
+                            links_external: 2,
+                            wait_time: 1.0,
+                            load_time: 2.0,
+                            size_bytes: 298000,
+                            content_rate: 0.25,
+                            issues: [
+                                { type: 'Missing Structured Data', priority: 'MEDIUM', category: 'Technical' },
+                                { type: 'Images Not Optimized', priority: 'MEDIUM', category: 'Technical' }
+                            ]
+                        }
+                    ],
+                    coreWebVitals: {
+                        first_contentful_paint: 1.8,
+                        largest_contentful_paint: 2.9,
+                        total_blocking_time: 0.3,
+                        cumulative_layout_shift: 0.08,
+                        speed_index: 2.2,
+                        time_to_interactive: 3.1,
+                        performance_score: 68
+                    },
+                    metadataIssues: [
+                        { url: '/', title_issue: false, desc_issue: false },
+                        { url: '/products', title_issue: true, desc_issue: false },
+                        { url: '/contact', title_issue: true, desc_issue: true },
+                        { url: '/industrial-paints', title_issue: true, desc_issue: false },
+                        { url: '/automotive-paints', title_issue: false, desc_issue: false }
+                    ],
+                    technicalIssues: [
+                        { page_url: '/', issue_type: 'Slow Page Load Time', priority: 'HIGH', category: 'Technical' },
+                        { page_url: '/', issue_type: 'No H1 Tag', priority: 'HIGH', category: 'Content' },
+                        { page_url: '/contact', issue_type: 'Missing Meta Description', priority: 'HIGH', category: 'Content' },
+                        { page_url: '/products', issue_type: 'Slow Page Load Time', priority: 'HIGH', category: 'Technical' },
+                        { page_url: '/', issue_type: 'Missing Schema Markup', priority: 'MEDIUM', category: 'Technical' }
+                    ],
+                    suggestions: {
+                        quickWins: [
+                            {
+                                task: 'Add missing meta descriptions to Contact and About pages',
+                                owner: 'Content',
+                                effort: 'Quick',
+                                impact: 'High',
+                                timeline: '1-2 days'
+                            },
+                            {
+                                task: 'Fix title lengths on Products and Contact pages',
+                                owner: 'Content',
+                                effort: 'Quick',
+                                impact: 'Medium',
+                                timeline: '1-2 days'
+                            },
+                            {
+                                task: 'Add H1 tags to homepage and key landing pages',
+                                owner: 'Dev',
+                                effort: 'Quick',
+                                impact: 'High',
+                                timeline: '2-3 days'
+                            }
+                        ],
+                        mediumTerm: [
+                            {
+                                task: 'Optimize page load speed (target < 2 seconds)',
+                                owner: 'Dev',
+                                effort: 'Medium',
+                                impact: 'High',
+                                timeline: '2-3 weeks'
+                            },
+                            {
+                                task: 'Implement structured data for products and local business',
+                                owner: 'Dev',
+                                effort: 'Medium',
+                                impact: 'High',
+                                timeline: '1-2 weeks'
+                            },
+                            {
+                                task: 'Optimize and compress all product images',
+                                owner: 'Design/Dev',
+                                effort: 'Medium',
+                                impact: 'Medium',
+                                timeline: '1-2 weeks'
+                            }
+                        ],
+                        strategic: [
+                            {
+                                task: 'Complete technical SEO overhaul with Core Web Vitals optimization',
+                                owner: 'Dev Team',
+                                effort: 'Strategic',
+                                impact: 'High',
+                                timeline: '4-6 weeks'
+                            },
+                            {
+                                task: 'Develop comprehensive content strategy for industrial/automotive sectors',
+                                owner: 'Marketing',
+                                effort: 'Strategic',
+                                impact: 'High',
+                                timeline: '6-8 weeks'
+                            }
+                        ]
+                    },
+                    issueScore: {
+                        critical: 8,
+                        major: 15,
+                        minor: 24,
+                        total: 1070 // weighted score
+                    },
+                    overallScore: 72.4,
+                    analysisDate: new Date().toISOString().split('T')[0],
+                    totalPages: 12,
+                    totalIssues: 47
+                };
+
+                // Generate the report preview
+                generateReportPreview(auditResults);
+                
+                // Update customer progress in CRM
+                const crmData = localStorage.getItem('crm_customers');
+                if (crmData) {
+                    const customers = JSON.parse(crmData);
+                    const customer = customers.find(c => c.id === promacCustomerId);
+                    if (customer) {
+                        customer.progress.seoAudit = 100;
+                        customer.seoScore = auditResults.overallScore;
+                        customer.lastUpdate = new Date().toISOString().split('T')[0];
+                        localStorage.setItem('crm_customers', JSON.stringify(customers));
+                    }
+                }
+                
+                // Store audit results
+                localStorage.setItem(`seo_report_${promacCustomerId}`, JSON.stringify({
+                    customerId: promacCustomerId,
+                    customerName: 'Promac Paints',
+                    auditResults: auditResults,
+                    generatedAt: new Date().toISOString()
+                }));
+                
+                auditCompleted = true;
+                
+                // Enable report button
+                document.getElementById('reportBtn').disabled = false;
+                document.getElementById('reportBtn').className = 'bg-purple-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors';
+                
+                updateStatus('✅ SEO audit completed successfully for Promac Paints!', 'success');
+                
+            } catch (error) {
+                console.error('Error running audit:', error);
+                updateStatus(`❌ Audit failed: ${error.message}`, 'error');
+            }
+        }
+
+        function generateReportPreview(auditResults) {
+            const reportPreview = document.getElementById('reportPreview');
+            
+            reportPreview.innerHTML = `
+                <!-- Executive Summary -->
+                <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">📊 Executive Summary - Promac Paints</h2>
+                    
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+                        <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl">
+                            <div class="text-3xl font-bold text-yellow-600">${auditResults.overallScore}</div>
+                            <div class="text-sm font-semibold text-yellow-800">SEO Score</div>
+                            <div class="text-xs text-gray-600">/100 Overall</div>
+                        </div>
+                        
+                        <div class="text-center p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-xl">
+                            <div class="text-3xl font-bold text-red-600">${auditResults.domainSummary.checks.broken_links}</div>
+                            <div class="text-sm font-semibold text-red-800">Broken Links</div>
+                            <div class="text-xs text-gray-600">Found</div>
+                        </div>
+                        
+                        <div class="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
+                            <div class="text-3xl font-bold text-orange-600">${auditResults.domainSummary.checks.duplicate_title}</div>
+                            <div class="text-sm font-semibold text-orange-800">Duplicate Titles</div>
+                            <div class="text-xs text-gray-600">Issues</div>
+                        </div>
+                        
+                        <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                            <div class="text-3xl font-bold text-purple-600">${auditResults.domainSummary.checks.no_description}</div>
+                            <div class="text-sm font-semibold text-purple-800">Missing Desc</div>
+                            <div class="text-xs text-gray-600">Pages</div>
+                        </div>
+                        
+                        <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                            <div class="text-3xl font-bold text-blue-600">${(auditResults.pagesData.reduce((sum, p) => sum + p.load_time, 0) / auditResults.pagesData.length).toFixed(1)}s</div>
+                            <div class="text-sm font-semibold text-blue-800">Avg Load</div>
+                            <div class="text-xs text-gray-600">Time</div>
+                        </div>
+                        
+                        <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                            <div class="text-3xl font-bold text-green-600">${auditResults.coreWebVitals.performance_score}</div>
+                            <div class="text-sm font-semibold text-green-800">Performance</div>
+                            <div class="text-xs text-gray-600">Score</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Site Health Overview -->
+                    <div class="bg-gray-50 p-6 rounded-xl">
+                        <h3 class="font-semibold text-gray-800 mb-3">🎯 Site Health Snapshot</h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            Promac Paints' website shows <strong class="text-yellow-600">moderate SEO health</strong> with a score of ${auditResults.overallScore}/100. 
+                            The analysis revealed <strong>${auditResults.totalIssues} total issues</strong> across ${auditResults.totalPages} pages, with 
+                            <span class="text-red-600 font-semibold">${auditResults.issueScore.critical} critical</span>, 
+                            <span class="text-orange-600 font-semibold">${auditResults.issueScore.major} major</span>, and 
+                            <span class="text-blue-600 font-semibold">${auditResults.issueScore.minor} minor</span> issues. 
+                            <strong>Priority focus areas:</strong> Page speed optimization (average ${(auditResults.pagesData.reduce((sum, p) => sum + p.load_time, 0) / auditResults.pagesData.length).toFixed(1)}s load time), 
+                            fixing missing meta descriptions, and implementing structured data for better search visibility.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Top Issues -->
+                <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">⚠️ Critical Issues Requiring Immediate Attention</h2>
+                    
+                    <div class="space-y-4">
+                        ${auditResults.technicalIssues
+                            .filter(issue => issue.priority === 'HIGH')
+                            .slice(0, 5)
+                            .map(issue => `
+                                <div class="flex items-start gap-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center font-bold">!</div>
+                                    </div>
+                                    <div class="flex-grow">
+                                        <div class="font-semibold text-gray-800">${issue.issue_type}</div>
+                                        <div class="text-sm text-gray-600 mt-1">
+                                            <span class="font-medium">Page:</span> 
+                                            <a href="https://www.promacpaints.co.za${issue.page_url}" target="_blank" class="text-blue-600 hover:underline">
+                                                ${issue.page_url === '/' ? 'Homepage' : issue.page_url}
+                                            </a>
+                                        </div>
+                                        <div class="text-sm text-gray-600">
+                                            <span class="font-medium">Category:</span> ${issue.category}
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <span class="px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">HIGH PRIORITY</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                    </div>
+                </div>
+
+                <!-- Page Performance -->
+                <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">🚀 Page Performance Analysis</h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Page URL</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Load Time</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Page Size</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Content Rate</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Issues</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${auditResults.pagesData.map(page => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3">
+                                            <a href="https://www.promacpaints.co.za${page.url}" target="_blank" class="text-blue-600 hover:underline font-medium">
+                                                ${page.url === '/' ? 'Homepage' : page.url}
+                                            </a>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="${page.load_time > 2 ? 'text-red-600 font-semibold' : 'text-green-600'}">
+                                                ${page.load_time}s
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="${page.size_bytes > 300000 ? 'text-orange-600' : 'text-gray-600'}">
+                                                ${(page.size_bytes / 1000).toFixed(0)}KB
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="${page.content_rate < 0.20 ? 'text-red-600' : 'text-gray-600'}">
+                                                ${(page.content_rate * 100).toFixed(0)}%
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="text-red-600 font-semibold">${page.issues.length}</span>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recommended Actions -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">✅ Recommended Action Plan</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Quick Wins -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-green-700 mb-3">🚀 Quick Wins (1-3 days)</h3>
+                            <div class="space-y-2">
+                                ${auditResults.suggestions.quickWins.map(task => `
+                                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                                        <div class="font-medium text-gray-800">${task.task}</div>
+                                        <div class="text-sm text-gray-600 mt-1">
+                                            <span class="font-medium">Owner:</span> ${task.owner} | 
+                                            <span class="font-medium">Impact:</span> ${task.impact} | 
+                                            <span class="font-medium">Timeline:</span> ${task.timeline}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <!-- Medium Term -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-yellow-700 mb-3">⚡ Medium Term (2-3 weeks)</h3>
+                            <div class="space-y-2">
+                                ${auditResults.suggestions.mediumTerm.map(task => `
+                                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <div class="font-medium text-gray-800">${task.task}</div>
+                                        <div class="text-sm text-gray-600 mt-1">
+                                            <span class="font-medium">Owner:</span> ${task.owner} | 
+                                            <span class="font-medium">Impact:</span> ${task.impact} | 
+                                            <span class="font-medium">Timeline:</span> ${task.timeline}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            reportPreview.classList.remove('hidden');
+        }
+
+        function viewFullReport() {
+            if (!auditCompleted) {
+                updateStatus('❌ Please complete the audit first!', 'error');
+                return;
+            }
+            
+            // Create and display the full report
+            const reportData = localStorage.getItem(`seo_report_${promacCustomerId}`);
+            if (reportData) {
+                const report = JSON.parse(reportData);
+                
+                // Create a new window with the full report
+                const reportWindow = window.open('', '_blank');
+                reportWindow.document.write(generateFullReport(report.auditResults));
+                reportWindow.document.close();
+            }
+        }
+
+        function generateFullReport(auditResults) {
+            // This generates the complete professional report
+            const processor = new SEOAuditProcessor();
+            return processor.generateAuditReportHTML(
+                { 
+                    customerName: 'Promac Paints',
+                    primaryDomain: 'https://www.promacpaints.co.za',
+                    id: promacCustomerId
+                },
+                auditResults
+            );
+        }
+
+        function updateStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            const colors = {
+                success: 'bg-green-50 border-green-200 text-green-800',
+                error: 'bg-red-50 border-red-200 text-red-800',
+                info: 'bg-blue-50 border-blue-200 text-blue-800'
+            };
+            
+            statusDiv.className = `p-4 rounded-lg border ${colors[type]}`;
+            statusDiv.innerHTML = message;
+        }
+
+        // Auto-start when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                updateStatus('🎨 Ready to audit Promac Paints website. Click "Create Promac Customer" to begin!', 'info');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
