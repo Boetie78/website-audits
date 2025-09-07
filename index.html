@@ -74,6 +74,24 @@
         </div>
     </header>
 
+    <!-- New Audit CTA -->
+    <section class="py-12 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div class="max-w-4xl mx-auto px-6 text-center text-white">
+            <h2 class="text-3xl font-bold mb-4">🚀 Start New Customer Audit</h2>
+            <p class="text-xl mb-8 opacity-90">Complete 3-Stage Website Analysis: SEO → Competitor Research → Keyword Strategy</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="audit-intake-form.html" class="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg">
+                    📋 Launch Audit Process
+                </a>
+                <div class="flex items-center gap-6 text-sm opacity-75">
+                    <span>✓ SEO Analysis</span>
+                    <span>✓ Competitor Intel</span>
+                    <span>✓ Keyword Planning</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Stats Overview -->
     <section class="py-12 bg-white">
         <div class="max-w-6xl mx-auto px-6">
@@ -291,12 +309,8 @@
 
         // Interactive functions
         function addNewCustomer() {
-            const customerName = prompt('Enter customer name:');
-            const domain = prompt('Enter customer domain (e.g., example.com):');
-            
-            if (customerName && domain) {
-                showNotification(`New customer dashboard would be created for ${customerName} (${domain}). Use the create-customer.sh script for actual implementation.`, 'info');
-            }
+            // Redirect to the comprehensive audit intake form
+            window.location.href = 'audit-intake-form.html';
         }
 
         function exportCustomer(customer) {
