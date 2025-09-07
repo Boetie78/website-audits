@@ -440,6 +440,13 @@ class SEOAuditProcessor {
      * Generate the complete audit report HTML matching the format shown in images
      */
     generateAuditReportHTML(customer, auditResults) {
+        // Use the professional report generator
+        if (typeof window.SEOReportGenerator !== 'undefined') {
+            const generator = new window.SEOReportGenerator();
+            return generator.generateReport(customer, auditResults);
+        }
+        
+        // Fallback to basic report if generator not available
         return `<!DOCTYPE html>
 <html lang="en">
 <head>

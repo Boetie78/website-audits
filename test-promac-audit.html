@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Automation Scripts -->
+    <script src="seo-report-generator.js"></script>
     <script src="seo-audit-processor.js"></script>
     <script src="scripts/create-seo-audit.js"></script>
     <script src="audit-automation-hub.js"></script>
@@ -621,16 +622,33 @@
         }
 
         function generateFullReport(auditResults) {
-            // This generates the complete professional report
-            const processor = new SEOAuditProcessor();
-            return processor.generateAuditReportHTML(
-                { 
-                    customerName: 'Promac Paints',
-                    primaryDomain: 'https://www.promacpaints.co.za',
-                    id: promacCustomerId
-                },
-                auditResults
-            );
+            // This generates the complete professional report using the new generator
+            if (typeof window.SEOReportGenerator !== 'undefined') {
+                const generator = new window.SEOReportGenerator();
+                return generator.generateReport(
+                    { 
+                        customerName: 'Promac Paints',
+                        companyName: 'Promac Paints (Pty) Ltd',
+                        primaryDomain: 'https://www.promacpaints.co.za',
+                        industry: 'Manufacturing - Paint & Coatings',
+                        location: 'South Africa',
+                        email: 'info@promacpaints.co.za',
+                        id: promacCustomerId
+                    },
+                    auditResults
+                );
+            } else {
+                // Fallback to basic processor
+                const processor = new SEOAuditProcessor();
+                return processor.generateAuditReportHTML(
+                    { 
+                        customerName: 'Promac Paints',
+                        primaryDomain: 'https://www.promacpaints.co.za',
+                        id: promacCustomerId
+                    },
+                    auditResults
+                );
+            }
         }
 
         function updateStatus(message, type) {
