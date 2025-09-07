@@ -556,7 +556,7 @@ class SEOReportGenerator {
                         Comprehensive SEO Audit Report
                     </p>
                     <p class="text-white/80 mb-6">
-                        ${customer.primaryDomain.replace(/https?:\/\/(www\.)?/, '')} • Generated ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        ${(customer.primaryDomain || customer.website || 'Website').replace(/https?:\/\/(www\.)?/, '')} • Generated ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
