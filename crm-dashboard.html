@@ -7,6 +7,11 @@
     <meta name="description" content="Comprehensive customer relationship management system for website audit clients">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Automation Scripts -->
+    <script src="seo-audit-processor.js"></script>
+    <script src="scripts/create-seo-audit.js"></script>
+    <script src="audit-automation-hub.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -795,6 +800,25 @@
                         </div>
                     ` : ''}
                     
+                    <!-- Audit Automation Controls -->
+                    <div class="bg-gray-50 p-4 rounded-lg mt-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">🤖 Audit Automation</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="triggerSEOAudit('${customer.id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors ${customer.progress?.seoAudit === 100 ? 'opacity-50' : ''}">
+                                📈 SEO Audit
+                            </button>
+                            <button onclick="showComingSoon()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors opacity-50">
+                                🎯 Competitor
+                            </button>
+                            <button onclick="showComingSoon()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition-colors opacity-50">
+                                🔍 Keywords
+                            </button>
+                        </div>
+                        <div class="text-xs text-gray-600 mt-2">
+                            Automated audits create customer folders and professional reports
+                        </div>
+                    </div>
+                    
                     <div class="flex gap-4 mt-8 pt-6 border-t border-gray-200">
                         <a href="customers/${customer.id}/" target="_blank" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
                             📊 View Dashboard
@@ -815,6 +839,61 @@
         function editCustomer(customerId) {
             // Edit functionality would go here
             showNotification('Edit functionality coming soon!', 'info');
+        }
+
+        // Audit Automation Functions
+        async function triggerSEOAudit(customerId) {
+            try {
+                showNotification('🚀 Starting SEO audit automation...', 'info');
+                
+                // Check if automation hub is loaded
+                if (typeof window.auditAutomationHub === 'undefined') {
+                    throw new Error('Automation system not loaded. Please refresh the page.');
+                }
+                
+                const result = await window.triggerCustomerAudit(customerId, 'seo');
+                
+                if (result.success) {
+                    showNotification('✅ SEO audit queued successfully!', 'success');
+                    // Refresh the customer data to show updated progress
+                    setTimeout(() => {
+                        loadCustomerData();
+                    }, 2000);
+                } else {
+                    throw new Error(result.error);
+                }
+                
+            } catch (error) {
+                console.error('SEO Audit Error:', error);
+                showNotification(`❌ SEO audit failed: ${error.message}`, 'error');
+            }
+        }
+
+        function showComingSoon() {
+            showNotification('🚧 Competitor and Keyword audits coming in Q1 2025!', 'info');
+        }
+
+        // Auto-refresh for audit progress
+        let autoRefreshInterval;
+        function enableAutoRefresh() {
+            if (autoRefreshInterval) return;
+            
+            autoRefreshInterval = setInterval(() => {
+                // Check for any active audits
+                const queueStatus = window.auditAutomationHub ? 
+                    window.auditAutomationHub.getQueueStatus() : null;
+                
+                if (queueStatus && (queueStatus.processing || queueStatus.queueLength > 0)) {
+                    loadCustomerData();
+                }
+            }, 10000); // Check every 10 seconds
+        }
+
+        function disableAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
         }
 
         function refreshData() {

@@ -6,6 +6,11 @@
     <title>New Customer Audit - Intake Form</title>
     <meta name="description" content="Professional website audit intake form - SEO analysis, competitor research, and keyword strategy planning">
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Automation Scripts -->
+    <script src="seo-audit-processor.js"></script>
+    <script src="scripts/create-seo-audit.js"></script>
+    <script src="audit-automation-hub.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -421,14 +426,19 @@ website optimization"></textarea>
             const auditId = 'audit_' + Date.now();
             localStorage.setItem(auditId, JSON.stringify(data));
             
-            // Add customer to CRM system
-            addCustomerToCRM(data);
-            
-            // In production, this would make an API call to:
-            // 1. Create customer folder structure
-            // 2. Start SEO audit process
-            // 3. Queue competitor analysis
-            // 4. Queue keyword strategy analysis
+            // Process customer through automation hub
+            if (typeof window.processIntakeForm === 'function') {
+                const automationResult = await window.processIntakeForm(data);
+                if (automationResult.success) {
+                    console.log('✅ Customer processed through automation:', automationResult);
+                } else {
+                    console.warn('⚠️ Automation failed, using fallback CRM:', automationResult.error);
+                    addCustomerToCRM(data);
+                }
+            } else {
+                // Fallback: Add customer to CRM manually
+                addCustomerToCRM(data);
+            }
             
             console.log('Audit request processed:', data);
             
