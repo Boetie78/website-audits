@@ -32,7 +32,7 @@ class AuditAutomationHub {
             const customer = await this.addCustomerToCRM(customerData);
             
             // Step 2: Trigger SEO audit if requested
-            if (customerData.auditTypes.includes('seo')) {
+            if (customerData.auditTypes && customerData.auditTypes.includes('seo')) {
                 await this.queueSEOAudit(customer.id);
             }
             
@@ -265,7 +265,7 @@ class AuditAutomationHub {
     async scheduleAdditionalAudits(customer, auditTypes) {
         const scheduledAudits = [];
         
-        if (auditTypes.includes('competitor')) {
+        if (auditTypes && auditTypes.includes('competitor')) {
             const competitorAudit = {
                 type: 'competitor',
                 customerId: customer.id,
@@ -278,7 +278,7 @@ class AuditAutomationHub {
             scheduledAudits.push(competitorAudit);
         }
         
-        if (auditTypes.includes('keyword')) {
+        if (auditTypes && auditTypes.includes('keyword')) {
             const keywordAudit = {
                 type: 'keyword',
                 customerId: customer.id,
@@ -399,9 +399,9 @@ class AuditAutomationHub {
     estimateCompletionTime(auditTypes) {
         let totalMinutes = 0;
         
-        if (auditTypes.includes('seo')) totalMinutes += 8; // ~8 minutes
-        if (auditTypes.includes('competitor')) totalMinutes += 15; // ~15 minutes
-        if (auditTypes.includes('keyword')) totalMinutes += 12; // ~12 minutes
+        if (auditTypes && auditTypes.includes('seo')) totalMinutes += 8; // ~8 minutes
+        if (auditTypes && auditTypes.includes('competitor')) totalMinutes += 15; // ~15 minutes
+        if (auditTypes && auditTypes.includes('keyword')) totalMinutes += 12; // ~12 minutes
         
         return totalMinutes > 60 ? 
             `${Math.ceil(totalMinutes / 60)} hour${totalMinutes > 120 ? 's' : ''}` :

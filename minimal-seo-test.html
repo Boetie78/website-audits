@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal SEO Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <h1 class="text-2xl font-bold mb-6">Minimal SEO Generator Test</h1>
+    
+    <button onclick="testSEOGenerator()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Test SEO Generator (Inline)
+    </button>
+    
+    <div id="output" class="mt-6"></div>
+
+    <script>
+        // Inline minimal version of SEOReportGenerator for testing
+        class SEOReportGenerator {
+            async generateReport(customer, auditData) {
+                console.log('Generating report with:', customer, auditData);
+                
+                const html = `<!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${customer.customerName} - SEO Report</title>
+                    <script src="https://cdn.tailwindcss.com"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                </head>
+                <body class="bg-gray-50 p-8">
+                    <h1 class="text-2xl font-bold">${customer.customerName} SEO Report</h1>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow mt-6">
+                        <h2 class="text-lg font-semibold mb-4">Issue Distribution Chart</h2>
+                        <div style="width: 100%; height: 300px; position: relative;">
+                            <canvas id="issueChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow mt-6">
+                        <h2 class="text-lg font-semibold mb-4">Actions</h2>
+                        <button onclick="openDetailedReport()" class="bg-red-600 text-white px-4 py-2 rounded">
+                            Open Detailed Issues Report
+                        </button>
+                    </div>
+                    
+                    <script>
+                        function initChart() {
+                            const ctx = document.getElementById('issueChart');
+                            if (ctx && typeof Chart !== 'undefined') {
+                                new Chart(ctx, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                                        datasets: [{
+                                            data: [8, 15, 12, 12],
+                                            backgroundColor: [
+                                                'rgba(239, 68, 68, 0.8)',
+                                                'rgba(249, 115, 22, 0.8)',
+                                                'rgba(234, 179, 8, 0.8)',
+                                                'rgba(59, 130, 246, 0.8)'
+                                            ]
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false
+                                    }
+                                });
+                                console.log('✅ Chart created');
+                            } else {
+                                console.error('❌ Chart creation failed');
+                            }
+                        }
+                        
+                        function openDetailedReport() {
+                            window.open('detailed-issues-report.html?customerId=test', '_blank');
+                        }
+                        
+                        // Initialize chart when page loads
+                        document.addEventListener('DOMContentLoaded', initChart);
+                        setTimeout(initChart, 500);
+                        setTimeout(initChart, 1000);
+                    </script>
+                </body>
+                </html>`;
+                
+                return html;
+            }
+        }
+        
+        async function testSEOGenerator() {
+            try {
+                console.log('Testing inline SEO generator...');
+                
+                const customer = {
+                    customerName: 'Promac Paints',
+                    website: 'https://www.promacpaints.co.za',
+                    id: 'test123'
+                };
+                
+                const auditData = {
+                    technicalIssues: [{
+                        issue: 'Slow loading',
+                        severity: 'High'
+                    }]
+                };
+                
+                const generator = new SEOReportGenerator();
+                const report = await generator.generateReport(customer, auditData);
+                
+                // Open in new window
+                const reportWindow = window.open('', '_blank');
+                reportWindow.document.write(report);
+                reportWindow.document.close();
+                
+                document.getElementById('output').innerHTML = 
+                    '<div class="text-green-600">✅ Minimal SEO report generated successfully!</div>';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('output').innerHTML = 
+                    `<div class="text-red-600">❌ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
