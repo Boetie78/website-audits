@@ -18,6 +18,23 @@
     <div id="output" class="mt-6"></div>
 
     <script>
+        // Check what's loaded when page loads
+        window.addEventListener('load', function() {
+            console.log('Page loaded. Checking available objects:');
+            console.log('SEOReportGenerator:', typeof SEOReportGenerator);
+            console.log('Chart:', typeof Chart);
+            console.log('window.SEOReportGenerator:', typeof window.SEOReportGenerator);
+            
+            document.getElementById('output').innerHTML += `
+                <div class="bg-blue-50 p-4 rounded mt-4">
+                    <h3 class="font-bold">Debug Info:</h3>
+                    <p>SEOReportGenerator: ${typeof SEOReportGenerator}</p>
+                    <p>Chart.js: ${typeof Chart}</p>
+                    <p>window.SEOReportGenerator: ${typeof window.SEOReportGenerator}</p>
+                </div>
+            `;
+        });
+        
         async function generateTestReport() {
             console.log('Starting test report generation...');
             
@@ -45,20 +62,46 @@
                 }
             };
             
-            if (typeof SEOReportGenerator !== 'undefined') {
-                const generator = new SEOReportGenerator();
-                const report = await generator.generateReport(testCustomer, testData);
-                
-                // Open in new window to see the actual result
-                const reportWindow = window.open('', '_blank');
-                reportWindow.document.write(report);
-                reportWindow.document.close();
-                
+            try {
+                if (typeof SEOReportGenerator !== 'undefined') {
+                    console.log('Creating SEOReportGenerator instance...');
+                    const generator = new SEOReportGenerator();
+                    
+                    console.log('Generating report...');
+                    const report = await generator.generateReport(testCustomer, testData);
+                    
+                    console.log('Report generated, length:', report.length);
+                    
+                    // Open in new window to see the actual result
+                    const reportWindow = window.open('', '_blank');
+                    if (reportWindow) {
+                        reportWindow.document.write(report);
+                        reportWindow.document.close();
+                        
+                        document.getElementById('output').innerHTML = 
+                            '<div class="text-green-600">✅ Report generated and opened in new window</div>';
+                    } else {
+                        throw new Error('Could not open new window - popup blocked?');
+                    }
+                } else if (typeof window.SEOReportGenerator !== 'undefined') {
+                    console.log('Using window.SEOReportGenerator...');
+                    const generator = new window.SEOReportGenerator();
+                    const report = await generator.generateReport(testCustomer, testData);
+                    
+                    const reportWindow = window.open('', '_blank');
+                    reportWindow.document.write(report);
+                    reportWindow.document.close();
+                    
+                    document.getElementById('output').innerHTML = 
+                        '<div class="text-green-600">✅ Report generated via window.SEOReportGenerator</div>';
+                } else {
+                    document.getElementById('output').innerHTML = 
+                        '<div class="text-red-600">❌ SEOReportGenerator not available. Check console for details.</div>';
+                }
+            } catch (error) {
+                console.error('Error generating report:', error);
                 document.getElementById('output').innerHTML = 
-                    '<div class="text-green-600">✅ Report generated and opened in new window</div>';
-            } else {
-                document.getElementById('output').innerHTML = 
-                    '<div class="text-red-600">❌ SEOReportGenerator not available</div>';
+                    `<div class="text-red-600">❌ Error: ${error.message}</div>`;
             }
         }
     </script>

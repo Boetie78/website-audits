@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chart Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <h1 class="text-2xl font-bold mb-6">Simple Chart Test</h1>
+    
+    <!-- Chart Container -->
+    <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h2 class="text-lg font-semibold mb-4">Issue Distribution Chart</h2>
+        <div style="width: 100%; height: 300px; position: relative;">
+            <canvas id="issueChart" style="max-width: 100%; max-height: 300px;"></canvas>
+        </div>
+    </div>
+    
+    <button onclick="createChart()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Create Chart
+    </button>
+    
+    <button onclick="openDetailedReport()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 ml-4">
+        Test Detailed Report Link
+    </button>
+    
+    <div id="debug" class="mt-6 bg-gray-100 p-4 rounded">
+        <h3 class="font-bold">Debug Info:</h3>
+        <div id="debugContent"></div>
+    </div>
+
+    <script>
+        // Check what's available
+        window.addEventListener('load', function() {
+            console.log('Chart.js available:', typeof Chart);
+            document.getElementById('debugContent').innerHTML = `
+                <p>Chart.js: ${typeof Chart !== 'undefined' ? '✅ Available' : '❌ Not loaded'}</p>
+                <p>Canvas element: ${document.getElementById('issueChart') ? '✅ Found' : '❌ Not found'}</p>
+            `;
+            
+            // Auto-create chart
+            setTimeout(createChart, 500);
+        });
+        
+        function createChart() {
+            console.log('Attempting to create chart...');
+            const ctx = document.getElementById('issueChart');
+            
+            if (!ctx) {
+                console.error('Canvas not found');
+                return;
+            }
+            
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded');
+                return;
+            }
+            
+            try {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            data: [8, 15, 12, 12],
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(249, 115, 22, 0.8)',
+                                'rgba(234, 179, 8, 0.8)',
+                                'rgba(59, 130, 246, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(249, 115, 22, 1)',
+                                'rgba(234, 179, 8, 1)',
+                                'rgba(59, 130, 246, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Issues by Severity'
+                            }
+                        }
+                    }
+                });
+                
+                console.log('✅ Chart created successfully');
+                document.getElementById('debugContent').innerHTML += '<p>✅ Chart created successfully</p>';
+            } catch (error) {
+                console.error('Error creating chart:', error);
+                document.getElementById('debugContent').innerHTML += `<p>❌ Chart error: ${error.message}</p>`;
+            }
+        }
+        
+        function openDetailedReport() {
+            // Test opening the separate detailed report
+            const reportUrl = 'detailed-issues-report.html?customerId=test123';
+            const reportWindow = window.open(reportUrl, '_blank');
+            
+            if (reportWindow) {
+                console.log('✅ Detailed report opened');
+                document.getElementById('debugContent').innerHTML += '<p>✅ Detailed report opened in new tab</p>';
+            } else {
+                console.log('❌ Could not open detailed report - popup blocked?');
+                document.getElementById('debugContent').innerHTML += '<p>❌ Could not open detailed report - popup blocked?</p>';
+            }
+        }
+    </script>
+</body>
+</html>
