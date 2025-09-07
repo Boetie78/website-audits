@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Fix Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="seo-report-generator.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <h1 class="text-2xl font-bold mb-6">Testing Chart Fix</h1>
+    
+    <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h2 class="text-lg font-semibold mb-4">Test Chart</h2>
+        <div style="width: 400px; height: 300px;">
+            <canvas id="testChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold mb-4">Report Generation Test</h2>
+        <button onclick="testReportGeneration()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Generate Test Report
+        </button>
+        <div id="testResult" class="mt-4"></div>
+    </div>
+
+    <script>
+        // Test Chart.js directly
+        console.log('Chart.js available:', typeof Chart !== 'undefined');
+        
+        // Test basic chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('testChart');
+            if (ctx && typeof Chart !== 'undefined') {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            data: [8, 15, 12, 12],
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(249, 115, 22, 0.8)', 
+                                'rgba(234, 179, 8, 0.8)',
+                                'rgba(59, 130, 246, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            } else {
+                console.error('Chart test failed');
+            }
+        });
+        
+        // Test report generation
+        async function testReportGeneration() {
+            const testCustomer = {
+                customerName: 'Test Company',
+                website: 'https://test.com'
+            };
+            
+            const testAuditData = {
+                technicalIssues: [{
+                    issue: 'Test issue',
+                    severity: 'Medium',
+                    description: 'Test description'
+                }]
+            };
+            
+            try {
+                if (typeof SEOReportGenerator !== 'undefined') {
+                    const generator = new SEOReportGenerator();
+                    const report = await generator.generateReport(testCustomer, testAuditData);
+                    document.getElementById('testResult').innerHTML = '<div class="text-green-600">✅ Report generation successful!</div>';
+                    
+                    // Check for chart presence
+                    if (report.includes('issueChart')) {
+                        document.getElementById('testResult').innerHTML += '<div class="text-green-600">✅ Chart canvas found in report!</div>';
+                    }
+                    
+                    // Check for Chart.js library
+                    if (report.includes('chart.js')) {
+                        document.getElementById('testResult').innerHTML += '<div class="text-green-600">✅ Chart.js library included!</div>';
+                    }
+                    
+                } else {
+                    document.getElementById('testResult').innerHTML = '<div class="text-red-600">❌ SEOReportGenerator not loaded</div>';
+                }
+            } catch (error) {
+                document.getElementById('testResult').innerHTML = '<div class="text-red-600">❌ Error: ' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

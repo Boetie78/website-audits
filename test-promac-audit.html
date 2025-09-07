@@ -7,10 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Automation Scripts -->
-    <script src="seo-report-generator.js"></script>
-    <script src="seo-audit-processor.js"></script>
-    <script src="scripts/create-seo-audit.js"></script>
-    <script src="audit-automation-hub.js"></script>
+    <script src="seo-analysis-engine.js" onload="console.log('✅ SEO Analysis Engine loaded')" onerror="console.error('❌ Failed to load SEO Analysis Engine')"></script>
+    <script src="detailed-issues-report-generator.js" onload="console.log('✅ Detailed Issues Report Generator loaded')" onerror="console.error('❌ Failed to load Detailed Issues Report Generator')"></script>
+    <script src="seo-report-generator.js" onload="console.log('✅ SEO Report Generator loaded')" onerror="console.error('❌ Failed to load SEO Report Generator')"></script>
+    <script src="seo-audit-processor.js" onload="console.log('✅ SEO Audit Processor loaded')" onerror="console.error('❌ Failed to load SEO Audit Processor')"></script>
+    <script src="scripts/create-seo-audit.js" onload="console.log('✅ Create SEO Audit script loaded')" onerror="console.error('❌ Failed to load Create SEO Audit script')"></script>
+    <script src="audit-automation-hub.js" onload="console.log('✅ Audit Automation Hub loaded')" onerror="console.error('❌ Failed to load Audit Automation Hub')"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -75,20 +77,17 @@
             customerName: 'Promac Paints',
             companyName: 'Promac Paints (Pty) Ltd',
             email: 'info@promacpaints.co.za',
+            website: 'https://www.promacpaints.co.za',
             primaryDomain: 'https://www.promacpaints.co.za',
             industry: 'Manufacturing - Paint & Coatings',
             location: 'South Africa',
             geoTarget: 'South Africa',
-            competitors: [
+            targetKeywords: 'industrial paints south africa, automotive paint suppliers, protective coatings, paint manufacturers, commercial paint solutions, waterproof paint coatings, anti-rust paint treatments',
+            competitors: 'dulux.co.za, plascon.com, prominentpaints.co.za, kansaipaints.co.za',
+            competitorUrls: [
                 'https://www.dulux.co.za',
                 'https://www.plascon.com',
                 'https://www.prominentpaints.co.za'
-            ],
-            targetKeywords: [
-                'paint manufacturers south africa',
-                'industrial paints',
-                'automotive paint suppliers',
-                'protective coatings'
             ],
             currentChallenges: 'Improve organic visibility and compete with larger paint brands',
             goals: 'Increase online presence and generate more B2B leads',
@@ -603,7 +602,7 @@
             reportPreview.classList.remove('hidden');
         }
 
-        function viewFullReport() {
+        async function viewFullReport() {
             if (!auditCompleted) {
                 updateStatus('❌ Please complete the audit first!', 'error');
                 return;
@@ -614,29 +613,41 @@
             if (reportData) {
                 const report = JSON.parse(reportData);
                 
-                // Create a new window with the full report
-                const reportWindow = window.open('', '_blank');
-                reportWindow.document.write(generateFullReport(report.auditResults));
-                reportWindow.document.close();
+                try {
+                    updateStatus('🔄 Generating full report with SEO analysis...', 'info');
+                    
+                    // Create a new window with the full report
+                    const reportWindow = window.open('', '_blank');
+                    reportWindow.document.write('<html><body style="font-family: Arial, sans-serif; padding: 20px; text-align: center;"><h2>🔄 Generating Your Complete SEO Report...</h2><p>Please wait while we compile both Website Performance and SEO Analysis data.</p></body></html>');
+                    
+                    // Generate the complete report asynchronously
+                    const fullReportHtml = await generateFullReport(report.auditResults);
+                    
+                    // Replace the loading content with the actual report
+                    reportWindow.document.open();
+                    reportWindow.document.write(fullReportHtml);
+                    reportWindow.document.close();
+                    
+                    updateStatus('✅ Full report generated successfully!', 'success');
+                } catch (error) {
+                    console.error('Error generating full report:', error);
+                    updateStatus(`❌ Error generating report: ${error.message}`, 'error');
+                }
             }
         }
 
-        function generateFullReport(auditResults) {
+        async function generateFullReport(auditResults) {
             // This generates the complete professional report using the new generator
             if (typeof window.SEOReportGenerator !== 'undefined') {
                 const generator = new window.SEOReportGenerator();
-                return generator.generateReport(
-                    { 
-                        customerName: 'Promac Paints',
-                        companyName: 'Promac Paints (Pty) Ltd',
-                        primaryDomain: 'https://www.promacpaints.co.za',
-                        industry: 'Manufacturing - Paint & Coatings',
-                        location: 'South Africa',
-                        email: 'info@promacpaints.co.za',
-                        id: promacCustomerId
-                    },
-                    auditResults
-                );
+                
+                // Use the complete promac customer data including keywords and competitors
+                const customerData = {
+                    ...promacData,
+                    id: promacCustomerId
+                };
+                
+                return await generator.generateReport(customerData, auditResults);
             } else {
                 // Fallback to basic processor
                 const processor = new SEOAuditProcessor();
@@ -667,6 +678,18 @@
         window.addEventListener('load', function() {
             setTimeout(() => {
                 updateStatus('🎨 Ready to audit Promac Paints website. Click "Create Promac Customer" to begin!', 'info');
+                
+                // Debug: Check if all generators are loaded
+                console.log('🔍 Checking loaded generators:');
+                console.log('- SEOAnalysisEngine:', typeof window.SEOAnalysisEngine);
+                console.log('- DetailedIssuesReportGenerator:', typeof window.DetailedIssuesReportGenerator);
+                console.log('- SEOReportGenerator:', typeof window.SEOReportGenerator);
+                console.log('- SEOAuditProcessor:', typeof window.SEOAuditProcessor);
+                
+                if (typeof window.DetailedIssuesReportGenerator === 'undefined') {
+                    console.error('🚨 DetailedIssuesReportGenerator failed to load!');
+                    updateStatus('⚠️ Some report generators failed to load. Refresh the page if you encounter issues.', 'error');
+                }
             }, 500);
         });
     </script>
