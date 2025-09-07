@@ -1140,48 +1140,9 @@ class SEOReportGenerator {
             window.print();
         }
 
+        // Redirect old function to new one for compatibility
         function generateDetailedIssuesReport() {
-            console.log('🔧 Attempting to generate detailed issues report...');
-            
-            try {
-                // Use embedded data instead of template literals
-                const customerData = window.currentCustomerData || ${JSON.stringify(customer)};
-                const auditData = window.currentAuditData || ${JSON.stringify(data)};
-                const seoAnalysisData = window.currentSeoAnalysisData || ${data.seoAnalysis ? JSON.stringify(data.seoAnalysis) : 'null'};
-                
-                console.log('Generating detailed report with data:', {
-                    customer: customerData.customerName,
-                    issuesCount: auditData.technicalIssues?.length || 0,
-                    hasSeoAnalysis: !!seoAnalysisData && seoAnalysisData !== 'null'
-                });
-                
-                // Generate the detailed report HTML directly
-                const detailedReportHtml = generateDetailedReportHTML(customerData, auditData, seoAnalysisData);
-                
-                // Open detailed report in new window
-                const reportWindow = window.open('', '_blank');
-                if (reportWindow) {
-                    reportWindow.document.write(detailedReportHtml);
-                    reportWindow.document.close();
-                    
-                    // Save to customer files
-                    const reportData = {
-                        customerId: customerData.id,
-                        customerName: customerData.customerName,
-                        reportType: 'detailed_issues',
-                        reportHtml: detailedReportHtml,
-                        generatedAt: new Date().toISOString()
-                    };
-                    localStorage.setItem('detailed_issues_report_' + customerData.id, JSON.stringify(reportData));
-                    
-                    showNotification('✅ Detailed Issues Report generated and saved!');
-                } else {
-                    throw new Error('Failed to open new window. Please allow pop-ups for this site.');
-                }
-            } catch (error) {
-                console.error('Error generating detailed report:', error);
-                showNotification('❌ Error generating detailed report: ' + error.message);
-            }
+            openDetailedIssuesReport();
         }
         
         function openDetailedIssuesReport() {
