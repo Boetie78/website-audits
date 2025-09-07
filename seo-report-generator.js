@@ -873,9 +873,9 @@ class SEOReportGenerator {
                                             }
                                         </td>
                                         <td class="text-sm">
-                                            ${issue.issue_type.includes('Load') ? 'Optimize performance' :
-                                              issue.issue_type.includes('Meta') || issue.issue_type.includes('Description') ? 'Update content' :
-                                              issue.issue_type.includes('H1') || issue.issue_type.includes('Title') ? 'Fix HTML structure' :
+                                            ${(issue.issue_type || '').includes('Load') ? 'Optimize performance' :
+                                              (issue.issue_type || '').includes('Meta') || (issue.issue_type || '').includes('Description') ? 'Update content' :
+                                              (issue.issue_type || '').includes('H1') || (issue.issue_type || '').includes('Title') ? 'Fix HTML structure' :
                                               'Review and fix'
                                             }
                                         </td>
