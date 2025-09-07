@@ -1046,17 +1046,18 @@ class SEOReportGenerator {
         window.currentAuditData = ${JSON.stringify(data)};
         window.currentSeoAnalysisData = ${data.seoAnalysis ? JSON.stringify(data.seoAnalysis) : 'null'};
         
-        // Initialize charts
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize charts with better timing and error handling
+        function initializeCharts() {
             console.log('Chart initialization starting...');
             
             // Issue Distribution Chart
-            setTimeout(function() {
-                const ctx = document.getElementById('issueChart');
-                console.log('Canvas element:', ctx);
-                
-                if (ctx && typeof Chart !== 'undefined') {
-                    console.log('Creating chart...');
+            const ctx = document.getElementById('issueChart');
+            console.log('Canvas element found:', !!ctx);
+            console.log('Chart.js available:', typeof Chart !== 'undefined');
+            
+            if (ctx && typeof Chart !== 'undefined') {
+                console.log('Creating issue distribution chart...');
+                try {
                     new Chart(ctx.getContext('2d'), {
                         type: 'doughnut',
                         data: {
@@ -1105,10 +1106,33 @@ class SEOReportGenerator {
                         }
                     }
                 });
-                } else {
-                    console.error('Chart.js not loaded or canvas not found');
+                } catch (error) {
+                    console.error('Error creating chart:', error);
                 }
-            }, 500);
+            } else {
+                console.error('Chart.js not loaded or canvas not found');
+                console.log('ctx:', ctx, 'Chart defined:', typeof Chart !== 'undefined');
+            }
+        }
+        
+        // Initialize charts after page load with multiple timing strategies
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, attempting chart initialization...');
+            
+            // Try immediately
+            initializeCharts();
+            
+            // Try after short delay
+            setTimeout(initializeCharts, 500);
+            
+            // Try after longer delay to ensure Chart.js is loaded
+            setTimeout(initializeCharts, 1500);
+        });
+        
+        // Also try when window is fully loaded
+        window.addEventListener('load', function() {
+            console.log('Window fully loaded, attempting chart initialization...');
+            setTimeout(initializeCharts, 100);
         });
 
         // Export functions
