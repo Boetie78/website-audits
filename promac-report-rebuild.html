@@ -1339,6 +1339,157 @@
         </div>
     </div>
 
+    <!-- Prioritized Action Plan Section -->
+    <div class="container mx-auto px-8 py-8">
+        <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-6 h-6 bg-green-500 rounded flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Prioritized Action Plan</h2>
+                </div>
+                <button onclick="exportCSV('Prioritized Action Plan')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export CSV
+                </button>
+            </div>
+
+            <!-- Priority Action Items -->
+            <div class="space-y-6">
+                <!-- Action Item #1 -->
+                <div class="border-l-4 border-red-500 bg-gray-50 p-6 rounded-r-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                                #1
+                            </div>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">Critical</span>
+                                <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium">Technical</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">5 Broken Links Found</h3>
+                            <p class="text-gray-700 mb-4">Fix or redirect all broken links immediately</p>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-600 font-medium">Impact:</span>
+                                    <span class="text-green-700 font-semibold ml-1">High</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Effort:</span>
+                                    <span class="text-blue-700 font-semibold ml-1">Low</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Timeline:</span>
+                                    <span class="text-purple-700 font-semibold ml-1">1-2 days</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Owner:</span>
+                                    <span class="text-gray-800 font-semibold ml-1">Dev Team</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Result:</span>
+                                    <span class="text-green-700 font-semibold ml-1">Improved user experience and crawlability</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Item #2 -->
+                <div class="border-l-4 border-red-500 bg-gray-50 p-6 rounded-r-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                                #2
+                            </div>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">High</span>
+                                <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium">Content</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">2 Pages Missing Meta Descriptions</h3>
+                            <p class="text-gray-700 mb-4">Write unique, compelling meta descriptions for all pages</p>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-600 font-medium">Impact:</span>
+                                    <span class="text-green-700 font-semibold ml-1">High</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Effort:</span>
+                                    <span class="text-blue-700 font-semibold ml-1">Low</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Timeline:</span>
+                                    <span class="text-purple-700 font-semibold ml-1">2-3 days</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Owner:</span>
+                                    <span class="text-gray-800 font-semibold ml-1">Content Team</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Result:</span>
+                                    <span class="text-green-700 font-semibold ml-1">Improved CTR from search results</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Item #3 -->
+                <div class="border-l-4 border-red-500 bg-gray-50 p-6 rounded-r-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                                #3
+                            </div>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">Critical</span>
+                                <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium">Performance</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Average Page Load Time: 2.4s (Target: <2s)</h3>
+                            <p class="text-gray-700 mb-4">Optimize images, enable caching, minify resources</p>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-600 font-medium">Impact:</span>
+                                    <span class="text-green-700 font-semibold ml-1">Very High</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Effort:</span>
+                                    <span class="text-yellow-700 font-semibold ml-1">Medium</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Timeline:</span>
+                                    <span class="text-purple-700 font-semibold ml-1">1-2 weeks</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Owner:</span>
+                                    <span class="text-gray-800 font-semibold ml-1">Dev Team</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 font-medium">Result:</span>
+                                    <span class="text-green-700 font-semibold ml-1">40% improvement in conversion rate</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Strategic Action Plan Section -->
     <div class="container mx-auto px-8 py-8">
         <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
@@ -2997,6 +3148,29 @@
                 });
                 
                 filename = 'keyword-scout-intelligence-100-keywords.csv';
+                
+            } else if (sectionName === 'Prioritized Action Plan') {
+                csvContent = '"Priority","Category","Issue","Description","Impact","Effort","Timeline","Owner","Expected Result","Action Items"\n';
+                
+                const prioritizedActions = [
+                    ['#1', 'Technical', '5 Broken Links Found', 'Fix or redirect all broken links immediately', 'High', 'Low', '1-2 days', 'Dev Team', 'Improved user experience and crawlability', 'Audit all internal links; Fix 404 errors; Set up 301 redirects where needed; Test all redirects'],
+                    ['#2', 'Content', '2 Pages Missing Meta Descriptions', 'Write unique, compelling meta descriptions for all pages', 'High', 'Low', '2-3 days', 'Content Team', 'Improved CTR from search results', 'Audit pages missing meta descriptions; Write compelling 150-160 character descriptions; Include target keywords naturally; A/B test high-traffic pages'],
+                    ['#3', 'Performance', 'Average Page Load Time: 2.4s (Target: <2s)', 'Optimize images, enable caching, minify resources', 'Very High', 'Medium', '1-2 weeks', 'Dev Team', '40% improvement in conversion rate', 'Compress and optimize all images; Enable browser caching; Minify CSS/JS files; Implement CDN; Optimize server response time'],
+                    ['#4', 'Technical', 'Missing H1 Tags on Key Pages', 'Add proper H1 tags to homepage and main landing pages', 'High', 'Low', '1-2 days', 'Dev Team', 'Better content structure and SEO', 'Audit pages missing H1 tags; Add descriptive H1 tags; Ensure H1 uniqueness; Optimize for target keywords'],
+                    ['#5', 'Technical', 'Mobile Responsiveness Issues', 'Fix mobile display issues and improve mobile UX', 'High', 'Medium', '1-2 weeks', 'Dev + Design Team', 'Better mobile rankings and user experience', 'Mobile audit; Fix responsive design issues; Test on multiple devices; Optimize mobile page speed'],
+                    ['#6', 'Content', 'Thin Content on Product Pages', 'Expand product descriptions with detailed technical information', 'Medium', 'Medium', '2-3 weeks', 'Content + Product Team', 'Higher product page rankings', 'Audit thin content pages; Add technical specifications; Include application guides; Add related products section'],
+                    ['#7', 'Technical', 'Missing Schema Markup', 'Implement structured data for products and business info', 'Medium', 'Medium', '1-2 weeks', 'Dev Team', 'Enhanced search result appearance', 'Research relevant schema types; Implement product schema; Add business/organization schema; Test with Google tools'],
+                    ['#8', 'Content', 'Outdated Blog Content', 'Update and optimize existing blog posts for current trends', 'Medium', 'Low', '2-3 weeks', 'Content Team', 'Improved content freshness and rankings', 'Audit outdated content; Update statistics and references; Add new sections; Optimize for current keywords'],
+                    ['#9', 'Technical', 'Missing Alt Text on Images', 'Add descriptive alt text to all product and content images', 'Medium', 'Low', '3-5 days', 'Content + Dev Team', 'Better accessibility and image SEO', 'Audit images missing alt text; Write descriptive alt text; Include relevant keywords; Ensure accessibility compliance'],
+                    ['#10', 'Performance', 'Large Page Sizes', 'Reduce overall page sizes through optimization', 'Medium', 'Medium', '1-2 weeks', 'Dev Team', 'Faster loading times across all pages', 'Identify largest pages; Optimize images and media; Remove unused code; Implement lazy loading']
+                ];
+                
+                prioritizedActions.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                
+                filename = 'prioritized-action-plan.csv';
             }
             
             // Create and download the CSV file
