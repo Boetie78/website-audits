@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Functionality Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        .status { padding: 10px; margin: 10px 0; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        canvas { max-width: 400px; max-height: 400px; }
+    </style>
+</head>
+<body>
+    <h1>Chart & Export Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>Chart.js Loading Test</h2>
+        <div id="chartStatus" class="status">Testing...</div>
+        <canvas id="testChart" width="300" height="300"></canvas>
+    </div>
+    
+    <div class="test-section">
+        <h2>Export Functions Test</h2>
+        <button onclick="testCSVExport()">Test CSV Export</button>
+        <button onclick="testPDFExport()">Test PDF Export</button>
+        <div id="exportStatus" class="status">Ready to test</div>
+    </div>
+    
+    <script>
+        // Test Chart.js loading and initialization
+        window.addEventListener('load', function() {
+            const statusDiv = document.getElementById('chartStatus');
+            
+            if (typeof Chart === 'undefined') {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Chart.js NOT loaded';
+                return;
+            }
+            
+            statusDiv.className = 'status success';
+            statusDiv.textContent = '✅ Chart.js loaded successfully!';
+            
+            // Try to create a chart
+            try {
+                const ctx = document.getElementById('testChart');
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            data: [8, 15, 12, 12],
+                            backgroundColor: ['#EF4444', '#F97316', '#EAB308', '#3B82F6']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                });
+                statusDiv.textContent += ' Chart created successfully!';
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Error creating chart: ' + error.message;
+            }
+        });
+        
+        // Test CSV Export
+        function testCSVExport() {
+            const statusDiv = document.getElementById('exportStatus');
+            try {
+                const csvContent = 'Test,Data\n1,Value1\n2,Value2';
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'test-export.csv');
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ CSV Export function works!';
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ CSV Export error: ' + error.message;
+            }
+        }
+        
+        // Test PDF Export (Print)
+        function testPDFExport() {
+            const statusDiv = document.getElementById('exportStatus');
+            try {
+                window.print();
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ PDF Export (Print) triggered successfully!';
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ PDF Export error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

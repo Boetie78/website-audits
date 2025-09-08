@@ -4475,25 +4475,10 @@
         }
 
         // Initialize the doughnut chart and keyword intent chart
-        // Add a delay to ensure Chart.js is fully loaded
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                initializeCharts();
-            }, 100);
-        });
-        
-        function initializeCharts() {
-            // Check if Chart.js is loaded
-            if (typeof Chart === 'undefined') {
-                console.error('Chart.js not loaded. Retrying...');
-                setTimeout(initializeCharts, 500);
-                return;
-            }
-            
+        document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('issueChart');
-            if (ctx) {
-                try {
-                    new Chart(ctx.getContext('2d'), {
+            if (ctx && window.Chart) {
+                new Chart(ctx.getContext('2d'), {
                     type: 'doughnut',
                     data: {
                         labels: ['Critical', 'High', 'Medium', 'Low'],
@@ -4530,16 +4515,12 @@
                         }
                     }
                 });
-                } catch (error) {
-                    console.error('Error creating issue chart:', error);
-                }
             }
             
             // Initialize keyword intent chart for Keyword Scout section
             const keywordIntentCtx = document.getElementById('keywordIntentChart');
-            if (keywordIntentCtx) {
-                try {
-                    new Chart(keywordIntentCtx.getContext('2d'), {
+            if (keywordIntentCtx && window.Chart) {
+                new Chart(keywordIntentCtx.getContext('2d'), {
                     type: 'doughnut',
                     data: {
                         labels: ['Commercial', 'Transactional', 'Local', 'Informational'],
@@ -4594,16 +4575,12 @@
                         }
                     }
                 });
-                } catch (error) {
-                    console.error('Error creating keyword intent chart:', error);
-                }
             }
             
             // Initialize comprehensive social media chart
             const socialMediaCtx = document.getElementById('socialMediaChart');
-            if (socialMediaCtx) {
-                try {
-                    new Chart(socialMediaCtx.getContext('2d'), {
+            if (socialMediaCtx && window.Chart) {
+                new Chart(socialMediaCtx.getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: ['Promac Paints', 'Dulux SA', 'Plascon', 'Duram'],
@@ -4737,11 +4714,8 @@
                             mode: 'index'
                         }
                     });
-                } catch (error) {
-                    console.error('Error creating social media chart:', error);
                 }
-            }
-        }
+        });
     </script>
 
 </body>
