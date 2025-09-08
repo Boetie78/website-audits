@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Debug Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8">
+    <h1 class="text-xl font-bold mb-4">Button & Dropdown Function Test</h1>
+    
+    <!-- Test Dropdown -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-2">Dropdown Test</h2>
+        <button onclick="toggleAdvantageDetails('niche-dominance')" id="nicheDominanceBtn" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+            View Detailed Rankings
+        </button>
+        
+        <div id="niche-dominance-details" class="hidden mt-4 bg-gray-100 p-4 rounded">
+            <p>This is the dropdown content that should show/hide</p>
+        </div>
+    </div>
+    
+    <!-- Test Export Button -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-2">Export Button Test</h2>
+        <button onclick="exportCompetitorCSV('Dulux')" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">
+            Export Dulux CSV
+        </button>
+    </div>
+    
+    <!-- Test Show All Rankings -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-2">Toggle Button Test</h2>
+        <button onclick="toggleCompetitorView('dulux')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300" id="duluxToggleBtn">
+            Show All Rankings
+        </button>
+        
+        <div class="mt-2">
+            <div class="competitor-keyword" data-competitor="dulux">Visible Keyword 1</div>
+            <div class="competitor-keyword hidden" data-competitor="dulux">Hidden Keyword 2</div>
+            <div class="competitor-keyword hidden" data-competitor="dulux">Hidden Keyword 3</div>
+        </div>
+    </div>
+    
+    <div id="debug-output" class="mt-6 p-4 bg-yellow-100 rounded">
+        <h3 class="font-bold">Debug Output:</h3>
+        <div id="debug-messages"></div>
+    </div>
+    
+    <script>
+        // Add debug logging
+        function log(message) {
+            const debugDiv = document.getElementById('debug-messages');
+            debugDiv.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+        
+        // Test if functions exist
+        window.addEventListener('load', function() {
+            log('Page loaded, testing functions...');
+            
+            if (typeof toggleAdvantageDetails === 'function') {
+                log('✅ toggleAdvantageDetails function exists');
+            } else {
+                log('❌ toggleAdvantageDetails function NOT found');
+            }
+            
+            if (typeof exportCompetitorCSV === 'function') {
+                log('✅ exportCompetitorCSV function exists');
+            } else {
+                log('❌ exportCompetitorCSV function NOT found');
+            }
+            
+            if (typeof toggleCompetitorView === 'function') {
+                log('✅ toggleCompetitorView function exists');
+            } else {
+                log('❌ toggleCompetitorView function NOT found');
+            }
+        });
+        
+        // Define the functions for testing
+        function toggleAdvantageDetails(section) {
+            log('toggleAdvantageDetails called with: ' + section);
+            const detailsDiv = document.getElementById(section + '-details');
+            const button = document.getElementById(section === 'niche-dominance' ? 'nicheDominanceBtn' : 'brandAuthorityBtn');
+            const arrow = button.querySelector('svg');
+            
+            if (detailsDiv.classList.contains('hidden')) {
+                detailsDiv.classList.remove('hidden');
+                arrow.style.transform = 'rotate(180deg)';
+                button.innerHTML = button.innerHTML.replace('View Detailed Rankings', 'Hide Detailed Rankings');
+                log('Dropdown opened');
+            } else {
+                detailsDiv.classList.add('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+                button.innerHTML = button.innerHTML.replace('Hide Detailed Rankings', 'View Detailed Rankings');
+                log('Dropdown closed');
+            }
+        }
+        
+        function exportCompetitorCSV(competitor) {
+            log('Export CSV called for: ' + competitor);
+            alert('Export function called for ' + competitor);
+        }
+        
+        function toggleCompetitorView(competitor) {
+            log('toggleCompetitorView called for: ' + competitor);
+            const hiddenKeywords = document.querySelectorAll(`.competitor-keyword[data-competitor="${competitor}"].hidden`);
+            const toggleBtn = document.getElementById(`${competitor}ToggleBtn`);
+            
+            if (hiddenKeywords.length > 0 && hiddenKeywords[0].classList.contains('hidden')) {
+                hiddenKeywords.forEach(keyword => {
+                    keyword.classList.remove('hidden');
+                });
+                toggleBtn.textContent = 'Show Top 5';
+                log('Showing all keywords');
+            } else {
+                hiddenKeywords.forEach(keyword => {
+                    keyword.classList.add('hidden');
+                });
+                toggleBtn.textContent = 'Show All Rankings';
+                log('Hiding extra keywords');
+            }
+        }
+    </script>
+</body>
+</html>

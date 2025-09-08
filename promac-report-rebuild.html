@@ -4475,6 +4475,352 @@
             }
         }
 
+        // Global functions first (must be outside event listeners to be accessible)
+        function goBack() {
+            window.history.back();
+        }
+
+        function exportToPDF() {
+            window.print();
+        }
+
+        function shareReport() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Website Auditor SEO Report',
+                    text: 'Check out this comprehensive SEO audit report',
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Report URL copied to clipboard!');
+                }).catch(err => {
+                    prompt('Copy this URL to share:', window.location.href);
+                });
+            }
+        }
+
+        // Competitor view toggle functions
+        function toggleCompetitorView(competitor) {
+            const hiddenKeywords = document.querySelectorAll(`.competitor-keyword[data-competitor="${competitor}"].hidden`);
+            const toggleBtn = document.getElementById(`${competitor}ToggleBtn`);
+            
+            if (hiddenKeywords.length > 0 && hiddenKeywords[0].classList.contains('hidden')) {
+                // Show all keywords
+                hiddenKeywords.forEach(keyword => {
+                    keyword.classList.remove('hidden');
+                });
+                toggleBtn.textContent = 'Show Top 5';
+            } else {
+                // Hide extra keywords - show only top 5
+                hiddenKeywords.forEach(keyword => {
+                    keyword.classList.add('hidden');
+                });
+                toggleBtn.textContent = 'Show All Rankings';
+            }
+        }
+
+        function toggleAdvantageDetails(section) {
+            const detailsDiv = document.getElementById(section + '-details');
+            const button = document.getElementById(section === 'niche-dominance' ? 'nicheDominanceBtn' : 'brandAuthorityBtn');
+            const arrow = button.querySelector('svg');
+            
+            if (detailsDiv.classList.contains('hidden')) {
+                // Show details
+                detailsDiv.classList.remove('hidden');
+                arrow.style.transform = 'rotate(180deg)';
+                button.innerHTML = button.innerHTML.replace('View Detailed Rankings', 'Hide Detailed Rankings').replace('View Authority Breakdown', 'Hide Authority Breakdown');
+            } else {
+                // Hide details
+                detailsDiv.classList.add('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+                button.innerHTML = button.innerHTML.replace('Hide Detailed Rankings', 'View Detailed Rankings').replace('Hide Authority Breakdown', 'View Authority Breakdown');
+            }
+        }
+
+        // GLOBAL FUNCTIONS - Moved outside DOMContentLoaded for onclick accessibility
+        
+        // CSV Export function for various sections
+        function exportCSV(sectionName) {
+            let csvContent = '';
+            let filename = '';
+            
+            if (sectionName === 'Metadata Analysis') {
+                // Get the metadata table
+                const table = document.querySelector('#metadataTable') || 
+                             document.querySelector('table'); // fallback to first table
+                
+                if (!table) {
+                    alert('Table not found for export');
+                    return;
+                }
+                
+                // Extract headers
+                const headers = [];
+                const headerRow = table.querySelector('thead tr');
+                if (headerRow) {
+                    headerRow.querySelectorAll('th').forEach(th => {
+                        headers.push('"' + th.textContent.trim() + '"');
+                    });
+                    csvContent += headers.join(',') + '\n';
+                }
+                
+                // Extract data rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const rowData = [];
+                    row.querySelectorAll('td').forEach(td => {
+                        // Clean up the cell content (remove extra whitespace, get text only)
+                        let cellText = td.textContent.trim();
+                        // Escape quotes and wrap in quotes
+                        cellText = cellText.replace(/"/g, '""');
+                        rowData.push('"' + cellText + '"');
+                    });
+                    csvContent += rowData.join(',') + '\n';
+                });
+                
+                filename = 'metadata-analysis.csv';
+                
+            } else if (sectionName === 'Technical Issues') {
+                // Get the technical issues table
+                const tables = document.querySelectorAll('table');
+                const technicalTable = tables[1]; // Second table should be technical issues
+                
+                if (!technicalTable) {
+                    alert('Technical Issues table not found for export');
+                    return;
+                }
+                
+                // Extract headers
+                const headers = [];
+                const headerRow = technicalTable.querySelector('thead tr');
+                if (headerRow) {
+                    headerRow.querySelectorAll('th').forEach(th => {
+                        headers.push('"' + th.textContent.trim() + '"');
+                    });
+                    csvContent += headers.join(',') + '\n';
+                }
+                
+                // Extract data rows
+                const rows = technicalTable.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const rowData = [];
+                    row.querySelectorAll('td').forEach(td => {
+                        let cellText = td.textContent.trim();
+                        cellText = cellText.replace(/"/g, '""');
+                        rowData.push('"' + cellText + '"');
+                    });
+                    csvContent += rowData.join(',') + '\n';
+                });
+                
+                filename = 'technical-issues.csv';
+                
+            } else if (sectionName === 'Competitor Analysis') {
+                // Export competitor analysis data
+                csvContent = '"Company","Traffic (ETV)","Keywords","Top Rankings","Backlinks","Ref. Domains","SEO Score","Performance","Accessibility","Technical SEO","Description"\n';
+                
+                // Add data rows for each competitor
+                const competitors = [
+                    ['Website Auditor Client', '4,683', '263', '18', '892', '41', '72.4/100', '67/100', '84/100', '72/100', 'Niche leader in specialized solutions and manufacturing'],
+                    ['Plascon', '21,240', '772', '52', '4,584', '393', '81.2/100', '73/100', '91/100', '79/100', 'Strong in color trends and general paint solutions'],
+                    ['Dulux', '66,249', '1,968', '167', '49,663', '105', '89.7/100', '78/100', '95/100', '95/100', 'Market leader with comprehensive product range'],
+                    ['Duram', '26,407', '846', '68', '1,709', '61', '76.8/100', '71/100', '83/100', '75/100', 'Competing in specialized solutions but ranking lower than client']
+                ];
+                
+                competitors.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                
+                filename = 'competitor-analysis.csv';
+                
+            } else if (sectionName === 'Keyword Opportunities') {
+                // Export keyword opportunities data - placeholder implementation
+                csvContent = '"Keyword","Search Volume","Difficulty","Intent","Opportunity Score","Current Position","Competitor Position"\n';
+                filename = 'keyword-opportunities.csv';
+                
+            } else if (sectionName === 'Competitive Intelligence') {
+                // Export competitive intelligence data - placeholder implementation
+                csvContent = '"Metric","Your Site","Competitor Average","Industry Benchmark","Performance Gap"\n';
+                filename = 'competitive-intelligence.csv';
+                
+            } else if (sectionName === 'Prioritized Action Plan' || sectionName === 'Strategic Action Plan') {
+                // Export action plan data - placeholder implementation
+                csvContent = '"Priority","Action Item","Impact","Effort","Timeline","Resources Required"\n';
+                filename = 'action-plan.csv';
+                
+            } else if (sectionName === 'Competitive Advantages') {
+                // Export competitive advantages - placeholder implementation
+                csvContent = '"Advantage Area","Description","Strength Level","Monetization Potential"\n';
+                filename = 'competitive-advantages.csv';
+                
+            } else if (sectionName === 'ROI Analysis') {
+                // Export ROI analysis - placeholder implementation
+                csvContent = '"Investment Area","Cost Estimate","Expected Return","Timeline","ROI Percentage"\n';
+                filename = 'roi-analysis.csv';
+                
+            } else if (sectionName === 'Social Media Audit') {
+                // Export social media audit - placeholder implementation
+                csvContent = '"Platform","Followers","Engagement Rate","Content Quality","Growth Rate","Recommendation"\n';
+                filename = 'social-media-audit.csv';
+                
+            } else if (sectionName === 'Keyword Scout') {
+                // Export keyword scout data - placeholder implementation
+                csvContent = '"Keyword","Search Volume","Competition","CPC","Trend","Opportunity"\n';
+                filename = 'keyword-scout.csv';
+            }
+            
+            // Create and download the CSV file
+            if (csvContent) {
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            } else {
+                alert('No data available for export');
+            }
+        }
+
+        // Competitor-specific CSV export functions
+        function exportCompetitorCSV(competitorName) {
+            let csvContent = '';
+            let filename = '';
+            
+            if (competitorName === 'Dulux') {
+                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
+                
+                const duluxData = [
+                    // Top Keywords
+                    ['Keywords', 'paint', '#1', '12,100', 'Brand Search', 'High volume brand keyword'],
+                    ['Keywords', 'dulux', '#1', '6,600', 'Brand Search', 'Company brand name'],
+                    ['Keywords', 'exterior paint', '#3', '3,600', 'Product', 'Exterior paint category'],
+                    ['Keywords', 'interior paint', '#2', '2,900', 'Product', 'Interior paint category'],
+                    ['Keywords', 'wall paint', '#4', '2,400', 'Product', 'Wall paint specific'],
+                    ['Keywords', 'paint prices', '#5', '1,900', 'Commercial', 'Price-focused searches'],
+                    ['Keywords', 'house paint', '#6', '1,600', 'Product', 'Residential paint category'],
+                    ['Keywords', 'paint shop', '#7', '1,300', 'Commercial', 'Local business searches'],
+                    ['Keywords', 'paint suppliers', '#8', '1,100', 'Commercial', 'B2B supplier searches'],
+                    ['Keywords', 'acrylic paint', '#9', '980', 'Product', 'Acrylic paint category']
+                ];
+                
+                duluxData.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                
+                filename = 'dulux-competitor-analysis.csv';
+                
+            } else if (competitorName === 'Duram') {
+                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
+                
+                const duramData = [
+                    ['Keywords', 'rubber roof paint prices', '#5', '9,900', 'Commercial', 'Price-focused rubber roof paint'],
+                    ['Keywords', 'roof paint rubber', '#6', '9,900', 'Product', 'Rubber roof paint variations'],
+                    ['Keywords', 'rubber roof paint south africa', '#7', '9,900', 'Local', 'Geo-targeted rubber roof paint'],
+                    ['Keywords', 'roof coating', '#4', '4,400', 'Product', 'General roof coating category'],
+                    ['Keywords', 'industrial paint', '#3', '3,200', 'Product', 'Industrial paint category'],
+                    ['Keywords', 'waterproofing paint', '#5', '2,800', 'Product', 'Waterproofing solutions'],
+                    ['Keywords', 'roof sealer', '#2', '2,100', 'Product', 'Roof sealing products'],
+                    ['Keywords', 'roof membrane', '#8', '1,800', 'Product', 'Membrane roofing systems'],
+                    ['Keywords', 'industrial coatings', '#4', '1,600', 'Product', 'Industrial coating solutions'],
+                    ['Keywords', 'protective coatings', '#6', '1,400', 'Product', 'Protective paint systems']
+                ];
+                
+                duramData.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                
+                filename = 'duram-competitor-analysis.csv';
+                
+            } else if (competitorName === 'Plascon') {
+                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
+                
+                const plasconData = [
+                    ['Keywords', 'colour', '#3', '22,200', 'Informational', 'Color-related searches'],
+                    ['Keywords', 'paint colours', '#1', '2,900', 'Product', 'Paint color variations'],
+                    ['Keywords', 'floor coating', '#4', '590', 'Product', 'Floor coating category'],
+                    ['Keywords', 'color chart', '#2', '1,800', 'Informational', 'Color reference materials'],
+                    ['Keywords', 'paint trends', '#1', '1,200', 'Informational', 'Color and paint trends'],
+                    ['Keywords', 'interior design colors', '#5', '980', 'Informational', 'Design-focused color searches'],
+                    ['Keywords', 'epoxy floor coating', '#3', '720', 'Product', 'Specialized floor coating'],
+                    ['Keywords', 'decorative paint', '#6', '650', 'Product', 'Decorative paint category'],
+                    ['Keywords', 'wood stain', '#4', '580', 'Product', 'Wood staining products'],
+                    ['Keywords', 'garage floor paint', '#7', '520', 'Product', 'Garage flooring solutions']
+                ];
+                
+                plasconData.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                
+                filename = 'plascon-competitor-analysis.csv';
+            }
+            
+            // Create and download the CSV file
+            if (csvContent) {
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            } else {
+                alert('No competitor data available for export');
+            }
+        }
+
+        // Toggle view functions
+        function toggleView(sectionName) {
+            console.log('toggleView called for:', sectionName);
+            // Implementation for different section views
+        }
+
+        function toggleKeywordView() {
+            const keywordGrid = document.querySelector('.keyword-grid');
+            const toggleBtn = document.getElementById('keywordViewToggle');
+            
+            if (keywordGrid && toggleBtn) {
+                if (keywordGrid.classList.contains('collapsed')) {
+                    keywordGrid.classList.remove('collapsed');
+                    toggleBtn.textContent = 'Show Less';
+                } else {
+                    keywordGrid.classList.add('collapsed');
+                    toggleBtn.textContent = 'Show All';
+                }
+            }
+        }
+
+        // Competitor view toggle functions
+        function toggleCompetitorView(competitor) {
+            const hiddenKeywords = document.querySelectorAll(`.competitor-keyword[data-competitor="${competitor}"].hidden`);
+            const toggleBtn = document.getElementById(`${competitor}ToggleBtn`);
+            
+            if (hiddenKeywords.length > 0 && hiddenKeywords[0].classList.contains('hidden')) {
+                // Show all keywords
+                hiddenKeywords.forEach(keyword => {
+                    keyword.classList.remove('hidden');
+                });
+                if (toggleBtn) toggleBtn.textContent = 'Show Top 5';
+            } else {
+                // Hide extra keywords - show only top 5
+                hiddenKeywords.forEach(keyword => {
+                    keyword.classList.add('hidden');
+                });
+                if (toggleBtn) toggleBtn.textContent = 'Show All Rankings';
+            }
+        }
+
         // Chart initialization - Fixed version
         document.addEventListener('DOMContentLoaded', function() {
             let chartAttempts = 0;
