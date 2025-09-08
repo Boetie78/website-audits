@@ -3615,39 +3615,7 @@
     </div>
 
     <script>
-        // Navigation functions
-        function goBack() {
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                // Fallback if no history
-                window.location.href = '/';
-            }
-        }
-
-        function exportToPDF() {
-            // Use browser's print functionality which allows saving as PDF
-            window.print();
-        }
-
-        function shareReport() {
-            if (navigator.share) {
-                // Use Web Share API if available
-                navigator.share({
-                    title: 'Website Auditor SEO Report',
-                    text: 'Check out this comprehensive SEO audit report',
-                    url: window.location.href
-                }).catch(err => console.log('Error sharing:', err));
-            } else {
-                // Fallback: copy URL to clipboard
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    alert('Report URL copied to clipboard!');
-                }).catch(err => {
-                    // Final fallback: show URL in prompt
-                    prompt('Copy this URL to share:', window.location.href);
-                });
-            }
-        }
+        // Navigation functions - removed duplicates, kept functions at line 4479+
 
         function exportCSV(sectionName) {
             let csvContent = '';
@@ -4786,7 +4754,7 @@
             // Implementation for different section views
         }
 
-        function toggleKeywordView() {
+        function toggleKeywordGridView() {
             const keywordGrid = document.querySelector('.keyword-grid');
             const toggleBtn = document.getElementById('keywordViewToggle');
             
