@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Function Test</title>
+</head>
+<body>
+    <h1>Simple Interactive Test</h1>
+    <button onclick="toggleAdvantageDetails('test')">Test Dropdown</button>
+    <button onclick="exportCompetitorCSV('Dulux')">Test Export</button>
+    <div id="test-details" class="hidden">Test content</div>
+    
+    <script>
+        // Test if our moved functions work
+        function toggleAdvantageDetails(section) {
+            console.log('Function called with:', section);
+            const detailsDiv = document.getElementById(section + '-details');
+            if (detailsDiv) {
+                if (detailsDiv.classList.contains('hidden')) {
+                    detailsDiv.classList.remove('hidden');
+                    detailsDiv.style.display = 'block';
+                    console.log('Showing element');
+                } else {
+                    detailsDiv.classList.add('hidden');
+                    detailsDiv.style.display = 'none';
+                    console.log('Hiding element');
+                }
+            }
+        }
+
+        function exportCompetitorCSV(competitor) {
+            console.log('Export called for:', competitor);
+            alert('Export function works! Competitor: ' + competitor);
+        }
+    </script>
+</body>
+</html>

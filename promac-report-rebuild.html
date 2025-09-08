@@ -4394,24 +4394,7 @@
             }
         }
 
-        // Toggle advantage details function
-        function toggleAdvantageDetails(section) {
-            const detailsDiv = document.getElementById(section + '-details');
-            const button = document.getElementById(section === 'niche-dominance' ? 'nicheDominanceBtn' : 'brandAuthorityBtn');
-            const arrow = button.querySelector('svg');
-            
-            if (detailsDiv.classList.contains('hidden')) {
-                // Show details
-                detailsDiv.classList.remove('hidden');
-                arrow.style.transform = 'rotate(180deg)';
-                button.innerHTML = button.innerHTML.replace('View Detailed Rankings', 'Hide Detailed Rankings').replace('View Authority Breakdown', 'Hide Authority Breakdown');
-            } else {
-                // Hide details
-                detailsDiv.classList.add('hidden');
-                arrow.style.transform = 'rotate(0deg)';
-                button.innerHTML = button.innerHTML.replace('Hide Detailed Rankings', 'View Detailed Rankings').replace('Hide Authority Breakdown', 'View Authority Breakdown');
-            }
-        }
+        // Removed duplicate toggleAdvantageDetails function - kept the one at line 4491+
 
         // Toggle keyword view function (for Keyword Scout section)
         function toggleKeywordView() {
@@ -4655,98 +4638,7 @@
             }
         }
 
-        // Competitor-specific CSV export functions
-        function exportCompetitorCSV(competitorName) {
-            let csvContent = '';
-            let filename = '';
-            
-            if (competitorName === 'Dulux') {
-                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
-                
-                const duluxData = [
-                    // Top Keywords
-                    ['Keywords', 'paint', '#1', '12,100', 'Brand Search', 'High volume brand keyword'],
-                    ['Keywords', 'dulux', '#1', '6,600', 'Brand Search', 'Company brand name'],
-                    ['Keywords', 'exterior paint', '#3', '3,600', 'Product', 'Exterior paint category'],
-                    ['Keywords', 'interior paint', '#2', '2,900', 'Product', 'Interior paint category'],
-                    ['Keywords', 'wall paint', '#4', '2,400', 'Product', 'Wall paint specific'],
-                    ['Keywords', 'paint prices', '#5', '1,900', 'Commercial', 'Price-focused searches'],
-                    ['Keywords', 'house paint', '#6', '1,600', 'Product', 'Residential paint category'],
-                    ['Keywords', 'paint shop', '#7', '1,300', 'Commercial', 'Local business searches'],
-                    ['Keywords', 'paint suppliers', '#8', '1,100', 'Commercial', 'B2B supplier searches'],
-                    ['Keywords', 'acrylic paint', '#9', '980', 'Product', 'Acrylic paint category']
-                ];
-                
-                duluxData.forEach(row => {
-                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
-                    csvContent += escapedRow.join(',') + '\n';
-                });
-                
-                filename = 'dulux-competitor-analysis.csv';
-                
-            } else if (competitorName === 'Duram') {
-                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
-                
-                const duramData = [
-                    ['Keywords', 'rubber roof paint prices', '#5', '9,900', 'Commercial', 'Price-focused rubber roof paint'],
-                    ['Keywords', 'roof paint rubber', '#6', '9,900', 'Product', 'Rubber roof paint variations'],
-                    ['Keywords', 'rubber roof paint south africa', '#7', '9,900', 'Local', 'Geo-targeted rubber roof paint'],
-                    ['Keywords', 'roof coating', '#4', '4,400', 'Product', 'General roof coating category'],
-                    ['Keywords', 'industrial paint', '#3', '3,200', 'Product', 'Industrial paint category'],
-                    ['Keywords', 'waterproofing paint', '#5', '2,800', 'Product', 'Waterproofing solutions'],
-                    ['Keywords', 'roof sealer', '#2', '2,100', 'Product', 'Roof sealing products'],
-                    ['Keywords', 'roof membrane', '#8', '1,800', 'Product', 'Membrane roofing systems'],
-                    ['Keywords', 'industrial coatings', '#4', '1,600', 'Product', 'Industrial coating solutions'],
-                    ['Keywords', 'protective coatings', '#6', '1,400', 'Product', 'Protective paint systems']
-                ];
-                
-                duramData.forEach(row => {
-                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
-                    csvContent += escapedRow.join(',') + '\n';
-                });
-                
-                filename = 'duram-competitor-analysis.csv';
-                
-            } else if (competitorName === 'Plascon') {
-                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
-                
-                const plasconData = [
-                    ['Keywords', 'colour', '#3', '22,200', 'Informational', 'Color-related searches'],
-                    ['Keywords', 'paint colours', '#1', '2,900', 'Product', 'Paint color variations'],
-                    ['Keywords', 'floor coating', '#4', '590', 'Product', 'Floor coating category'],
-                    ['Keywords', 'color chart', '#2', '1,800', 'Informational', 'Color reference materials'],
-                    ['Keywords', 'paint trends', '#1', '1,200', 'Informational', 'Color and paint trends'],
-                    ['Keywords', 'interior design colors', '#5', '980', 'Informational', 'Design-focused color searches'],
-                    ['Keywords', 'epoxy floor coating', '#3', '720', 'Product', 'Specialized floor coating'],
-                    ['Keywords', 'decorative paint', '#6', '650', 'Product', 'Decorative paint category'],
-                    ['Keywords', 'wood stain', '#4', '580', 'Product', 'Wood staining products'],
-                    ['Keywords', 'garage floor paint', '#7', '520', 'Product', 'Garage flooring solutions']
-                ];
-                
-                plasconData.forEach(row => {
-                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
-                    csvContent += escapedRow.join(',') + '\n';
-                });
-                
-                filename = 'plascon-competitor-analysis.csv';
-            }
-            
-            // Create and download the CSV file
-            if (csvContent) {
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', filename);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            } else {
-                alert('No competitor data available for export');
-            }
-        }
+        // Removed duplicate exportCompetitorCSV function - kept the one at line 4659+
 
         // Toggle view functions
         function toggleView(sectionName) {
