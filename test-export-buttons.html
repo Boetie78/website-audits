@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Buttons Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Export Functionality Test</h1>
+        
+        <!-- Test the export buttons -->
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-lg font-semibold mb-4">Test Export Functions</h2>
+            <div class="flex gap-3">
+                <button onclick="testExportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Test Export PDF
+                </button>
+                <button onclick="testSaveHTML()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                    Test Save HTML
+                </button>
+                <button onclick="testShareReport()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    Test Share Report  
+                </button>
+            </div>
+            <div id="status" class="mt-4 p-3 bg-gray-100 rounded"></div>
+        </div>
+        
+        <!-- Sample content to export -->
+        <div id="reportContent" class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold mb-4">Sample SEO Audit Report - Promac Paints</h2>
+            <p class="text-gray-600 mb-4">Generated on: <span id="reportDate"></span></p>
+            
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-blue-100 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-blue-600">72.4</div>
+                    <div class="text-sm text-blue-800">Overall Score</div>
+                </div>
+                <div class="bg-red-100 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-red-600">47</div>
+                    <div class="text-sm text-red-800">Total Issues</div>
+                </div>
+                <div class="bg-green-100 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-green-600">12</div>
+                    <div class="text-sm text-green-800">Pages Crawled</div>
+                </div>
+            </div>
+            
+            <h3 class="text-lg font-semibold mb-3">Key Findings</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                <li>Homepage load time is 2.8 seconds - needs optimization</li>
+                <li>Missing meta descriptions on 2 pages</li>
+                <li>No H1 tag on homepage</li>
+                <li>5 broken internal links detected</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        document.getElementById('reportDate').textContent = new Date().toLocaleDateString('en-ZA');
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = `<strong>Status:</strong> ${message}`;
+            console.log('Export Status:', message);
+        }
+        
+        function testExportPDF() {
+            updateStatus('Triggering PDF export (print dialog)...');
+            window.print();
+        }
+        
+        function testSaveHTML() {
+            updateStatus('Generating HTML file for download...');
+            try {
+                const reportTitle = 'Promac Paints - SEO Audit Report';
+                const reportDate = new Date().toLocaleDateString('en-ZA');
+                
+                // Get the complete HTML content
+                const htmlContent = document.documentElement.outerHTML;
+                
+                // Create a complete HTML file
+                const completeHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${reportTitle}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 20px; }
+        }
+    </style>
+</head>
+${document.body.outerHTML}
+</html>`;
+                
+                const blob = new Blob([completeHTML], { type: 'text/html;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${reportTitle.replace(/[^a-zA-Z0-9\\s]/g, '').replace(/\\s+/g, '_')}_${reportDate.replace(/\\//g, '-')}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                updateStatus('HTML file download initiated successfully!');
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`);
+                console.error('HTML Export Error:', error);
+            }
+        }
+        
+        function testShareReport() {
+            updateStatus('Testing share functionality...');
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Promac Paints SEO Audit Report',
+                    text: 'View the comprehensive SEO audit report',
+                    url: window.location.href
+                }).then(() => {
+                    updateStatus('Share successful');
+                }).catch((error) => {
+                    updateStatus(`Share error: ${error.message}`);
+                });
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    updateStatus('Report link copied to clipboard!');
+                }).catch(() => {
+                    updateStatus('Fallback: Please manually copy the URL from address bar');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Scout Test - Quick Functionality Check</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center">Keyword Scout Functionality Test</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test New Features</h2>
+            
+            <div class="space-x-4 mb-4">
+                <button onclick="testToggleKeywordView()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                    Test Toggle View Function
+                </button>
+                
+                <button onclick="testCSVExport()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    Test CSV Export Function
+                </button>
+                
+                <button onclick="testChartJS()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                    Test Chart.js Integration
+                </button>
+            </div>
+            
+            <div class="mt-4 p-4 bg-gray-50 rounded">
+                <h3 class="font-semibold mb-2">Test Results:</h3>
+                <div id="testResults"></div>
+            </div>
+        </div>
+        
+        <!-- Sample keyword table for testing -->
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Sample Keywords Table</h2>
+            <table id="keywordScoutTable" class="w-full">
+                <thead>
+                    <tr class="border-b">
+                        <th class="text-left py-2">Keyword</th>
+                        <th class="text-center py-2">Volume</th>
+                        <th class="text-center py-2">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="py-2">"waterproof roof coating"</td>
+                        <td class="text-center py-2">8,100</td>
+                        <td class="text-center py-2">94</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="py-2">"industrial paint manufacturers"</td>
+                        <td class="text-center py-2">5,400</td>
+                        <td class="text-center py-2">89</td>
+                    </tr>
+                    <tr class="border-b hidden-row" style="display: none;">
+                        <td class="py-2">"roof paint near me"</td>
+                        <td class="text-center py-2">3,600</td>
+                        <td class="text-center py-2">92</td>
+                    </tr>
+                    <tr class="border-b hidden-row" style="display: none;">
+                        <td class="py-2">"automotive paint supplier"</td>
+                        <td class="text-center py-2">2,900</td>
+                        <td class="text-center py-2">85</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="toggleKeywordView()" id="keywordViewToggle" class="mt-4 bg-indigo-100 text-indigo-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-200">
+                Show Top 10
+            </button>
+        </div>
+        
+        <!-- Chart test area -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Chart Test</h2>
+            <div style="width: 300px; height: 300px; margin: 0 auto;">
+                <canvas id="keywordIntentChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addResult(message, status = 'info') {
+            const results = document.getElementById('testResults');
+            const result = document.createElement('div');
+            result.className = `p-2 mb-2 rounded ${status === 'success' ? 'bg-green-100 text-green-800' : status === 'error' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
+            result.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            results.appendChild(result);
+        }
+        
+        // Toggle keyword view function (copied from main file)
+        function toggleKeywordView() {
+            const table = document.getElementById('keywordScoutTable');
+            const button = document.getElementById('keywordViewToggle');
+            const hiddenRows = table.querySelectorAll('.hidden-row');
+            
+            const isExpanded = table.classList.contains('expanded-view');
+            
+            if (!isExpanded) {
+                // Show all rows - expand view
+                table.classList.add('expanded-view');
+                
+                hiddenRows.forEach(row => {
+                    row.style.display = '';
+                });
+                
+                button.textContent = 'Show Top 5';
+                
+            } else {
+                // Hide extra rows - show only top 5
+                table.classList.remove('expanded-view');
+                
+                hiddenRows.forEach(row => {
+                    row.style.display = 'none';
+                });
+                
+                button.textContent = 'Show Top 10';
+            }
+        }
+        
+        function testToggleKeywordView() {
+            try {
+                toggleKeywordView();
+                addResult('Toggle view function executed successfully!', 'success');
+            } catch (error) {
+                addResult('Toggle view error: ' + error.message, 'error');
+            }
+        }
+        
+        function testCSVExport() {
+            try {
+                // Create sample CSV content
+                const csvContent = '"Keyword","Volume","Score"\n"waterproof roof coating","8100","94"\n"industrial paint manufacturers","5400","89"';
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'keyword-scout-test.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                addResult('CSV export function executed successfully!', 'success');
+            } catch (error) {
+                addResult('CSV export error: ' + error.message, 'error');
+            }
+        }
+        
+        function testChartJS() {
+            try {
+                const keywordIntentCtx = document.getElementById('keywordIntentChart');
+                if (keywordIntentCtx && window.Chart) {
+                    new Chart(keywordIntentCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Commercial', 'Transactional', 'Local', 'Informational'],
+                            datasets: [{
+                                data: [42, 28, 18, 12],
+                                backgroundColor: [
+                                    '#F97316', // orange-500 (Commercial)
+                                    '#8B5CF6', // purple-500 (Transactional)
+                                    '#EF4444', // red-500 (Local)
+                                    '#3B82F6'  // blue-500 (Informational)
+                                ],
+                                borderWidth: 2,
+                                cutout: '60%'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 10,
+                                        font: { size: 11 }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    addResult('Chart.js visualization created successfully!', 'success');
+                } else {
+                    addResult('Chart.js not loaded or canvas element not found', 'error');
+                }
+            } catch (error) {
+                addResult('Chart.js error: ' + error.message, 'error');
+            }
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            addResult('Page loaded, ready to test Keyword Scout functionality');
+            setTimeout(function() {
+                testChartJS();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

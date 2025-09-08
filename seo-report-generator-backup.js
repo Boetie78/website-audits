@@ -12,90 +12,13 @@ class SEOReportGenerator {
 
     /**
      * Generate a complete SEO audit report matching IntelliMinds format
-     * Now includes BOTH Website Performance AND SEO Analysis parts
      */
-    async generateReport(customer, auditData, seoAnalysisData = null) {
+    generateReport(customer, auditData) {
         // Process and enhance audit data
         const enhancedData = this.enhanceAuditData(auditData);
         
-        // If no SEO analysis provided, generate it
-        if (!seoAnalysisData && typeof window.SEOAnalysisEngine !== 'undefined') {
-            console.log('🔍 Generating SEO Analysis for:', customer.website);
-            const seoEngine = new window.SEOAnalysisEngine();
-            const targetKeywords = customer.targetKeywords ? customer.targetKeywords.split(',').map(k => k.trim()) : [];
-            const competitors = customer.competitors ? customer.competitors.split(',').map(c => c.trim()) : [];
-            seoAnalysisData = await seoEngine.generateSEOAnalysis(customer.website, targetKeywords, competitors);
-        }
-        
-        // Combine both audit parts
-        const combinedData = {
-            ...enhancedData,
-            seoAnalysis: seoAnalysisData,
-            // Generate combined issue lists
-            allIssues: this.combineAllIssues(enhancedData, seoAnalysisData),
-            // Generate combined recommendations
-            allRecommendations: this.combineAllRecommendations(enhancedData, seoAnalysisData)
-        };
-        
-        // Generate the comprehensive HTML report with both parts
-        return this.generateComprehensiveHTML(customer, combinedData);
-    }
-
-    /**
-     * Combine issues from both Website Performance and SEO Analysis
-     */
-    combineAllIssues(performanceData, seoAnalysisData) {
-        let allIssues = [];
-        
-        // Add Website Performance issues
-        if (performanceData.technicalIssues) {
-            performanceData.technicalIssues.forEach(issue => {
-                allIssues.push({
-                    ...issue,
-                    type: 'Performance',
-                    auditPart: 'Website Performance'
-                });
-            });
-        }
-        
-        // Add SEO Analysis issues
-        if (seoAnalysisData && typeof window.SEOAnalysisEngine !== 'undefined') {
-            const seoEngine = new window.SEOAnalysisEngine();
-            const seoIssues = seoEngine.generateSEOIssuesList(seoAnalysisData);
-            allIssues = allIssues.concat(seoIssues.map(issue => ({
-                ...issue,
-                auditPart: 'SEO Analysis'
-            })));
-        }
-        
-        return allIssues;
-    }
-    
-    /**
-     * Combine recommendations from both audit parts
-     */
-    combineAllRecommendations(performanceData, seoAnalysisData) {
-        let allRecommendations = [];
-        
-        // Add Website Performance recommendations
-        if (performanceData.recommendations) {
-            allRecommendations = allRecommendations.concat(performanceData.recommendations.map(rec => ({
-                ...rec,
-                auditPart: 'Website Performance'
-            })));
-        }
-        
-        // Add SEO Analysis recommendations
-        if (seoAnalysisData && typeof window.SEOAnalysisEngine !== 'undefined') {
-            const seoEngine = new window.SEOAnalysisEngine();
-            const seoRecommendations = seoEngine.generateSEORecommendations(seoAnalysisData);
-            allRecommendations = allRecommendations.concat(seoRecommendations.map(rec => ({
-                ...rec,
-                auditPart: 'SEO Analysis'
-            })));
-        }
-        
-        return allRecommendations;
+        // Generate the comprehensive HTML report
+        return this.generateComprehensiveHTML(customer, enhancedData);
     }
 
     /**
@@ -447,26 +370,18 @@ class SEOReportGenerator {
     }
 
     /**
-     * Calculate ROI potential for South African market
+     * Calculate ROI potential
      */
     calculateROIPotential(data) {
         const score = data.overallScore || 72;
         const improvementPotential = 100 - score;
         
-        // Convert to South African Rands (roughly 18:1 USD to ZAR ratio)
-        const usdToZarRate = 18;
-        
         return {
             currentTrafficEstimate: Math.floor(1000 * (score / 100)),
             potentialTrafficIncrease: Math.floor(1000 * (improvementPotential / 100) * 2.5),
-<<<<<<< Updated upstream
-            estimatedRevenueIncrease: Math.floor(improvementPotential * 500 * usdToZarRate), // Convert to ZAR
-=======
             estimatedRevenueIncrease: Math.floor(improvementPotential * 9000), // Using ZAR conversion (~18:1 USD to ZAR)
->>>>>>> Stashed changes
             timeToResults: score < 50 ? '3-6 months' : '2-3 months',
-            confidenceLevel: score < 50 ? 'High' : 'Moderate',
-            currency: 'ZAR'
+            confidenceLevel: score < 50 ? 'High' : 'Moderate'
         };
     }
 
@@ -728,19 +643,11 @@ class SEOReportGenerator {
                         </svg>
                         Export PDF
                     </button>
-<<<<<<< Updated upstream
-                    <button onclick="openDetailedIssuesReport()" class="action-button bg-red-600 text-white hover:bg-red-700">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        Detailed Issues Report
-=======
                     <button onclick="saveHTMLReport()" class="action-button bg-purple-600 text-white hover:bg-purple-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
                         Save HTML
->>>>>>> Stashed changes
                     </button>
                     <button onclick="shareReport()" class="action-button bg-green-600 text-white hover:bg-green-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -765,7 +672,7 @@ class SEOReportGenerator {
                         Comprehensive SEO Audit Report
                     </p>
                     <p class="text-white/80 mb-6">
-                        ${(customer.primaryDomain || customer.website || 'Website').replace(/https?:\/\/(www\.)?/, '')} • Generated ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        ${customer.primaryDomain.replace(/https?:\/\/(www\.)?/, '')} • Generated ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
@@ -900,8 +807,8 @@ class SEOReportGenerator {
                 <!-- Issue Distribution Chart -->
                 <div>
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Issue Distribution</h3>
-                    <div class="chart-container" style="width: 100%; height: 300px; position: relative;">
-                        <canvas id="issueChart" style="max-width: 100%; max-height: 300px;"></canvas>
+                    <div class="chart-container">
+                        <canvas id="issueChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -1082,9 +989,9 @@ class SEOReportGenerator {
                                             }
                                         </td>
                                         <td class="text-sm">
-                                            ${(issue.issue_type || '').includes('Load') ? 'Optimize performance' :
-                                              (issue.issue_type || '').includes('Meta') || (issue.issue_type || '').includes('Description') ? 'Update content' :
-                                              (issue.issue_type || '').includes('H1') || (issue.issue_type || '').includes('Title') ? 'Fix HTML structure' :
+                                            ${issue.issue_type.includes('Load') ? 'Optimize performance' :
+                                              issue.issue_type.includes('Meta') || issue.issue_type.includes('Description') ? 'Update content' :
+                                              issue.issue_type.includes('H1') || issue.issue_type.includes('Title') ? 'Fix HTML structure' :
                                               'Review and fix'
                                             }
                                         </td>
@@ -1096,10 +1003,6 @@ class SEOReportGenerator {
                 </div>
             </div>
 
-<<<<<<< Updated upstream
-            ${data.seoAnalysis ? this.generateSEOAnalysisSection(data.seoAnalysis) : ''}
-            
-=======
             <!-- Competitor Analysis Section -->
             <div class="card">
                 <div class="p-6 border-b border-gray-200">
@@ -1388,7 +1291,6 @@ class SEOReportGenerator {
                 </div>
             </div>
 
->>>>>>> Stashed changes
             <!-- Recommendations & Action Plan -->
             <div class="card">
                 <div class="p-6 border-b border-gray-200">
@@ -1480,11 +1382,7 @@ class SEOReportGenerator {
                         </div>
                         <div class="bg-white rounded-lg p-4">
                             <div class="text-sm text-gray-600 mb-1">Est. Revenue Impact</div>
-<<<<<<< Updated upstream
-                            <div class="text-2xl font-bold text-green-600">R${(data.roiPotential?.estimatedRevenueIncrease || 0).toLocaleString()}/mo</div>
-=======
                             <div class="text-2xl font-bold text-green-600">+R${(data.roiPotential?.estimatedRevenueIncrease || 0).toLocaleString()}/mo</div>
->>>>>>> Stashed changes
                         </div>
                     </div>
                     <div class="bg-white rounded-lg p-4">
@@ -1545,34 +1443,22 @@ class SEOReportGenerator {
     </footer>
 
     <script>
-<<<<<<< Updated upstream
-        // Set global data for detailed reports
-        window.currentCustomerData = ${JSON.stringify(customer)};
-        window.currentAuditData = ${JSON.stringify(data)};
-        window.currentSeoAnalysisData = ${data.seoAnalysis ? JSON.stringify(data.seoAnalysis) : 'null'};
-        
-        // Initialize charts with better timing and error handling
-        function initializeCharts() {
-            console.log('Chart initialization starting...');
-            
-=======
         // Initialize charts immediately (since HTML is dynamically inserted)
         setTimeout(function() {
->>>>>>> Stashed changes
             // Issue Distribution Chart
             const ctx = document.getElementById('issueChart');
-            console.log('Canvas element found:', !!ctx);
-            console.log('Chart.js available:', typeof Chart !== 'undefined');
-            
-            if (ctx && typeof Chart !== 'undefined') {
-                console.log('Creating issue distribution chart...');
-                try {
-                    new Chart(ctx.getContext('2d'), {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Critical', 'High', 'Medium', 'Low'],
-                            datasets: [{
-                                data: [8, 15, 12, 12],
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            data: [
+                                ${data.issueScore?.critical || 0},
+                                ${data.issueScore?.major || 0},
+                                ${Math.floor((data.issueScore?.minor || 0) / 2)},
+                                ${Math.ceil((data.issueScore?.minor || 0) / 2)}
+                            ],
                             backgroundColor: [
                                 'rgba(239, 68, 68, 0.8)',
                                 'rgba(249, 115, 22, 0.8)',
@@ -1615,183 +1501,18 @@ class SEOReportGenerator {
                         }
                     }
                 });
-                } catch (error) {
-                    console.error('Error creating chart:', error);
-                }
-            } else {
-                console.error('Chart.js not loaded or canvas not found');
-                console.log('ctx:', ctx, 'Chart defined:', typeof Chart !== 'undefined');
             }
-<<<<<<< Updated upstream
-        }
-        
-        // Initialize charts after page load with multiple timing strategies
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, attempting chart initialization...');
-            
-            // Try immediately
-            initializeCharts();
-            
-            // Try after short delay
-            setTimeout(initializeCharts, 500);
-            
-            // Try after longer delay to ensure Chart.js is loaded
-            setTimeout(initializeCharts, 1500);
-        });
-        
-        // Also try when window is fully loaded
-        window.addEventListener('load', function() {
-            console.log('Window fully loaded, attempting chart initialization...');
-            setTimeout(initializeCharts, 100);
-        });
-=======
         }, 100); // Small delay to ensure DOM is ready
->>>>>>> Stashed changes
 
         // Export functions - make them globally accessible
         window.exportPDF = function() {
             window.print();
         };
 
-<<<<<<< Updated upstream
-        // Redirect old function to new one for compatibility
-        function generateDetailedIssuesReport() {
-            openDetailedIssuesReport();
-        }
-        
-        function openDetailedIssuesReport() {
-            console.log('🔧 Opening detailed issues report...');
-            
-            try {
-                // Get customer data for URL parameters
-                const customerData = window.currentCustomerData || ${JSON.stringify(customer)};
-                
-                // Save data to localStorage for the detailed report to access
-                window.currentCustomer = customerData;
-                window.currentAuditData = window.currentAuditData || ${JSON.stringify(data)};
-                window.currentSeoAnalysisData = window.currentSeoAnalysisData || ${data.seoAnalysis ? JSON.stringify(data.seoAnalysis) : 'null'};
-                
-                // Open the separate detailed report file
-                const reportUrl = 'detailed-issues-report.html?customerId=' + encodeURIComponent(customerData.id || 'default');
-                window.open(reportUrl, '_blank');
-                
-                showNotification('✅ Opening detailed issues report in new tab...');
-            } catch (error) {
-                console.error('Error opening detailed report:', error);
-                showNotification('❌ Error opening detailed report: ' + error.message);
-            }
-        }
-        
-        function generateDetailedReportHTML(customer, auditData, seoAnalysisData) {
-            // Use proper string concatenation without template literals inside templates
-            const customerName = customer.customerName || 'Client';
-            const website = (customer.website || customer.primaryDomain || '').replace(/https?:\/\/(www\.)?/, '');
-            const currentDate = new Date().toLocaleDateString();
-            
-            return '<!DOCTYPE html>' +
-'<html lang="en">' +
-'<head>' +
-    '<meta charset="UTF-8">' +
-    '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-    '<title>Detailed Issues Report - ' + customerName + '</title>' +
-    '<script src="https://cdn.tailwindcss.com"></script>' +
-    '<style>' +
-        '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");' +
-        'body { font-family: "Inter", sans-serif; }' +
-        '@media print { .no-print { display: none !important; } }' +
-    '</style>' +
-'</head>' +
-'<body class="bg-gray-50">' +
-    '<div class="bg-gradient-to-r from-red-600 to-red-700 text-white py-8">' +
-        '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">' +
-            '<div class="text-center">' +
-                '<h1 class="text-4xl font-black mb-4">🔧 Detailed Issues & Fix Guide</h1>' +
-                '<p class="text-xl text-white/90 mb-2">Complete step-by-step instructions for ' + customerName + '</p>' +
-                '<p class="text-white/80 mb-6">' + website + ' • Generated ' + currentDate + '</p>' +
-            '</div>' +
-        '</div>' +
-    '</div>' +
-    '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">' +
-        '<div class="bg-white rounded-xl shadow-lg p-8">' +
-            '<h2 class="text-2xl font-bold text-gray-800 mb-6">Priority Issues Found</h2>' +
-            '<div class="space-y-6">' +
-                '<div class="border-l-4 border-red-500 bg-red-50 p-4 rounded-lg">' +
-                    '<h3 class="text-lg font-semibold text-red-800 mb-2">Critical: Slow Page Load Times</h3>' +
-                    '<p class="text-red-700 mb-3">Pages are loading slower than optimal, affecting user experience and search rankings.</p>' +
-                    '<div class="bg-white p-4 rounded border">' +
-                        '<h4 class="font-semibold text-gray-800 mb-2">🔧 How to Fix:</h4>' +
-                        '<ol class="list-decimal list-inside text-sm text-gray-700 space-y-1">' +
-                            '<li>Run Google PageSpeed Insights to identify bottlenecks</li>' +
-                            '<li>Compress images using TinyPNG or WebP format</li>' +
-                            '<li>Enable browser caching with Cache-Control headers</li>' +
-                            '<li>Minify CSS, JavaScript, and HTML files</li>' +
-                            '<li>Consider implementing a CDN for faster global loading</li>' +
-                        '</ol>' +
-                        '<div class="mt-3 text-xs text-gray-600"><strong>Time:</strong> 4-8 hours | <strong>Difficulty:</strong> Hard</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-lg">' +
-                    '<h3 class="text-lg font-semibold text-orange-800 mb-2">High: Missing Meta Descriptions</h3>' +
-                    '<p class="text-orange-700 mb-3">Pages lack compelling meta descriptions that appear in search results.</p>' +
-                    '<div class="bg-white p-4 rounded border">' +
-                        '<h4 class="font-semibold text-gray-800 mb-2">🔧 How to Fix:</h4>' +
-                        '<ol class="list-decimal list-inside text-sm text-gray-700 space-y-1">' +
-                            '<li>Write compelling 150-160 character descriptions</li>' +
-                            '<li>Include target keywords naturally</li>' +
-                            '<li>Add call-to-action words to encourage clicks</li>' +
-                            '<li>Ensure each page has unique description</li>' +
-                            '<li>Add to HTML: &lt;meta name="description" content="Your description"&gt;</li>' +
-                        '</ol>' +
-                        '<div class="mt-3 text-xs text-gray-600"><strong>Time:</strong> 15-30 min per page | <strong>Difficulty:</strong> Easy</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded-lg">' +
-                    '<h3 class="text-lg font-semibold text-yellow-800 mb-2">Medium: Missing H1 Tags</h3>' +
-                    '<p class="text-yellow-700 mb-3">Pages are missing or have incorrect H1 heading tags for SEO structure.</p>' +
-                    '<div class="bg-white p-4 rounded border">' +
-                        '<h4 class="font-semibold text-gray-800 mb-2">🔧 How to Fix:</h4>' +
-                        '<ol class="list-decimal list-inside text-sm text-gray-700 space-y-1">' +
-                            '<li>Identify the main topic of the page</li>' +
-                            '<li>Write clear, keyword-rich heading (50-60 characters)</li>' +
-                            '<li>Use only one H1 tag per page</li>' +
-                            '<li>Place as first heading: &lt;h1&gt;Your Main Heading&lt;/h1&gt;</li>' +
-                            '<li>Follow with H2-H6 tags hierarchically</li>' +
-                        '</ol>' +
-                        '<div class="mt-3 text-xs text-gray-600"><strong>Time:</strong> 10-15 min per page | <strong>Difficulty:</strong> Easy</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-            '<div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">' +
-                '<h3 class="text-lg font-semibold text-blue-800 mb-2">📋 Next Steps</h3>' +
-                '<p class="text-blue-700 text-sm">' +
-                    'Start with critical issues first, then work through high and medium priority items. ' +
-                    'Each fix will improve your search rankings and user experience. ' +
-                    'Consider implementing changes in phases to manage workload effectively.' +
-                '</p>' +
-            '</div>' +
-        '</div>' +
-    '</div>' +
-'</body>' +
-'</html>';
-        }
-        
-        
-        function getSEOFixTime(severity) {
-            switch (severity?.toLowerCase()) {
-                case 'critical': return '2-4 hours';
-                case 'high': return '1-2 hours';
-                case 'medium': return '30-60 minutes';
-                default: return '15-30 minutes';
-            }
-        }
-        
-        function shareReport() {
-=======
         window.shareReport = function() {
->>>>>>> Stashed changes
             if (navigator.share) {
                 navigator.share({
-                    title: 'SEO Audit Report',
+                    title: '${customer.customerName} SEO Audit Report',
                     text: 'View the comprehensive SEO audit report',
                     url: window.location.href
                 });
@@ -1801,11 +1522,6 @@ class SEOReportGenerator {
             }
         };
 
-<<<<<<< Updated upstream
-        function exportTableCSV(tableType) {
-            showNotification('CSV export feature coming soon!');
-        }
-=======
         window.exportTableCSV = function(tableType) {
             let csvContent = '';
             let filename = '';
@@ -1840,7 +1556,6 @@ class SEOReportGenerator {
             
             window.showNotification('CSV exported successfully!');
         };
->>>>>>> Stashed changes
 
         window.exportCompetitorCSV = function() {
             let csvContent = 'Keyword,Competitor,Their Position,Your Position,Monthly Volume,Opportunity Score,Priority\\n';
@@ -1920,22 +1635,6 @@ document.body.outerHTML +
             }
         };
 
-<<<<<<< Updated upstream
-        function scheduleConsultation() {
-            window.open('mailto:info@example.com?subject=SEO Audit Consultation Request&body=I would like to schedule a consultation to discuss the SEO audit findings.', '_blank');
-        }
-
-        function downloadFullReport() {
-            showNotification('Full report download ready!');
-            window.print();
-        }
-
-        function shareWithTeam() {
-            const subject = encodeURIComponent('SEO Audit Report');
-            const body = encodeURIComponent('Please review the SEO audit report: ' + window.location.href);
-            window.open('mailto:?subject=' + subject + '&body=' + body, '_blank');
-        }
-=======
         window.scheduleConsultation = function() {
             window.open('mailto:${customer.email || 'info@example.com'}?subject=SEO Audit Consultation Request&body=I would like to schedule a consultation to discuss the SEO audit findings.', '_blank');
         };
@@ -1963,7 +1662,6 @@ document.body.outerHTML +
             const body = encodeURIComponent('Please review the attached SEO audit report: ' + window.location.href);
             window.open('mailto:?subject=' + subject + '&body=' + body, '_blank');
         };
->>>>>>> Stashed changes
 
         window.showNotification = function(message) {
             const notification = document.createElement('div');
@@ -2002,232 +1700,6 @@ document.body.outerHTML +
     </script>
 </body>
 </html>`;
-    }
-    
-    /**
-     * Generate the comprehensive SEO Analysis section
-     */
-    generateSEOAnalysisSection(seoAnalysis) {
-        return `
-            <!-- SEO Analysis Section -->
-            <div class="card">
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-3">
-                            <span class="text-2xl">🔍</span>
-                            SEO Analysis & Optimization
-                        </h2>
-                        <div class="flex gap-2 no-print">
-                            <button onclick="exportTableCSV('seo-analysis')" class="action-button bg-green-600 text-white text-sm">
-                                Export CSV
-                            </button>
-                            <button onclick="toggleSection('seo-analysis')" class="action-button bg-gray-100 text-gray-700 text-sm">
-                                Toggle View
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 mt-2">Comprehensive SEO analysis covering keywords, content, rankings, and competitive positioning</p>
-                </div>
-                <div id="seo-analysis" class="p-6">
-                    
-                    <!-- SEO Score Overview -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-blue-700">Overall SEO Score</p>
-                                    <p class="text-2xl font-bold text-blue-900">${seoAnalysis.seoScores?.overallSEOScore || 0}/100</p>
-                                </div>
-                                <div class="text-2xl">${this.getScoreIcon(seoAnalysis.seoScores?.overallSEOScore || 0)}</div>
-                            </div>
-                        </div>
-                        <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-green-700">Ranking Keywords</p>
-                                    <p class="text-2xl font-bold text-green-900">${seoAnalysis.keywordAnalysis?.totalKeywords || 0}</p>
-                                </div>
-                                <div class="text-2xl">🎯</div>
-                            </div>
-                        </div>
-                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-purple-700">Backlinks</p>
-                                    <p class="text-2xl font-bold text-purple-900">${seoAnalysis.backlinkAnalysis?.totalBacklinks || 0}</p>
-                                </div>
-                                <div class="text-2xl">🔗</div>
-                            </div>
-                        </div>
-                        <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-200">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-orange-700">Domain Authority</p>
-                                    <p class="text-2xl font-bold text-orange-900">${seoAnalysis.backlinkAnalysis?.domainAuthority || 0}</p>
-                                </div>
-                                <div class="text-2xl">📊</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Keyword Analysis -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <span class="text-xl">🎯</span>
-                            Keyword Performance Analysis
-                        </h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full border-collapse bg-white border border-gray-200 rounded-lg overflow-hidden">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Keyword</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Position</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Search Volume</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Difficulty</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Traffic</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Opportunity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${seoAnalysis.keywordAnalysis?.topRankingKeywords?.map(keyword => `
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-3 text-sm text-gray-900 border-b font-medium">${keyword.keyword}</td>
-                                            <td class="px-4 py-3 text-sm border-b">
-                                                <span class="px-2 py-1 rounded-full text-xs font-medium ${this.getRankingClass(keyword.position)}">
-                                                    #${keyword.position}
-                                                </span>
-                                            </td>
-                                            <td class="px-4 py-3 text-sm text-gray-600 border-b">${keyword.searchVolume.toLocaleString()}</td>
-                                            <td class="px-4 py-3 text-sm border-b">
-                                                <span class="px-2 py-1 rounded-full text-xs font-medium ${this.getDifficultyClass(keyword.difficulty)}">
-                                                    ${keyword.difficulty}%
-                                                </span>
-                                            </td>
-                                            <td class="px-4 py-3 text-sm text-gray-600 border-b">${keyword.traffic}</td>
-                                            <td class="px-4 py-3 text-sm border-b">
-                                                <span class="px-2 py-1 rounded-full text-xs font-medium ${keyword.opportunity === 'High' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                                                    ${keyword.opportunity}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    `).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No keyword data available</td></tr>'}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <!-- Content Analysis -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <span class="text-xl">📝</span>
-                            Content Optimization Analysis
-                        </h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="bg-white border border-gray-200 rounded-lg p-4">
-                                <h4 class="font-semibold text-gray-800 mb-3">Content Issues</h4>
-                                <div class="space-y-3">
-                                    ${seoAnalysis.contentAnalysis?.contentIssues?.slice(0, 5).map(issue => `
-                                        <div class="flex items-start gap-3 p-3 bg-red-50 rounded-lg">
-                                            <span class="text-red-500 text-sm">⚠️</span>
-                                            <div class="flex-1">
-                                                <p class="text-sm font-medium text-gray-900">${issue.page}</p>
-                                                <p class="text-sm text-red-700">${issue.issue}</p>
-                                            </div>
-                                            <span class="px-2 py-1 text-xs font-medium rounded ${this.getSeverityClass(issue.severity)}">
-                                                ${issue.severity}
-                                            </span>
-                                        </div>
-                                    `).join('') || '<p class="text-gray-500">No content issues found</p>'}
-                                </div>
-                            </div>
-                            
-                            <div class="bg-white border border-gray-200 rounded-lg p-4">
-                                <h4 class="font-semibold text-gray-800 mb-3">Content Opportunities</h4>
-                                <div class="space-y-3">
-                                    ${seoAnalysis.contentAnalysis?.contentOpportunities?.slice(0, 3).map(opp => `
-                                        <div class="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
-                                            <span class="text-green-500 text-sm">💡</span>
-                                            <div class="flex-1">
-                                                <p class="text-sm font-medium text-gray-900">${opp.topic}</p>
-                                                <p class="text-sm text-gray-600">${opp.opportunity}</p>
-                                                <p class="text-xs text-green-700 mt-1">Est. ${opp.estimatedTraffic} monthly visitors</p>
-                                            </div>
-                                        </div>
-                                    `).join('') || '<p class="text-gray-500">No content opportunities identified</p>'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Competitor Analysis -->
-                    ${seoAnalysis.competitorAnalysis ? `
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <span class="text-xl">🥊</span>
-                            Competitive Landscape
-                        </h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full border-collapse bg-white border border-gray-200 rounded-lg overflow-hidden">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Competitor</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Keywords</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Traffic</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Top Keywords</th>
-                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Strengths</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${seoAnalysis.competitorAnalysis.competitors?.map(comp => `
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-3 text-sm font-medium text-gray-900 border-b">${comp.domain}</td>
-                                            <td class="px-4 py-3 text-sm text-gray-600 border-b">${comp.organicKeywords.toLocaleString()}</td>
-                                            <td class="px-4 py-3 text-sm text-gray-600 border-b">${comp.organicTraffic.toLocaleString()}</td>
-                                            <td class="px-4 py-3 text-sm text-gray-600 border-b">${comp.topKeywords.slice(0, 2).join(', ')}</td>
-                                            <td class="px-4 py-3 text-sm text-gray-600 border-b">${comp.strengths.slice(0, 2).join(', ')}</td>
-                                        </tr>
-                                    `).join('') || ''}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    ` : ''}
-                    
-                </div>
-            </div>`;
-    }
-    
-    /**
-     * Helper methods for SEO Analysis section
-     */
-    getScoreIcon(score) {
-        if (score >= 90) return '🟢';
-        if (score >= 70) return '🟡';
-        if (score >= 50) return '🟠';
-        return '🔴';
-    }
-    
-    getRankingClass(position) {
-        if (position <= 3) return 'bg-green-100 text-green-800';
-        if (position <= 10) return 'bg-yellow-100 text-yellow-800';
-        if (position <= 20) return 'bg-orange-100 text-orange-800';
-        return 'bg-red-100 text-red-800';
-    }
-    
-    getDifficultyClass(difficulty) {
-        if (difficulty <= 30) return 'bg-green-100 text-green-800';
-        if (difficulty <= 60) return 'bg-yellow-100 text-yellow-800';
-        return 'bg-red-100 text-red-800';
-    }
-    
-    getSeverityClass(severity) {
-        switch(severity?.toLowerCase()) {
-            case 'critical': return 'bg-red-100 text-red-800';
-            case 'high': return 'bg-orange-100 text-orange-800';
-            case 'medium': return 'bg-yellow-100 text-yellow-800';
-            case 'low': return 'bg-green-100 text-green-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
     }
 }
 

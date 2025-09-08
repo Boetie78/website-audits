@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working Export Test - Promac Paints SEO Audit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <!-- Navigation Header -->
+    <nav class="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm">
+                    <a href="/" class="text-gray-600 hover:text-gray-900">← Back to Portfolio</a>
+                    <span class="text-gray-400">|</span>
+                    <span class="font-semibold text-gray-900">Promac Paints SEO Audit</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export PDF
+                    </button>
+                    <button onclick="saveHTMLReport()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Save HTML
+                    </button>
+                    <button onclick="shareReport()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"></path>
+                        </svg>
+                        Share Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto mt-20">
+        <h1 class="text-3xl font-bold mb-6 text-center">Promac Paints - SEO Audit Report</h1>
+        
+        <!-- Status Display -->
+        <div id="status" class="bg-blue-100 border border-blue-300 text-blue-800 px-4 py-3 rounded-lg mb-6">
+            <strong>Status:</strong> Export functions ready for testing
+        </div>
+        
+        <!-- Sample Report Content -->
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-6">SEO Audit Summary</h2>
+            
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-blue-50 p-6 rounded-lg text-center">
+                    <div class="text-3xl font-bold text-blue-600">72.4</div>
+                    <div class="text-blue-800 font-medium">Overall Score</div>
+                </div>
+                <div class="bg-red-50 p-6 rounded-lg text-center">
+                    <div class="text-3xl font-bold text-red-600">47</div>
+                    <div class="text-red-800 font-medium">Total Issues</div>
+                </div>
+                <div class="bg-green-50 p-6 rounded-lg text-center">
+                    <div class="text-3xl font-bold text-green-600">12</div>
+                    <div class="text-green-800 font-medium">Pages Crawled</div>
+                </div>
+                <div class="bg-purple-50 p-6 rounded-lg text-center">
+                    <div class="text-3xl font-bold text-purple-600">3</div>
+                    <div class="text-purple-800 font-medium">Competitors Analyzed</div>
+                </div>
+            </div>
+            
+            <!-- Issue Chart -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Issue Distribution</h3>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <canvas id="issueChart" width="300" height="150"></canvas>
+                </div>
+            </div>
+            
+            <!-- Key Findings -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Key Findings</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                        <div>
+                            <div class="font-medium text-red-700">Critical: Missing H1 Tag on Homepage</div>
+                            <div class="text-gray-600 text-sm">The homepage lacks a proper H1 tag, which is essential for SEO structure.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                        <div>
+                            <div class="font-medium text-orange-700">High: Slow Page Load Times</div>
+                            <div class="text-gray-600 text-sm">Average load time is 2.8 seconds, should be under 2 seconds.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                        <div>
+                            <div class="font-medium text-yellow-700">Medium: Missing Meta Descriptions</div>
+                            <div class="text-gray-600 text-sm">2 pages are missing meta descriptions for better SERP visibility.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Competitor Analysis -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4">Competitive Analysis</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="font-semibold">Dulux SA</div>
+                        <div class="text-2xl font-bold text-blue-600">66,249</div>
+                        <div class="text-sm text-gray-600">Estimated Traffic Value</div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="font-semibold">Duram Paints</div>
+                        <div class="text-2xl font-bold text-green-600">26,407</div>
+                        <div class="text-sm text-gray-600">Estimated Traffic Value</div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="font-semibold">Plascon</div>
+                        <div class="text-2xl font-bold text-purple-600">21,240</div>
+                        <div class="text-sm text-gray-600">Estimated Traffic Value</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center py-8 text-gray-500">
+            <p>© 2025 SEO Audit Report | Generated by Professional SEO Tools</p>
+            <p class="text-sm">Report ID: test-promac-001 | <a href="#" class="text-blue-600">Privacy Policy</a> | <a href="#" class="text-blue-600">Terms of Service</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Global export functions that should work
+        function exportPDF() {
+            updateStatus('Opening print dialog for PDF export...');
+            window.print();
+        }
+        
+        function saveHTMLReport() {
+            updateStatus('Generating HTML file for download...');
+            try {
+                const reportTitle = 'Promac Paints - Comprehensive SEO Audit Report';
+                const reportDate = new Date().toLocaleDateString('en-ZA');
+                
+                // Get the complete HTML content
+                const htmlContent = document.documentElement.outerHTML;
+                
+                // Create a complete HTML file
+                const completeHTML = '<!DOCTYPE html>' +
+                    '<html lang="en">' +
+                    '<head>' +
+                    '<meta charset="UTF-8">' +
+                    '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+                    '<title>' + reportTitle + '</title>' +
+                    '<script src="https://cdn.tailwindcss.com"><' + '/script>' +
+                    '<script src="https://cdn.jsdelivr.net/npm/chart.js"><' + '/script>' +
+                    '<style>@media print { .no-print { display: none !important; } body { margin: 0; padding: 20px; } }</style>' +
+                    '</head>' +
+                    document.body.outerHTML +
+                    '</html>';
+                
+                const blob = new Blob([completeHTML], { type: 'text/html;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = reportTitle.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '_' + reportDate.replace(/\//g, '-') + '.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                updateStatus('HTML file download completed successfully! File ready for customer delivery.');
+            } catch (error) {
+                updateStatus('Error: ' + error.message);
+                console.error('HTML Export Error:', error);
+            }
+        }
+        
+        function shareReport() {
+            updateStatus('Testing share functionality...');
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Promac Paints SEO Audit Report',
+                    text: 'View the comprehensive SEO audit report',
+                    url: window.location.href
+                }).then(() => {
+                    updateStatus('Share completed successfully');
+                }).catch((error) => {
+                    updateStatus('Share cancelled or error: ' + error.message);
+                });
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    updateStatus('Report link copied to clipboard!');
+                }).catch(() => {
+                    updateStatus('Fallback: Please manually copy the URL from address bar');
+                });
+            }
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = '<strong>Status:</strong> ' + message;
+            console.log('Export Status:', message);
+        }
+        
+        // Initialize chart
+        setTimeout(function() {
+            const ctx = document.getElementById('issueChart');
+            if (ctx && window.Chart) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            data: [8, 15, 12, 12],
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(249, 115, 22, 0.8)',
+                                'rgba(234, 179, 8, 0.8)',
+                                'rgba(59, 130, 246, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(249, 115, 22, 1)',
+                                'rgba(234, 179, 8, 1)',
+                                'rgba(59, 130, 246, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { padding: 15, font: { size: 12 } }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return label + ': ' + value + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }, 500);
+    </script>
+</body>
+</html>

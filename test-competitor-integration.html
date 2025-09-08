@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitor Analysis Integration Test - Promac Paints</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center">Competitor Analysis Integration Test</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Enhanced SEO Audit with Competitor Data</h2>
+            <button onclick="generateTestReport()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                Generate Sample Report with Competitor Analysis
+            </button>
+            
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                <h3 class="font-semibold text-blue-800">Debug Info:</h3>
+                <div id="debugInfo" class="text-sm text-blue-700"></div>
+            </div>
+        </div>
+        <div id="reportContainer" class="mt-6"></div>
+    </div>
+
+    <script src="seo-report-generator-working.js?v=5"></script>
+    <script src="seo-audit-processor.js"></script>
+    
+    <script>
+        function updateDebug(message) {
+            const debugDiv = document.getElementById('debugInfo');
+            debugDiv.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            console.log('DEBUG:', message);
+        }
+        
+        function generateTestReport() {
+            updateDebug('Button clicked - starting report generation...');
+            updateDebug('SEOReportGenerator available: ' + typeof SEOReportGenerator);
+            
+            try {
+                // Complete customer data structure for Promac Paints
+                const testCustomer = {
+                    id: 'test-promac-001',
+                    customerName: 'Promac Paints',
+                    companyName: 'Promac Paints (Pty) Ltd',
+                    primaryDomain: 'https://www.promacpaints.co.za',
+                    email: 'info@promacpaints.co.za',
+                    industry: 'Manufacturing - Paint & Coatings',
+                    location: 'South Africa',
+                    geoTarget: 'South Africa',
+                    competitors: [
+                        'https://www.dulux.co.za',
+                        'https://plascon.co.za',
+                        'https://www.duram.co.za'
+                    ]
+                };
+
+                // Complete audit data structure matching the original comprehensive report
+                const testAuditData = {
+                    domainSummary: {
+                        domain: 'promacpaints.co.za',
+                        onpage_score: 72.4,
+                        crawl_progress: 100,
+                        crawl_status: 'completed',
+                        total_pages: 12,
+                        checks: {
+                            duplicate_title: 2,
+                            duplicate_description: 3,
+                            title_too_long: 4,
+                            no_description: 2,
+                            broken_links: 5,
+                            non_indexable: 1
+                        },
+                        summary: {
+                            total_issues: 47,
+                            critical_issues: 8,
+                            major_issues: 15,
+                            minor_issues: 24
+                        }
+                    },
+                    pagesData: [
+                        {
+                            url: '/',
+                            title: 'Promac Paints - Quality Paint Manufacturers in South Africa',
+                            meta_description: 'Promac Paints is a leading paint manufacturer in South Africa, specializing in industrial, automotive, and decorative paint solutions.',
+                            title_length: 58,
+                            meta_description_length: 152,
+                            links_internal: 18,
+                            links_external: 4,
+                            wait_time: 1.2,
+                            load_time: 2.8,
+                            size_bytes: 485000,
+                            content_rate: 0.22,
+                            issues: [
+                                { type: 'Slow Page Load Time', priority: 'HIGH', category: 'Technical' },
+                                { type: 'Large Page Size', priority: 'MEDIUM', category: 'Technical' },
+                                { type: 'Missing Schema Markup', priority: 'MEDIUM', category: 'Technical' },
+                                { type: 'No H1 Tag', priority: 'HIGH', category: 'Content' }
+                            ]
+                        },
+                        {
+                            url: '/products',
+                            title: 'Paint Products - Industrial & Automotive Coatings',
+                            meta_description: 'Explore our comprehensive range of industrial paints, automotive coatings, and specialized protective solutions.',
+                            title_length: 52,
+                            meta_description_length: 126,
+                            links_internal: 24,
+                            links_external: 2,
+                            wait_time: 1.8,
+                            load_time: 3.2,
+                            size_bytes: 542000,
+                            content_rate: 0.28,
+                            issues: [
+                                { type: 'Slow Page Load Time', priority: 'HIGH', category: 'Technical' },
+                                { type: 'Missing Alt Tags', priority: 'MEDIUM', category: 'Content' }
+                            ]
+                        },
+                        {
+                            url: '/services',
+                            title: 'Paint Services & Technical Support | Promac Paints',
+                            meta_description: 'Professional paint application services and technical support for industrial and commercial projects across South Africa.',
+                            title_length: 50,
+                            meta_description_length: 139,
+                            links_internal: 15,
+                            links_external: 3,
+                            wait_time: 1.4,
+                            load_time: 2.6,
+                            size_bytes: 398000,
+                            content_rate: 0.31,
+                            issues: [
+                                { type: 'Duplicate Meta Description', priority: 'MEDIUM', category: 'Content' },
+                                { type: 'Missing Structured Data', priority: 'LOW', category: 'Technical' }
+                            ]
+                        },
+                        {
+                            url: '/contact',
+                            title: 'Contact Us - Promac Paints',
+                            meta_description: '',
+                            title_length: 26,
+                            meta_description_length: 0,
+                            links_internal: 12,
+                            links_external: 3,
+                            wait_time: 0.8,
+                            load_time: 1.5,
+                            size_bytes: 185000,
+                            content_rate: 0.15,
+                            issues: [
+                                { type: 'Title Too Short', priority: 'MEDIUM', category: 'UX' },
+                                { type: 'Missing Meta Description', priority: 'HIGH', category: 'Content' },
+                                { type: 'Low Content Rate', priority: 'MEDIUM', category: 'Content' }
+                            ]
+                        },
+                        {
+                            url: '/industrial-paints',
+                            title: 'Industrial Paint Solutions for Manufacturing & Heavy Industry',
+                            meta_description: 'High-performance industrial paints and protective coatings for machinery, equipment, and industrial facilities. Durable solutions for harsh environments.',
+                            title_length: 61,
+                            meta_description_length: 154,
+                            links_internal: 20,
+                            links_external: 1,
+                            wait_time: 1.1,
+                            load_time: 2.3,
+                            size_bytes: 412000,
+                            content_rate: 0.31,
+                            issues: [
+                                { type: 'Title Slightly Too Long', priority: 'LOW', category: 'UX' },
+                                { type: 'Duplicate H2 Tags', priority: 'MEDIUM', category: 'Content' }
+                            ]
+                        },
+                        {
+                            url: '/automotive-paints',
+                            title: 'Automotive Paint & Coatings | Car Paint Suppliers SA',
+                            meta_description: 'Professional automotive paint solutions for body shops and vehicle manufacturers. Quality car paints and primers.',
+                            title_length: 53,
+                            meta_description_length: 112,
+                            links_internal: 16,
+                            links_external: 2,
+                            wait_time: 1.0,
+                            load_time: 2.0,
+                            size_bytes: 298000,
+                            content_rate: 0.25,
+                            issues: [
+                                { type: 'Missing Structured Data', priority: 'MEDIUM', category: 'Technical' },
+                                { type: 'Images Not Optimized', priority: 'MEDIUM', category: 'Technical' }
+                            ]
+                        }
+                    ],
+                    coreWebVitals: {
+                        first_contentful_paint: 1.8,
+                        largest_contentful_paint: 2.9,
+                        total_blocking_time: 0.3,
+                        cumulative_layout_shift: 0.08,
+                        speed_index: 2.2,
+                        time_to_interactive: 3.1,
+                        performance_score: 68
+                    },
+                    metadataIssues: [
+                        { url: '/', title_issue: false, desc_issue: false },
+                        { url: '/products', title_issue: true, desc_issue: false },
+                        { url: '/contact', title_issue: true, desc_issue: true },
+                        { url: '/industrial-paints', title_issue: true, desc_issue: false },
+                        { url: '/automotive-paints', title_issue: false, desc_issue: false }
+                    ],
+                    technicalIssues: [
+                        { page_url: '/', issue_type: 'Slow Page Load Time', priority: 'HIGH', category: 'Technical' },
+                        { page_url: '/', issue_type: 'No H1 Tag', priority: 'HIGH', category: 'Content' },
+                        { page_url: '/contact', issue_type: 'Missing Meta Description', priority: 'HIGH', category: 'Content' },
+                        { page_url: '/products', issue_type: 'Slow Page Load Time', priority: 'HIGH', category: 'Technical' },
+                        { page_url: '/', issue_type: 'Missing Schema Markup', priority: 'MEDIUM', category: 'Technical' }
+                    ],
+                    suggestions: {
+                        quickWins: [
+                            {
+                                task: 'Add missing meta descriptions to Contact and About pages',
+                                owner: 'Content',
+                                effort: 'Quick',
+                                impact: 'High',
+                                timeline: '1-2 days'
+                            },
+                            {
+                                task: 'Fix title lengths on Products and Contact pages',
+                                owner: 'Content',
+                                effort: 'Quick',
+                                impact: 'Medium',
+                                timeline: '1-2 days'
+                            },
+                            {
+                                task: 'Add H1 tags to homepage and key landing pages',
+                                owner: 'Dev',
+                                effort: 'Quick',
+                                impact: 'High',
+                                timeline: '2-3 days'
+                            }
+                        ],
+                        mediumTerm: [
+                            {
+                                task: 'Optimize page load speed (target < 2 seconds)',
+                                owner: 'Dev',
+                                effort: 'Medium',
+                                impact: 'High',
+                                timeline: '2-3 weeks'
+                            },
+                            {
+                                task: 'Implement structured data for products and local business',
+                                owner: 'Dev',
+                                effort: 'Medium',
+                                impact: 'High',
+                                timeline: '1-2 weeks'
+                            },
+                            {
+                                task: 'Optimize and compress all product images',
+                                owner: 'Design/Dev',
+                                effort: 'Medium',
+                                impact: 'Medium',
+                                timeline: '1-2 weeks'
+                            }
+                        ],
+                        strategic: [
+                            {
+                                task: 'Complete technical SEO overhaul with Core Web Vitals optimization',
+                                owner: 'Dev Team',
+                                effort: 'Strategic',
+                                impact: 'High',
+                                timeline: '4-6 weeks'
+                            },
+                            {
+                                task: 'Develop comprehensive content strategy for industrial/automotive sectors',
+                                owner: 'Marketing',
+                                effort: 'Strategic',
+                                impact: 'High',
+                                timeline: '6-8 weeks'
+                            }
+                        ]
+                    },
+                    issueScore: {
+                        critical: 8,
+                        major: 15,
+                        minor: 24,
+                        total: 1070
+                    },
+                    overallScore: 72.4,
+                    analysisDate: new Date().toISOString().split('T')[0],
+                    totalPages: 12,
+                    totalIssues: 47
+                };
+
+                updateDebug('Customer and audit data prepared');
+                updateDebug('Creating SEOReportGenerator instance...');
+                
+                let generator;
+                if (typeof SEOReportGenerator !== 'undefined') {
+                    generator = new SEOReportGenerator();
+                } else if (typeof window.SEOReportGenerator !== 'undefined') {
+                    generator = new window.SEOReportGenerator();
+                } else {
+                    throw new Error('SEOReportGenerator class not found');
+                }
+                
+                updateDebug('Generator created successfully');
+                updateDebug('Generating report HTML...');
+                
+                const reportHtml = generator.generateReport(testCustomer, testAuditData);
+                updateDebug('Report HTML generated, length: ' + reportHtml.length);
+                
+                updateDebug('Inserting report into DOM...');
+                document.getElementById('reportContainer').innerHTML = reportHtml;
+                updateDebug('Report inserted successfully!');
+                
+                // Initialize the Issue Distribution Chart manually after HTML is inserted
+                setTimeout(function() {
+                    const ctx = document.getElementById('issueChart');
+                    if (ctx && window.Chart) {
+                        updateDebug('Initializing Chart.js visualization...');
+                        new Chart(ctx.getContext('2d'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Critical', 'High', 'Medium', 'Low'],
+                                datasets: [{
+                                    data: [
+                                        testAuditData.issueScore.critical,
+                                        testAuditData.issueScore.major,
+                                        Math.floor(testAuditData.issueScore.minor / 2),
+                                        Math.ceil(testAuditData.issueScore.minor / 2)
+                                    ],
+                                    backgroundColor: [
+                                        'rgba(239, 68, 68, 0.8)',
+                                        'rgba(249, 115, 22, 0.8)',
+                                        'rgba(234, 179, 8, 0.8)',
+                                        'rgba(59, 130, 246, 0.8)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(239, 68, 68, 1)',
+                                        'rgba(249, 115, 22, 1)',
+                                        'rgba(234, 179, 8, 1)',
+                                        'rgba(59, 130, 246, 1)'
+                                    ],
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 15,
+                                            font: {
+                                                size: 12
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.parsed || 0;
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = ((value / total) * 100).toFixed(1);
+                                                return label + ': ' + value + ' (' + percentage + '%)';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        updateDebug('Chart.js visualization created successfully');
+                    } else {
+                        updateDebug('ERROR: Chart.js not loaded or canvas element not found');
+                    }
+                }, 500);
+                
+                // Scroll to the report
+                document.getElementById('reportContainer').scrollIntoView({ behavior: 'smooth' });
+                updateDebug('✅ Report generation completed successfully!');
+                
+            } catch (error) {
+                updateDebug('❌ ERROR: ' + error.message);
+                console.error('Error generating report:', error);
+                alert('Error generating report: ' + error.message);
+            }
+        }
+
+        // Mock notification function for testing
+        function showNotification(message) {
+            alert(message);
+        }
+        
+        // Load status
+        window.addEventListener('load', function() {
+            updateDebug('Page loaded. Ready to generate reports.');
+        });
+    </script>
+</body>
+</html>

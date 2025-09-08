@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promac Paints - Complete SEO Audit Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .action-button {
+            @apply px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2;
+        }
+        
+        .btn-primary {
+            @apply bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transform hover:scale-105;
+        }
+        
+        .card {
+            @apply bg-white rounded-lg shadow-lg border border-gray-200 p-6 transition-all duration-300;
+        }
+        
+        .card:hover {
+            @apply shadow-xl transform translate-y-1;
+        }
+        
+        .status-badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+        }
+        
+        .status-critical { @apply bg-red-100 text-red-800; }
+        .status-high { @apply bg-orange-100 text-orange-800; }
+        .status-medium { @apply bg-yellow-100 text-yellow-800; }
+        .status-low { @apply bg-blue-100 text-blue-800; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 20px; }
+            .card { box-shadow: none; border: 1px solid #e5e7eb; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40 no-print">
+        <div class="max-w-6xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm">
+                    <a href="/" class="text-gray-600 hover:text-gray-900">← Back to Portfolio</a>
+                    <span class="text-gray-400">|</span>
+                    <span class="font-semibold text-gray-900">Promac Paints SEO Audit</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportPDF()" class="action-button btn-primary">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export PDF
+                    </button>
+                    <button onclick="saveHTMLReport()" class="action-button bg-purple-600 text-white hover:bg-purple-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Save HTML
+                    </button>
+                    <button onclick="shareReport()" class="action-button bg-green-600 text-white hover:bg-green-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"></path>
+                        </svg>
+                        Share Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 py-8 mt-20">
+        
+        <!-- Header -->
+        <div class="card mb-8 gradient-bg text-white">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-2">Promac Paints</h1>
+                <h2 class="text-xl font-light mb-4">Comprehensive SEO Audit Report</h2>
+                <p class="text-sm opacity-90">Generated on 07/09/2025 | Domain: promacpaints.co.za</p>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="card text-center bg-blue-50">
+                <div class="text-3xl font-bold text-blue-600 mb-2">72.4</div>
+                <div class="text-blue-800 font-medium">Overall SEO Score</div>
+            </div>
+            <div class="card text-center bg-red-50">
+                <div class="text-3xl font-bold text-red-600 mb-2">47</div>
+                <div class="text-red-800 font-medium">Total Issues Found</div>
+            </div>
+            <div class="card text-center bg-green-50">
+                <div class="text-3xl font-bold text-green-600 mb-2">12</div>
+                <div class="text-green-800 font-medium">Pages Analyzed</div>
+            </div>
+            <div class="card text-center bg-purple-50">
+                <div class="text-3xl font-bold text-purple-600 mb-2">8</div>
+                <div class="text-purple-800 font-medium">Critical Issues</div>
+            </div>
+        </div>
+
+        <!-- Issue Distribution Chart -->
+        <div class="card mb-8">
+            <h3 class="text-2xl font-bold mb-6">Issue Distribution Analysis</h3>
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/2">
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="issueChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:w-1/2">
+                    <h4 class="text-lg font-semibold mb-4">Issue Breakdown</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                                <span class="font-medium">Critical Issues</span>
+                            </div>
+                            <span class="font-bold text-red-600">8</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-orange-500 rounded-full"></div>
+                                <span class="font-medium">High Priority</span>
+                            </div>
+                            <span class="font-bold text-orange-600">15</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                                <span class="font-medium">Medium Priority</span>
+                            </div>
+                            <span class="font-bold text-yellow-600">12</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
+                                <span class="font-medium">Low Priority</span>
+                            </div>
+                            <span class="font-bold text-blue-600">12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Analysis -->
+        <div class="card mb-8">
+            <h3 class="text-2xl font-bold mb-6">Page Analysis</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Page URL</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meta Description</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Load Time</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                                <a href="/" target="_blank">/</a>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900">Promac Paints - Quality Paint Manufacturers...</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">Promac Paints is a leading paint manufacturer...</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-critical">2.8s</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-low">Good</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                                <a href="/products" target="_blank">/products</a>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900">Paint Products - Industrial & Automotive...</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">Explore our comprehensive range of industrial...</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-critical">3.2s</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-low">Good</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                                <a href="/contact" target="_blank">/contact</a>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900">Contact Us - Promac Paints</td>
+                            <td class="px-6 py-4 text-sm text-gray-900">No description</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-low">1.5s</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-medium">Needs Work</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Core Web Vitals -->
+        <div class="card mb-8">
+            <h3 class="text-2xl font-bold mb-6">Core Web Vitals Performance</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-yellow-600 mb-2">68</div>
+                    <div class="text-sm font-medium text-gray-700">Performance Score</div>
+                    <div class="text-xs text-gray-500 mt-1">Needs Improvement</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600 mb-2">1.8s</div>
+                    <div class="text-sm font-medium text-gray-700">First Contentful Paint</div>
+                    <div class="text-xs text-gray-500 mt-1">Good</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-yellow-600 mb-2">2.9s</div>
+                    <div class="text-sm font-medium text-gray-700">Largest Contentful Paint</div>
+                    <div class="text-xs text-gray-500 mt-1">Needs Improvement</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-yellow-600 mb-2">0.3s</div>
+                    <div class="text-sm font-medium text-gray-700">Total Blocking Time</div>
+                    <div class="text-xs text-gray-500 mt-1">Needs Improvement</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600 mb-2">0.08</div>
+                    <div class="text-sm font-medium text-gray-700">Cumulative Layout Shift</div>
+                    <div class="text-xs text-gray-500 mt-1">Good</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Issues -->
+        <div class="card mb-8">
+            <h3 class="text-2xl font-bold mb-6">Critical Technical Issues</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Page</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-critical">HIGH</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">/</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Slow Page Load Time</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Technical</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-critical">HIGH</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">/</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">No H1 Tag</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Content</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge status-critical">HIGH</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">/contact</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Missing Meta Description</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Content</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Competitive Analysis -->
+        <div class="card mb-8">
+            <h3 class="text-2xl font-bold mb-6">Competitive Analysis</h3>
+            
+            <!-- Competitor Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg">
+                    <h4 class="text-lg font-semibold mb-2">Dulux SA</h4>
+                    <div class="text-2xl font-bold text-blue-600 mb-1">R 66,249</div>
+                    <div class="text-sm text-gray-600 mb-2">Est. Monthly Traffic Value</div>
+                    <div class="text-sm text-gray-700">1,968 ranking keywords</div>
+                </div>
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg">
+                    <h4 class="text-lg font-semibold mb-2">Duram Paints</h4>
+                    <div class="text-2xl font-bold text-green-600 mb-1">R 26,407</div>
+                    <div class="text-sm text-gray-600 mb-2">Est. Monthly Traffic Value</div>
+                    <div class="text-sm text-gray-700">846 ranking keywords</div>
+                </div>
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg">
+                    <h4 class="text-lg font-semibold mb-2">Plascon</h4>
+                    <div class="text-2xl font-bold text-purple-600 mb-1">R 21,240</div>
+                    <div class="text-sm text-gray-600 mb-2">Est. Monthly Traffic Value</div>
+                    <div class="text-sm text-gray-700">772 ranking keywords</div>
+                </div>
+            </div>
+            
+            <!-- Keyword Gap Analysis -->
+            <h4 class="text-xl font-semibold mb-4">Keyword Gap Opportunities</h4>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keyword</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Competitor</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Their Position</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Your Position</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Volume</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Opportunity Score</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">industrial paint south africa</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Duram</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#3</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Not ranking</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">880</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">650</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">roof paint waterproof</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Duram</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#2</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Not ranking</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">720</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">580</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">exterior wall paint</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Dulux</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#1</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Not ranking</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1200</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">750</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card mb-8">
+            <h3 class="text-2xl font-bold mb-6">Strategic Recommendations</h3>
+            
+            <div class="space-y-6">
+                <!-- Quick Wins -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-3 text-green-600">🚀 Quick Wins (1-2 weeks)</h4>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="font-medium">Add missing meta descriptions to Contact and About pages</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: Content Team | Impact: High | Timeline: 1-2 days</div>
+                        </div>
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="font-medium">Fix title lengths on Products and Contact pages</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: Content Team | Impact: Medium | Timeline: 1-2 days</div>
+                        </div>
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="font-medium">Add H1 tags to homepage and key landing pages</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: Dev Team | Impact: High | Timeline: 2-3 days</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Medium Term -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-3 text-yellow-600">⚡ Medium Term (2-4 weeks)</h4>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="font-medium">Optimize page load speed (target < 2 seconds)</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: Dev Team | Impact: High | Timeline: 2-3 weeks</div>
+                        </div>
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="font-medium">Implement structured data for products and local business</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: Dev Team | Impact: High | Timeline: 1-2 weeks</div>
+                        </div>
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="font-medium">Optimize and compress all product images</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: Design/Dev | Impact: Medium | Timeline: 1-2 weeks</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Strategic -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-3 text-blue-600">🎯 Strategic Initiatives (4-8 weeks)</h4>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="font-medium">Complete technical SEO overhaul with Core Web Vitals optimization</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: Dev Team | Impact: High | Timeline: 4-6 weeks</div>
+                        </div>
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="font-medium">Develop comprehensive content strategy for industrial/automotive sectors</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: Marketing Team | Impact: High | Timeline: 6-8 weeks</div>
+                        </div>
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="font-medium">Target high-opportunity keywords identified in competitor analysis</div>
+                            <div class="text-sm text-gray-600 mt-1">Owner: SEO/Marketing | Impact: High | Timeline: 8-12 weeks</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="text-center py-8 text-gray-500 border-t border-gray-200 mt-12">
+        <p>&copy; 2025 SEO Audit Report | Generated by Professional SEO Tools</p>
+        <p class="text-sm">Report ID: test-promac-001 | <a href="#" class="text-blue-600">Privacy Policy</a> | <a href="#" class="text-blue-600">Terms of Service</a></p>
+    </footer>
+
+    <script>
+        // Working export functions
+        function exportPDF() {
+            window.print();
+        }
+        
+        function shareReport() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Promac Paints SEO Audit Report',
+                    text: 'View the comprehensive SEO audit report',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                showNotification('Report link copied to clipboard!');
+            }
+        }
+        
+        function saveHTMLReport() {
+            try {
+                const reportTitle = 'Promac Paints - Complete SEO Audit Report';
+                const reportDate = new Date().toLocaleDateString('en-ZA');
+                
+                const htmlContent = document.documentElement.outerHTML;
+                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = reportTitle.replace(/[^a-zA-Z0-9\\s]/g, '').replace(/\\s+/g, '_') + '_' + reportDate.replace(/\\//g, '-') + '.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showNotification('Complete HTML report saved successfully! Ready for customer delivery.');
+            } catch (error) {
+                console.error('HTML Export Error:', error);
+                showNotification('Error saving HTML report. Please try again.');
+            }
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Initialize chart
+        setTimeout(function() {
+            const ctx = document.getElementById('issueChart');
+            if (ctx && window.Chart) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            data: [8, 15, 12, 12],
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(249, 115, 22, 0.8)',
+                                'rgba(234, 179, 8, 0.8)',
+                                'rgba(59, 130, 246, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(249, 115, 22, 1)',
+                                'rgba(234, 179, 8, 1)',
+                                'rgba(59, 130, 246, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { padding: 15, font: { size: 12 } }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return label + ': ' + value + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }, 500);
+    </script>
+</body>
+</html>

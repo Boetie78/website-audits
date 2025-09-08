@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test - Simple Version</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Debug Test - Step by Step</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Testing JavaScript Dependencies</h2>
+            
+            <div class="space-y-4">
+                <button onclick="testBasicJS()" class="bg-blue-600 text-white px-4 py-2 rounded">
+                    Test 1: Basic JavaScript
+                </button>
+                
+                <button onclick="testTailwind()" class="bg-green-600 text-white px-4 py-2 rounded">
+                    Test 2: Tailwind CSS
+                </button>
+                
+                <button onclick="testChartJS()" class="bg-purple-600 text-white px-4 py-2 rounded">
+                    Test 3: Chart.js
+                </button>
+                
+                <button onclick="testSEOGenerator()" class="bg-orange-600 text-white px-4 py-2 rounded">
+                    Test 4: SEO Report Generator
+                </button>
+                
+                <button onclick="generateSimpleReport()" class="bg-red-600 text-white px-4 py-2 rounded">
+                    Test 5: Generate Simple Report
+                </button>
+            </div>
+            
+            <div id="testResults" class="mt-6 p-4 bg-gray-100 rounded-lg">
+                <h3 class="font-semibold mb-2">Test Results:</h3>
+                <div id="results"></div>
+            </div>
+        </div>
+        
+        <div id="reportContainer" class="mt-6"></div>
+    </div>
+
+    <!-- Load the actual JS files -->
+    <script src="seo-report-generator-working.js?v=4"></script>
+    <script src="seo-audit-processor.js"></script>
+    
+    <script>
+        function addResult(test, status, message) {
+            const results = document.getElementById('results');
+            const result = document.createElement('div');
+            result.className = `p-2 mb-2 rounded ${status === 'PASS' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            result.innerHTML = `<strong>${test}:</strong> ${status} - ${message}`;
+            results.appendChild(result);
+        }
+        
+        function testBasicJS() {
+            try {
+                console.log('Testing basic JavaScript...');
+                addResult('Basic JavaScript', 'PASS', 'JavaScript is working correctly');
+            } catch (error) {
+                addResult('Basic JavaScript', 'FAIL', error.message);
+            }
+        }
+        
+        function testTailwind() {
+            try {
+                const element = document.createElement('div');
+                element.className = 'bg-blue-500';
+                document.body.appendChild(element);
+                const computed = window.getComputedStyle(element);
+                document.body.removeChild(element);
+                
+                if (computed.backgroundColor.includes('rgb')) {
+                    addResult('Tailwind CSS', 'PASS', 'Tailwind CSS is loaded and working');
+                } else {
+                    addResult('Tailwind CSS', 'FAIL', 'Tailwind CSS not properly loaded');
+                }
+            } catch (error) {
+                addResult('Tailwind CSS', 'FAIL', error.message);
+            }
+        }
+        
+        function testChartJS() {
+            try {
+                if (typeof Chart !== 'undefined') {
+                    addResult('Chart.js', 'PASS', `Chart.js version ${Chart.version} loaded successfully`);
+                } else {
+                    addResult('Chart.js', 'FAIL', 'Chart.js not found');
+                }
+            } catch (error) {
+                addResult('Chart.js', 'FAIL', error.message);
+            }
+        }
+        
+        function testSEOGenerator() {
+            try {
+                console.log('Testing SEOReportGenerator...');
+                console.log('window.SEOReportGenerator:', typeof window.SEOReportGenerator);
+                console.log('SEOReportGenerator:', typeof SEOReportGenerator);
+                
+                if (typeof SEOReportGenerator !== 'undefined') {
+                    const generator = new SEOReportGenerator();
+                    addResult('SEO Report Generator', 'PASS', 'SEOReportGenerator class available and instantiable');
+                } else if (typeof window.SEOReportGenerator !== 'undefined') {
+                    const generator = new window.SEOReportGenerator();
+                    addResult('SEO Report Generator', 'PASS', 'SEOReportGenerator available on window object');
+                } else {
+                    addResult('SEO Report Generator', 'FAIL', 'SEOReportGenerator class not found');
+                }
+            } catch (error) {
+                addResult('SEO Report Generator', 'FAIL', error.message);
+                console.error('SEOReportGenerator error:', error);
+            }
+        }
+        
+        function generateSimpleReport() {
+            try {
+                console.log('Attempting to generate simple report...');
+                
+                const testCustomer = {
+                    customerName: 'Test Customer',
+                    companyName: 'Test Company',
+                    primaryDomain: 'https://example.com'
+                };
+                
+                const testData = {
+                    overallScore: 75,
+                    totalIssues: 10,
+                    issueScore: { critical: 2, major: 5, minor: 3 }
+                };
+                
+                let generator;
+                if (typeof SEOReportGenerator !== 'undefined') {
+                    generator = new SEOReportGenerator();
+                } else if (typeof window.SEOReportGenerator !== 'undefined') {
+                    generator = new window.SEOReportGenerator();
+                } else {
+                    throw new Error('SEOReportGenerator not available');
+                }
+                
+                console.log('Generator created:', generator);
+                
+                // Try to generate a simple report
+                const reportHtml = generator.generateReport(testCustomer, testData);
+                console.log('Report generated, length:', reportHtml.length);
+                
+                document.getElementById('reportContainer').innerHTML = reportHtml;
+                addResult('Generate Report', 'PASS', 'Simple report generated successfully');
+                
+            } catch (error) {
+                addResult('Generate Report', 'FAIL', error.message);
+                console.error('Report generation error:', error);
+            }
+        }
+        
+        // Auto-run basic tests when page loads
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                testBasicJS();
+                testTailwind();
+                testChartJS();
+                setTimeout(testSEOGenerator, 500); // Give JS files time to load
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
