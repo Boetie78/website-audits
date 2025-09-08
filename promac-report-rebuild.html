@@ -2369,6 +2369,148 @@
         </div>
     </div>
 
+    <!-- ROI Potential & Expected Outcomes Section -->
+    <div class="container mx-auto px-8 py-8">
+        <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">💰</span>
+                    <h2 class="text-2xl font-bold text-gray-800">ROI Potential & Expected Outcomes</h2>
+                </div>
+                <button onclick="exportCSV('ROI Analysis')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export Analysis
+                </button>
+            </div>
+
+            <!-- Main ROI Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <!-- Current Traffic -->
+                <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-gray-400">
+                    <h3 class="text-sm font-medium text-gray-600 mb-2">Current Est. Monthly Traffic</h3>
+                    <div class="text-3xl font-bold text-gray-900 mb-1">724 visits</div>
+                    <p class="text-xs text-gray-500">Based on current keyword rankings</p>
+                </div>
+
+                <!-- Potential Traffic Increase -->
+                <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                    <h3 class="text-sm font-medium text-gray-600 mb-2">Potential Traffic Increase</h3>
+                    <div class="text-3xl font-bold text-green-600 mb-1">+689 visits</div>
+                    <p class="text-xs text-gray-500">95% increase from optimization</p>
+                </div>
+
+                <!-- Revenue Impact -->
+                <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                    <h3 class="text-sm font-medium text-gray-600 mb-2">Est. Revenue Impact</h3>
+                    <div class="text-3xl font-bold text-green-600 mb-1">+R248,399/mo</div>
+                    <p class="text-xs text-gray-500">Based on conversion optimization</p>
+                </div>
+            </div>
+
+            <!-- Timeline and Confidence -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-blue-50 p-6 rounded-lg">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-blue-900">Time to See Results</h3>
+                    </div>
+                    <div class="text-2xl font-bold text-blue-700 mb-2">2-3 months</div>
+                    <p class="text-sm text-blue-700">Initial improvements visible within 4-6 weeks, full impact by month 3</p>
+                </div>
+
+                <div class="bg-orange-50 p-6 rounded-lg">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-orange-900">Confidence Level</h3>
+                    </div>
+                    <div class="text-2xl font-bold text-orange-700 mb-2">Moderate</div>
+                    <p class="text-sm text-orange-700">Based on proven strategies and competitive analysis</p>
+                </div>
+            </div>
+
+            <!-- ROI Breakdown -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Revenue Projection Breakdown</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-700 mb-4">Traffic Sources</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Broken link fixes</span>
+                                <span class="font-semibold text-gray-900">+156 visits/mo</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Meta description optimization</span>
+                                <span class="font-semibold text-gray-900">+89 visits/mo</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Page speed improvements</span>
+                                <span class="font-semibold text-gray-900">+267 visits/mo</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Keyword optimization</span>
+                                <span class="font-semibold text-gray-900">+177 visits/mo</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-700 mb-4">Conversion Assumptions</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Current conversion rate</span>
+                                <span class="font-semibold text-gray-900">2.4%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Projected conversion rate</span>
+                                <span class="font-semibold text-green-600">3.8%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Average order value</span>
+                                <span class="font-semibold text-gray-900">R4,780</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Monthly revenue potential</span>
+                                <span class="font-semibold text-green-600">R248,399</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conservative vs Aggressive Projections -->
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Scenario Planning</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                        <h4 class="font-semibold text-yellow-800 mb-2">Conservative (70% confidence)</h4>
+                        <div class="text-lg font-bold text-yellow-700">+R174,000/mo</div>
+                        <p class="text-xs text-yellow-600 mt-1">Basic optimizations only</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <h4 class="font-semibold text-green-800 mb-2">Moderate (85% confidence)</h4>
+                        <div class="text-lg font-bold text-green-700">+R248,399/mo</div>
+                        <p class="text-xs text-green-600 mt-1">Full implementation plan</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-semibold text-blue-800 mb-2">Aggressive (60% confidence)</h4>
+                        <div class="text-lg font-bold text-blue-700">+R357,000/mo</div>
+                        <p class="text-xs text-blue-600 mt-1">Perfect execution + market growth</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Keyword Scout Intelligence Section -->
     <div class="container mx-auto px-8 py-8">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -3171,6 +3313,34 @@
                 });
                 
                 filename = 'prioritized-action-plan.csv';
+                
+            } else if (sectionName === 'ROI Analysis') {
+                csvContent = '"Metric","Current Value","Projected Value","Improvement","Confidence Level","Timeline"\n';
+                
+                const roiAnalysisData = [
+                    ['Monthly Traffic', '724 visits', '1,413 visits', '+689 visits (+95%)', 'High', '2-3 months'],
+                    ['Monthly Revenue', 'R131,200', 'R379,599', '+R248,399 (+189%)', 'Moderate', '2-3 months'],
+                    ['Conversion Rate', '2.4%', '3.8%', '+1.4% points (+58%)', 'High', '1-2 months'],
+                    ['Average Order Value', 'R4,780', 'R4,780', 'No change', 'High', 'N/A'],
+                    ['SEO Score', '72.4/100', '85.2/100', '+12.8 points (+18%)', 'High', '3-4 months'],
+                    ['Page Load Speed', '2.4 seconds', '1.6 seconds', '-0.8 seconds (-33%)', 'High', '2-4 weeks'],
+                    ['Broken Links', '5 issues', '0 issues', '-5 issues (-100%)', 'Very High', '1-2 days'],
+                    ['Missing Meta Descriptions', '2 pages', '0 pages', '-2 pages (-100%)', 'Very High', '2-3 days'],
+                    ['Conservative Scenario', 'N/A', '+R174,000/mo', '+R174,000', '70% confidence', '2-3 months'],
+                    ['Moderate Scenario', 'N/A', '+R248,399/mo', '+R248,399', '85% confidence', '2-3 months'],
+                    ['Aggressive Scenario', 'N/A', '+R357,000/mo', '+R357,000', '60% confidence', '2-3 months'],
+                    ['Traffic from Broken Link Fixes', 'N/A', '+156 visits/mo', '+156 visits', 'High', '1-2 days'],
+                    ['Traffic from Meta Descriptions', 'N/A', '+89 visits/mo', '+89 visits', 'High', '2-3 days'],
+                    ['Traffic from Speed Improvements', 'N/A', '+267 visits/mo', '+267 visits', 'Very High', '1-2 weeks'],
+                    ['Traffic from Keyword Optimization', 'N/A', '+177 visits/mo', '+177 visits', 'Moderate', '4-6 weeks']
+                ];
+                
+                roiAnalysisData.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                
+                filename = 'roi-analysis-projections.csv';
             }
             
             // Create and download the CSV file
