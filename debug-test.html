@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test - SEO Report Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Debug Test</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-lg font-semibold mb-4">Test Script Loading</h2>
+            <button onclick="testScriptLoading()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Test Script Loading
+            </button>
+            <button onclick="testReportGeneration()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 ml-4">
+                Test Report Generation
+            </button>
+            <div id="debugOutput" class="mt-4 p-3 bg-gray-100 rounded"></div>
+        </div>
+        
+        <div id="reportContainer" class="mt-6"></div>
+    </div>
+
+    <script src="seo-report-generator-fixed.js"></script>
+    <script>
+        function updateDebug(message) {
+            document.getElementById('debugOutput').innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            console.log('Debug:', message);
+        }
+        
+        function testScriptLoading() {
+            updateDebug('Testing script loading...');
+            
+            if (typeof SEOReportGenerator !== 'undefined') {
+                updateDebug('✅ SEOReportGenerator class loaded successfully');
+                try {
+                    const generator = new SEOReportGenerator();
+                    updateDebug('✅ SEOReportGenerator instance created successfully');
+                } catch (error) {
+                    updateDebug('❌ Error creating SEOReportGenerator instance: ' + error.message);
+                }
+            } else {
+                updateDebug('❌ SEOReportGenerator class not found');
+            }
+        }
+        
+        function testReportGeneration() {
+            updateDebug('Testing report generation...');
+            
+            try {
+                const testCustomer = {
+                    customerName: 'Promac Paints',
+                    companyName: 'Promac Paints (Pty) Ltd',
+                    primaryDomain: 'https://www.promacpaints.co.za',
+                    email: 'info@promacpaints.co.za'
+                };
+
+                const testAuditData = {
+                    domainSummary: {
+                        domain: 'promacpaints.co.za',
+                        onpage_score: 72.4,
+                        total_pages: 12,
+                        summary: { total_issues: 47 }
+                    },
+                    technicalIssues: [
+                        { page_url: '/', issue_type: 'Missing H1 Tag', priority: 'HIGH', category: 'Content' },
+                        { page_url: '/products', issue_type: 'Slow Load Time', priority: 'HIGH', category: 'Technical' }
+                    ],
+                    overallScore: 72.4,
+                    totalIssues: 47,
+                    totalPages: 12
+                };
+
+                updateDebug('✅ Test data prepared');
+                
+                const generator = new SEOReportGenerator();
+                updateDebug('✅ Generator instance created');
+                
+                const reportHtml = generator.generateReport(testCustomer, testAuditData);
+                updateDebug('✅ Report HTML generated, length: ' + reportHtml.length + ' characters');
+                
+                document.getElementById('reportContainer').innerHTML = reportHtml;
+                updateDebug('✅ Report inserted into DOM');
+                
+            } catch (error) {
+                updateDebug('❌ Error during report generation: ' + error.message);
+                console.error('Report Generation Error:', error);
+            }
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            updateDebug('Page loaded, starting automatic tests...');
+            setTimeout(testScriptLoading, 500);
+        });
+    </script>
+</body>
+</html>
