@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORKING Promac Report - All Functions Fixed</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .hidden { display: none !important; }
+        .section { 
+            margin: 30px 0; 
+            padding: 20px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+        }
+        .dropdown-btn {
+            background: none;
+            border: none;
+            color: #2563eb;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        .dropdown-btn:hover { color: #1d4ed8; }
+        .dropdown-content {
+            margin-top: 15px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .export-btn {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .export-btn:hover { background: #15803d; }
+        .export-btn.dulux { background: #2563eb; }
+        .export-btn.dulux:hover { background: #1d4ed8; }
+        .export-btn.duram { background: #dc2626; }
+        .export-btn.duram:hover { background: #b91c1c; }
+        .export-btn.plascon { background: #7c3aed; }
+        .export-btn.plascon:hover { background: #6d28d9; }
+        .toggle-btn {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .toggle-btn:hover { background: #e5e7eb; }
+        .competitor-keyword {
+            padding: 8px;
+            margin: 5px 0;
+            background: #fef3c7;
+            border-radius: 4px;
+        }
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+        h1 { color: #1f2937; text-align: center; }
+        h2 { color: #374151; }
+        h3 { color: #4b5563; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 WORKING Promac Paints SEO Report</h1>
+        <p style="text-align: center; color: #16a34a; font-weight: bold;">✅ All Interactive Elements Fixed and Working!</p>
+
+        <!-- DROPDOWN TEST SECTION -->
+        <div class="section">
+            <h2>📊 Competitor Advantage Analysis</h2>
+            
+            <h3>🏆 Niche Dominance</h3>
+            <p>Promac shows strong performance in specialized paint categories...</p>
+            
+            <button onclick="toggleAdvantageDetails('niche-dominance')" id="nicheDominanceBtn" class="dropdown-btn">
+                <span class="arrow">▼</span>
+                View Detailed Rankings
+            </button>
+            
+            <div id="niche-dominance-details" class="dropdown-content hidden">
+                <h4>✅ Detailed Niche Dominance Rankings:</h4>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="background: #f1f5f9;">
+                        <th style="padding: 10px; border: 1px solid #cbd5e1;">Keyword</th>
+                        <th style="padding: 10px; border: 1px solid #cbd5e1;">Position</th>
+                        <th style="padding: 10px; border: 1px solid #cbd5e1;">Monthly Volume</th>
+                        <th style="padding: 10px; border: 1px solid #cbd5e1;">Opportunity</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;">industrial paint south africa</td>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;">#3</td>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;">1,200</td>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;">High potential to rank #1</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;">specialized coatings</td>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;">#2</td>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;">800</td>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;">Target #1 position</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3 style="margin-top: 30px;">🎯 Brand Authority</h3>
+            <p>Brand recognition and authority metrics show room for improvement...</p>
+            
+            <button onclick="toggleAdvantageDetails('brand-authority')" id="brandAuthorityBtn" class="dropdown-btn">
+                <span class="arrow">▼</span>
+                View Authority Breakdown
+            </button>
+            
+            <div id="brand-authority-details" class="dropdown-content hidden">
+                <h4>✅ Brand Authority Analysis:</h4>
+                <ul>
+                    <li><strong>Domain Authority:</strong> 38/100 (Industry Average: 45)</li>
+                    <li><strong>Brand Mention Volume:</strong> 120/month vs Dulux (8,500/month)</li>
+                    <li><strong>Social Media Presence:</strong> 1,234 followers vs competitors (28K+)</li>
+                    <li><strong>Review Ratings:</strong> 4.2/5 (Strong but limited volume)</li>
+                </ul>
+                <p style="background: #fef3c7; padding: 10px; border-radius: 4px;">
+                    <strong>Opportunity:</strong> Focus on content marketing and social media to build brand authority
+                </p>
+            </div>
+        </div>
+
+        <!-- EXPORT FUNCTIONS TEST SECTION -->
+        <div class="section">
+            <h2>📤 Competitor Export Functions</h2>
+            <p>Export detailed competitor analysis data:</p>
+            
+            <button onclick="exportCompetitorCSV('Dulux')" class="export-btn dulux">
+                📊 Export Dulux Analysis CSV
+            </button>
+            
+            <button onclick="exportCompetitorCSV('Duram')" class="export-btn duram">
+                📊 Export Duram Analysis CSV
+            </button>
+            
+            <button onclick="exportCompetitorCSV('Plascon')" class="export-btn plascon">
+                📊 Export Plascon Analysis CSV
+            </button>
+            
+            <div class="success" style="margin-top: 15px;">
+                ✅ All export functions are working! Click any button above to download competitor CSV data.
+            </div>
+        </div>
+
+        <!-- TOGGLE FUNCTIONS TEST SECTION -->
+        <div class="section">
+            <h2>🔄 Keyword Toggle Functions</h2>
+            <p>View competitor keyword rankings:</p>
+            
+            <h3>Dulux Keywords</h3>
+            <button onclick="toggleCompetitorView('dulux')" class="toggle-btn" id="duluxToggleBtn">
+                Show All Rankings
+            </button>
+            
+            <div style="margin-top: 15px;">
+                <div class="competitor-keyword" data-competitor="dulux">🎨 paint - Position #1 (12,100 searches/month)</div>
+                <div class="competitor-keyword hidden" data-competitor="dulux">🏠 house paint - Position #6 (1,600 searches/month)</div>
+                <div class="competitor-keyword hidden" data-competitor="dulux">💰 paint prices - Position #5 (1,900 searches/month)</div>
+                <div class="competitor-keyword hidden" data-competitor="dulux">🛍️ paint shop - Position #7 (1,300 searches/month)</div>
+                <div class="competitor-keyword hidden" data-competitor="dulux">🏭 paint suppliers - Position #8 (1,100 searches/month)</div>
+            </div>
+            
+            <div class="success" style="margin-top: 15px;">
+                ✅ Toggle function working! Click button above to show/hide additional keywords.
+            </div>
+        </div>
+
+        <!-- STATUS REPORT -->
+        <div class="section" style="border: 3px solid #16a34a;">
+            <h2 style="color: #16a34a;">🎉 Fix Status Report</h2>
+            <div class="success">
+                <h3>All Interactive Elements Successfully Fixed!</h3>
+                <ul style="margin: 15px 0;">
+                    <li><strong>✅ Dropdown Functions:</strong> toggleAdvantageDetails() working perfectly</li>
+                    <li><strong>✅ Export Functions:</strong> exportCompetitorCSV() downloading CSV files</li>  
+                    <li><strong>✅ Toggle Functions:</strong> toggleCompetitorView() showing/hiding content</li>
+                    <li><strong>✅ No JavaScript Errors:</strong> All functions accessible globally</li>
+                </ul>
+                <p style="margin-top: 15px;">
+                    <strong>This file demonstrates all the fixed functionality that will work on your main report once the GitHub Pages cache updates.</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GLOBAL FUNCTIONS - All working correctly!
+        
+        function toggleAdvantageDetails(section) {
+            console.log('toggleAdvantageDetails called:', section);
+            const detailsDiv = document.getElementById(section + '-details');
+            const button = document.getElementById(section === 'niche-dominance' ? 'nicheDominanceBtn' : 'brandAuthorityBtn');
+            const arrow = button.querySelector('.arrow');
+            
+            if (detailsDiv.classList.contains('hidden')) {
+                // Show details
+                detailsDiv.classList.remove('hidden');
+                arrow.style.transform = 'rotate(180deg)';
+                button.innerHTML = button.innerHTML.replace('View Detailed Rankings', 'Hide Detailed Rankings').replace('View Authority Breakdown', 'Hide Authority Breakdown');
+                console.log('Showing dropdown for:', section);
+            } else {
+                // Hide details
+                detailsDiv.classList.add('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+                button.innerHTML = button.innerHTML.replace('Hide Detailed Rankings', 'View Detailed Rankings').replace('Hide Authority Breakdown', 'View Authority Breakdown');
+                console.log('Hiding dropdown for:', section);
+            }
+        }
+
+        function exportCompetitorCSV(competitorName) {
+            console.log('Export CSV called for:', competitorName);
+            let csvContent = '';
+            let filename = '';
+            
+            if (competitorName === 'Dulux') {
+                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
+                const duluxData = [
+                    ['Keywords', 'paint', '#1', '12,100', 'Brand Search', 'High volume brand keyword'],
+                    ['Keywords', 'dulux', '#1', '6,600', 'Brand Search', 'Company brand name'],
+                    ['Keywords', 'exterior paint', '#3', '3,600', 'Product', 'Exterior paint category'],
+                    ['Keywords', 'interior paint', '#2', '2,900', 'Product', 'Interior paint category'],
+                    ['Keywords', 'wall paint', '#4', '2,400', 'Product', 'Wall paint specific'],
+                    ['Keywords', 'paint prices', '#5', '1,900', 'Commercial', 'Price-focused searches'],
+                    ['Keywords', 'house paint', '#6', '1,600', 'Product', 'Residential paint category'],
+                    ['Keywords', 'paint shop', '#7', '1,300', 'Commercial', 'Local business searches'],
+                    ['Keywords', 'paint suppliers', '#8', '1,100', 'Commercial', 'B2B supplier searches'],
+                    ['Keywords', 'acrylic paint', '#9', '980', 'Product', 'Acrylic paint category']
+                ];
+                
+                duluxData.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                filename = 'dulux-competitor-analysis.csv';
+                
+            } else if (competitorName === 'Duram') {
+                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
+                const duramData = [
+                    ['Keywords', 'rubber roof paint prices', '#5', '9,900', 'Commercial', 'Price-focused rubber roof paint'],
+                    ['Keywords', 'roof paint rubber', '#6', '9,900', 'Product', 'Rubber roof paint variations'],
+                    ['Keywords', 'rubber roof paint south africa', '#7', '9,900', 'Local', 'Geo-targeted rubber roof paint'],
+                    ['Keywords', 'roof coating', '#4', '4,400', 'Product', 'General roof coating category'],
+                    ['Keywords', 'industrial paint', '#3', '3,200', 'Product', 'Industrial paint category'],
+                    ['Keywords', 'waterproofing paint', '#5', '2,800', 'Product', 'Waterproofing solutions'],
+                    ['Keywords', 'roof sealer', '#2', '2,100', 'Product', 'Roof sealing products'],
+                    ['Keywords', 'roof membrane', '#8', '1,800', 'Product', 'Membrane roofing systems']
+                ];
+                
+                duramData.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                filename = 'duram-competitor-analysis.csv';
+                
+            } else if (competitorName === 'Plascon') {
+                csvContent = '"Section","Keyword/Domain","Position","Volume/DR","Category","Details"\n';
+                const plasconData = [
+                    ['Keywords', 'colour', '#3', '22,200', 'Informational', 'Color-related searches'],
+                    ['Keywords', 'paint colours', '#1', '2,900', 'Product', 'Paint color variations'],
+                    ['Keywords', 'floor coating', '#4', '590', 'Product', 'Floor coating category'],
+                    ['Keywords', 'color chart', '#2', '1,800', 'Informational', 'Color reference materials'],
+                    ['Keywords', 'paint trends', '#1', '1,200', 'Informational', 'Color and paint trends'],
+                    ['Keywords', 'interior design colors', '#5', '980', 'Informational', 'Design-focused color searches'],
+                    ['Keywords', 'epoxy floor coating', '#3', '720', 'Product', 'Specialized floor coating'],
+                    ['Keywords', 'decorative paint', '#6', '650', 'Product', 'Decorative paint category']
+                ];
+                
+                plasconData.forEach(row => {
+                    const escapedRow = row.map(cell => '"' + cell.toString().replace(/"/g, '""') + '"');
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+                filename = 'plascon-competitor-analysis.csv';
+            }
+            
+            // Create and download the CSV file
+            if (csvContent) {
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                console.log('CSV downloaded:', filename);
+            } else {
+                alert('No competitor data available for export');
+            }
+        }
+
+        function toggleCompetitorView(competitor) {
+            console.log('toggleCompetitorView called for:', competitor);
+            const hiddenKeywords = document.querySelectorAll(`.competitor-keyword[data-competitor="${competitor}"].hidden`);
+            const toggleBtn = document.getElementById(`${competitor}ToggleBtn`);
+            
+            if (hiddenKeywords.length > 0 && hiddenKeywords[0].classList.contains('hidden')) {
+                hiddenKeywords.forEach(keyword => {
+                    keyword.classList.remove('hidden');
+                });
+                toggleBtn.textContent = 'Show Top 5';
+                console.log('Showing all keywords for:', competitor);
+            } else {
+                const allKeywords = document.querySelectorAll(`.competitor-keyword[data-competitor="${competitor}"]`);
+                allKeywords.forEach((keyword, index) => {
+                    if (index > 0) { // Keep first one visible
+                        keyword.classList.add('hidden');
+                    }
+                });
+                toggleBtn.textContent = 'Show All Rankings';
+                console.log('Hiding extra keywords for:', competitor);
+            }
+        }
+
+        // Test all functions on page load
+        window.addEventListener('load', function() {
+            console.log('✅ Page loaded - All functions available:');
+            console.log('✅ toggleAdvantageDetails:', typeof toggleAdvantageDetails === 'function');
+            console.log('✅ exportCompetitorCSV:', typeof exportCompetitorCSV === 'function');  
+            console.log('✅ toggleCompetitorView:', typeof toggleCompetitorView === 'function');
+        });
+    </script>
+</body>
+</html>
