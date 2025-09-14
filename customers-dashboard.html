@@ -315,6 +315,22 @@
             loadCustomers();
             setupEventListeners();
             startRealTimeUpdates();
+
+            // Initialize automated audit system
+            setTimeout(() => {
+                console.log('📊 Dashboard System Status Check:');
+                console.log('Customer Manager:', !!window.customerManager);
+                console.log('Real Audit Processor:', !!window.realAuditProcessor);
+                console.log('Audit Data Manager:', !!window.customerAuditDataManager);
+                console.log('Comprehensive Collector:', !!window.comprehensiveAuditDataCollector);
+                console.log('Automated Audit System:', !!window.automatedAuditSystem);
+
+                if (window.automatedAuditSystem) {
+                    console.log('✅ Automated Audit System is running and monitoring for customers to process');
+                } else {
+                    console.warn('⚠️ Automated Audit System not loaded - customers may not get processed automatically');
+                }
+            }, 2000);
         });
 
         function setupEventListeners() {

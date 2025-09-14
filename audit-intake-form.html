@@ -670,9 +670,19 @@ website optimization"></textarea>
                 console.log('Customer Manager:', !!window.customerManager);
                 console.log('Report Generator:', !!window.customerReportGenerator);
                 console.log('Audit Processor:', !!window.realAuditProcessor);
+                console.log('Audit Data Manager:', !!window.customerAuditDataManager);
+                console.log('Comprehensive Collector:', !!window.comprehensiveAuditDataCollector);
+                console.log('Automated Audit System:', !!window.automatedAuditSystem);
 
                 if (!window.customerManager) {
                     console.warn('⚠️ Customer Manager not loaded - this may cause form submission issues');
+                }
+
+                // Initialize automated audit system if available
+                if (window.automatedAuditSystem) {
+                    console.log('✅ Automated Audit System is running and monitoring for new customers');
+                } else {
+                    console.warn('⚠️ Automated Audit System not loaded - background processing may not work');
                 }
             }, 2000);
         });
