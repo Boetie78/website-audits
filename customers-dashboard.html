@@ -695,7 +695,8 @@
                 document.getElementById('reportIframe').src = currentReportUrl;
                 document.getElementById('reportModal').classList.remove('hidden');
             } else {
-                alert('Report not yet generated. Please try again later.');
+                // Open the audit report viewer with the customer slug
+                window.open(`view-audit-report.html?customer=${customer.slug}`, '_blank');
             }
         }
 
