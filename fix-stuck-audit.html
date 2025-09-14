@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Stuck Audit - Auto Queue</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="customer-manager.js"></script>
+    <script src="real-audit-processor.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">🔧 Fix Stuck Audit - Auto Queue</h1>
+        
+        <!-- Status Display -->
+        <div class="bg-white rounded-lg p-6 shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">Automated Fix Status</h2>
+            <div id="fixStatus">
+                <p class="text-blue-600">⏳ Initializing automated fix...</p>
+            </div>
+        </div>
+
+        <!-- Manual Actions -->
+        <div class="bg-white rounded-lg p-6 shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">Manual Fix Actions</h2>
+            <div class="space-y-3">
+                <button onclick="fixLGToolsAudit()" class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700">
+                    🚀 Fix L&G Tools Audit (Queue for Processing)
+                </button>
+                <button onclick="queueAllStuckAudits()" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
+                    🔄 Queue All Stuck Processing Customers
+                </button>
+                <button onclick="checkFixResults()" class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700">
+                    ✅ Check Fix Results
+                </button>
+            </div>
+        </div>
+
+        <!-- Live Results -->
+        <div class="bg-white rounded-lg p-6 shadow">
+            <h2 class="text-lg font-semibold mb-4">Live Fix Results</h2>
+            <div id="liveResults" class="bg-gray-50 p-4 rounded-lg min-h-32">
+                <p class="text-gray-600">Results will appear here...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let resultsDiv = document.getElementById('liveResults');
+        let statusDiv = document.getElementById('fixStatus');
+
+        function addResult(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: 'text-blue-600',
+                success: 'text-green-600',
+                error: 'text-red-600',
+                warning: 'text-yellow-600'
+            };
+            
+            const div = document.createElement('div');
+            div.className = `mb-2 ${colors[type]}`;
+            div.innerHTML = `<span class="font-mono text-sm">[${timestamp}]</span> ${message}`;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+            
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function updateStatus(message, type = 'info') {
+            const colors = {
+                info: 'text-blue-600',
+                success: 'text-green-600',
+                error: 'text-red-600',
+                warning: 'text-yellow-600'
+            };
+            
+            statusDiv.innerHTML = `<p class="${colors[type]}">${message}</p>`;
+        }
+
+        async function fixLGToolsAudit() {
+            addResult('🔧 Starting L&G Tools audit fix...', 'info');
+            updateStatus('🔧 Fixing L&G Tools audit...', 'info');
+
+            try {
+                // Check if systems are available
+                if (!window.customerManager) {
+                    throw new Error('Customer Manager not available');
+                }
+                if (!window.realAuditProcessor) {
+                    throw new Error('Real Audit Processor not available');
+                }
+
+                addResult('✅ Both systems available', 'success');
+
+                // Find L&G Tools customer
+                const customers = window.customerManager.getAllCustomers();
+                const lgCustomer = customers.find(c => c.companyName === 'L&G Tools');
+
+                if (!lgCustomer) {
+                    throw new Error('L&G Tools customer not found');
+                }
+
+                addResult(`📋 Found L&G Tools customer - Status: ${lgCustomer.status}`, 'success');
+
+                // Queue the customer for processing
+                addResult('🚀 Queuing L&G Tools for real audit processing...', 'info');
+                
+                const auditId = await window.realAuditProcessor.queueCustomerAudit(lgCustomer);
+                
+                // Update customer with audit ID
+                lgCustomer.auditId = auditId;
+                lgCustomer.status = 'processing';
+                lgCustomer.auditProgress = 0;
+                
+                // Save updated customer data
+                window.customerManager.saveCustomers();
+
+                addResult(`✅ SUCCESS! L&G Tools queued with audit ID: ${auditId}`, 'success');
+                updateStatus('✅ L&G Tools audit successfully queued for processing!', 'success');
+
+                // Auto-check results in 3 seconds
+                setTimeout(() => {
+                    checkFixResults();
+                }, 3000);
+
+            } catch (error) {
+                addResult(`❌ ERROR: ${error.message}`, 'error');
+                updateStatus(`❌ Fix failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function queueAllStuckAudits() {
+            addResult('🔄 Checking for all stuck audits...', 'info');
+            updateStatus('🔄 Processing all stuck audits...', 'info');
+
+            try {
+                if (!window.customerManager || !window.realAuditProcessor) {
+                    throw new Error('Required systems not available');
+                }
+
+                const customers = window.customerManager.getAllCustomers();
+                const stuckCustomers = customers.filter(c => 
+                    c.status === 'processing' && !c.auditId
+                );
+
+                addResult(`📊 Found ${stuckCustomers.length} stuck customers`, 'info');
+
+                if (stuckCustomers.length === 0) {
+                    addResult('✅ No stuck customers found', 'success');
+                    updateStatus('✅ No stuck customers found', 'success');
+                    return;
+                }
+
+                let fixedCount = 0;
+                for (const customer of stuckCustomers) {
+                    try {
+                        addResult(`🔧 Fixing ${customer.companyName}...`, 'info');
+                        
+                        const auditId = await window.realAuditProcessor.queueCustomerAudit(customer);
+                        customer.auditId = auditId;
+                        customer.status = 'processing';
+                        customer.auditProgress = 0;
+                        
+                        fixedCount++;
+                        addResult(`✅ Fixed ${customer.companyName} with audit ID: ${auditId}`, 'success');
+                    } catch (error) {
+                        addResult(`❌ Failed to fix ${customer.companyName}: ${error.message}`, 'error');
+                    }
+                }
+
+                // Save all changes
+                window.customerManager.saveCustomers();
+
+                addResult(`🎉 Successfully fixed ${fixedCount}/${stuckCustomers.length} customers`, 'success');
+                updateStatus(`✅ Fixed ${fixedCount}/${stuckCustomers.length} stuck audits`, 'success');
+
+                // Auto-check results
+                setTimeout(() => {
+                    checkFixResults();
+                }, 3000);
+
+            } catch (error) {
+                addResult(`❌ ERROR: ${error.message}`, 'error');
+                updateStatus(`❌ Fix failed: ${error.message}`, 'error');
+            }
+        }
+
+        function checkFixResults() {
+            addResult('🔍 Checking fix results...', 'info');
+
+            try {
+                if (!window.realAuditProcessor) {
+                    addResult('❌ Real Audit Processor not available', 'error');
+                    return;
+                }
+
+                // Check processor status
+                const queueLength = window.realAuditProcessor.processingQueue ? 
+                    window.realAuditProcessor.processingQueue.length : 0;
+                const activeCount = window.realAuditProcessor.activeAudits ? 
+                    window.realAuditProcessor.activeAudits.size : 0;
+
+                addResult(`📊 Processor Status:`, 'info');
+                addResult(`   📋 Queue Length: ${queueLength}`, queueLength > 0 ? 'success' : 'warning');
+                addResult(`   ⚙️ Active Audits: ${activeCount}`, activeCount > 0 ? 'success' : 'warning');
+
+                // Check active jobs details
+                if (window.realAuditProcessor.activeAudits && window.realAuditProcessor.activeAudits.size > 0) {
+                    addResult('📈 Active Jobs:', 'success');
+                    window.realAuditProcessor.activeAudits.forEach((job, id) => {
+                        addResult(`   🏢 ${job.customer.companyName}: ${job.status} (${job.progress}%)`, 'success');
+                    });
+                } else {
+                    addResult('⚠️ No active jobs found', 'warning');
+                }
+
+                // Check customer statuses
+                if (window.customerManager) {
+                    const customers = window.customerManager.getAllCustomers();
+                    const processingCustomers = customers.filter(c => c.status === 'processing');
+                    
+                    addResult(`👥 Processing Customers: ${processingCustomers.length}`, 'info');
+                    processingCustomers.forEach(customer => {
+                        const hasAuditId = customer.auditId ? '✅' : '❌';
+                        addResult(`   ${hasAuditId} ${customer.companyName}: ${customer.auditProgress || 0}%`, 
+                                 customer.auditId ? 'success' : 'error');
+                    });
+                }
+
+                if (queueLength > 0 || activeCount > 0) {
+                    updateStatus('✅ Fix successful - audits are now processing!', 'success');
+                    addResult('🎉 SUCCESS: Audits are now actively processing!', 'success');
+                } else {
+                    updateStatus('⚠️ No active processing detected', 'warning');
+                }
+
+            } catch (error) {
+                addResult(`❌ Error checking results: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                addResult('🚀 Auto-fix system initialized', 'success');
+                updateStatus('🎯 Ready to fix stuck audits', 'success');
+                
+                // Auto-check current status
+                setTimeout(() => {
+                    checkFixResults();
+                }, 2000);
+            }, 1000);
+        });
+
+        // Auto-refresh results every 15 seconds
+        setInterval(() => {
+            checkFixResults();
+        }, 15000);
+    </script>
+</body>
+</html>
