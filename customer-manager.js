@@ -47,6 +47,17 @@ class CustomerManager {
      * Create a new customer project
      */
     async createCustomerProject(formData) {
+        // Check for existing customer to prevent duplicates
+        const existingCustomer = this.customers.find(c =>
+            c.companyName.toLowerCase() === formData.companyName.toLowerCase() ||
+            c.email.toLowerCase() === formData.email.toLowerCase()
+        );
+
+        if (existingCustomer) {
+            console.log(`⚠️ Customer already exists: ${existingCustomer.companyName} (${existingCustomer.id})`);
+            return existingCustomer;
+        }
+
         const timestamp = Date.now();
         const customerSlug = this.createSlug(formData.companyName);
 
