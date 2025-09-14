@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Audit Processor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="customer-manager.js"></script>
+    <script src="real-audit-processor.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">🔧 Debug Audit Processor</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Processor Status -->
+            <div class="bg-white rounded-lg p-6 shadow">
+                <h2 class="text-lg font-semibold mb-4">Processor Status</h2>
+                <div id="processorStatus">
+                    <p>Loading...</p>
+                </div>
+                <button onclick="checkProcessorStatus()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">
+                    Refresh Status
+                </button>
+            </div>
+
+            <!-- Active Jobs -->
+            <div class="bg-white rounded-lg p-6 shadow">
+                <h2 class="text-lg font-semibold mb-4">Active Jobs</h2>
+                <div id="activeJobs">
+                    <p>Loading...</p>
+                </div>
+                <button onclick="checkActiveJobs()" class="mt-4 bg-green-600 text-white px-4 py-2 rounded">
+                    Refresh Jobs
+                </button>
+            </div>
+
+            <!-- Customers -->
+            <div class="bg-white rounded-lg p-6 shadow">
+                <h2 class="text-lg font-semibold mb-4">All Customers</h2>
+                <div id="allCustomers">
+                    <p>Loading...</p>
+                </div>
+                <button onclick="checkAllCustomers()" class="mt-4 bg-purple-600 text-white px-4 py-2 rounded">
+                    Refresh Customers
+                </button>
+            </div>
+
+            <!-- Debug Actions -->
+            <div class="bg-white rounded-lg p-6 shadow">
+                <h2 class="text-lg font-semibold mb-4">Debug Actions</h2>
+                <div class="space-y-2">
+                    <button onclick="forceProcessQueue()" class="w-full bg-orange-600 text-white px-4 py-2 rounded">
+                        Force Process Queue
+                    </button>
+                    <button onclick="restartProcessor()" class="w-full bg-red-600 text-white px-4 py-2 rounded">
+                        Restart Processor
+                    </button>
+                    <button onclick="clearStorage()" class="w-full bg-gray-600 text-white px-4 py-2 rounded">
+                        Clear All Storage
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Log -->
+        <div class="bg-white rounded-lg p-6 shadow mt-6">
+            <h2 class="text-lg font-semibold mb-4">Live Debug Log</h2>
+            <div id="debugLog" class="bg-black text-green-400 p-4 rounded h-64 overflow-y-auto font-mono text-sm">
+                <div>[SYSTEM] Debug processor loaded...</div>
+            </div>
+            <button onclick="clearLog()" class="mt-2 bg-gray-600 text-white px-3 py-1 rounded text-sm">
+                Clear Log
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('debugLog');
+            const colors = {
+                info: 'text-blue-400',
+                success: 'text-green-400', 
+                error: 'text-red-400',
+                warning: 'text-yellow-400'
+            };
+            
+            const entry = document.createElement('div');
+            entry.className = colors[type] || 'text-white';
+            entry.textContent = `[${timestamp}] ${message}`;
+            logElement.appendChild(entry);
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function checkProcessorStatus() {
+            log('🔍 Checking processor status...');
+            
+            const statusDiv = document.getElementById('processorStatus');
+            let html = '';
+            
+            if (window.realAuditProcessor) {
+                html += '<div class="text-green-600">✅ Real Audit Processor: Available</div>';
+                
+                // Check processing queue
+                const queueLength = window.realAuditProcessor.processingQueue ? window.realAuditProcessor.processingQueue.length : 0;
+                html += `<div>📋 Queue Length: ${queueLength}</div>`;
+                
+                // Check active audits
+                const activeCount = window.realAuditProcessor.activeAudits ? window.realAuditProcessor.activeAudits.size : 0;
+                html += `<div>⚙️ Active Audits: ${activeCount}</div>`;
+                
+                log(`✅ Processor available - Queue: ${queueLength}, Active: ${activeCount}`, 'success');
+            } else {
+                html += '<div class="text-red-600">❌ Real Audit Processor: Not Available</div>';
+                log('❌ Processor not available', 'error');
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function checkActiveJobs() {
+            log('🔍 Checking active jobs...');
+            
+            const jobsDiv = document.getElementById('activeJobs');
+            let html = '';
+            
+            if (window.realAuditProcessor && window.realAuditProcessor.activeAudits) {
+                if (window.realAuditProcessor.activeAudits.size === 0) {
+                    html = '<div class="text-gray-600">No active jobs</div>';
+                } else {
+                    window.realAuditProcessor.activeAudits.forEach((job, id) => {
+                        html += `
+                            <div class="border-l-4 border-blue-500 pl-3 mb-3">
+                                <div class="font-semibold">${job.customer.companyName}</div>
+                                <div class="text-sm text-gray-600">Status: ${job.status}</div>
+                                <div class="text-sm text-gray-600">Progress: ${job.progress}%</div>
+                                <div class="text-sm text-gray-600">Stage: ${job.stages[job.currentStage] || 'Unknown'}</div>
+                                <div class="text-sm text-gray-600">ID: ${id}</div>
+                            </div>
+                        `;
+                    });
+                }
+                log(`📊 Found ${window.realAuditProcessor.activeAudits.size} active jobs`);
+            } else {
+                html = '<div class="text-red-600">Cannot access active jobs</div>';
+                log('❌ Cannot access active jobs', 'error');
+            }
+            
+            jobsDiv.innerHTML = html;
+        }
+
+        function checkAllCustomers() {
+            log('🔍 Checking all customers...');
+            
+            const customersDiv = document.getElementById('allCustomers');
+            let html = '';
+            
+            if (window.customerManager) {
+                const customers = window.customerManager.getAllCustomers();
+                
+                if (customers.length === 0) {
+                    html = '<div class="text-gray-600">No customers found</div>';
+                } else {
+                    customers.forEach(customer => {
+                        const statusColor = customer.status === 'completed' ? 'text-green-600' : 
+                                          customer.status === 'processing' ? 'text-blue-600' : 
+                                          customer.status === 'failed' ? 'text-red-600' : 'text-gray-600';
+                        
+                        html += `
+                            <div class="border rounded p-2 mb-2">
+                                <div class="font-semibold">${customer.companyName}</div>
+                                <div class="text-sm ${statusColor}">Status: ${customer.status}</div>
+                                <div class="text-sm text-gray-600">Progress: ${customer.auditProgress || 0}%</div>
+                                <div class="text-sm text-gray-600">Created: ${new Date(customer.createdAt).toLocaleString()}</div>
+                            </div>
+                        `;
+                    });
+                }
+                log(`👥 Found ${customers.length} customers`);
+            } else {
+                html = '<div class="text-red-600">Customer Manager not available</div>';
+                log('❌ Customer Manager not available', 'error');
+            }
+            
+            customersDiv.innerHTML = html;
+        }
+
+        function forceProcessQueue() {
+            log('⚡ Force processing queue...');
+            
+            if (window.realAuditProcessor) {
+                try {
+                    window.realAuditProcessor.processNextInQueue();
+                    log('✅ Queue processing triggered', 'success');
+                } catch (error) {
+                    log(`❌ Error forcing queue: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ Processor not available', 'error');
+            }
+        }
+
+        function restartProcessor() {
+            log('🔄 Restarting processor...');
+            
+            try {
+                // Reinitialize the processor
+                window.realAuditProcessor = new RealAuditProcessor();
+                log('✅ Processor restarted', 'success');
+                
+                setTimeout(() => {
+                    checkProcessorStatus();
+                    checkActiveJobs();
+                }, 1000);
+            } catch (error) {
+                log(`❌ Error restarting processor: ${error.message}`, 'error');
+            }
+        }
+
+        function clearStorage() {
+            log('🗑️ Clearing storage...');
+            localStorage.clear();
+            log('✅ Storage cleared', 'success');
+        }
+
+        function clearLog() {
+            document.getElementById('debugLog').innerHTML = '<div>[SYSTEM] Log cleared...</div>';
+        }
+
+        // Auto-refresh every 10 seconds
+        setInterval(() => {
+            checkProcessorStatus();
+            checkActiveJobs();
+            checkAllCustomers();
+        }, 10000);
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('🚀 Debug processor initialized');
+                checkProcessorStatus();
+                checkActiveJobs();
+                checkAllCustomers();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
