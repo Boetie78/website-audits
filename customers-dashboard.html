@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="customer-manager.js"></script>
     <script src="customer-report-generator.js"></script>
+    <script src="real-audit-processor.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👥</text></svg>">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -42,6 +43,38 @@
         .status-processing {
             background-color: #dbeafe;
             color: #1e40af;
+        }
+
+        .status-queued {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+        }
+
+        .status-failed {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            transition: width 0.5s ease;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .customer-card {
@@ -134,12 +167,12 @@
 
             <div class="bg-white rounded-xl shadow-sm p-6 border">
                 <div class="flex items-center">
-                    <div class="p-2 bg-yellow-100 rounded-lg">
-                        <span class="text-2xl">⏳</span>
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <span class="text-2xl">⚙️</span>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm text-gray-600">Pending</p>
-                        <p class="text-2xl font-bold text-gray-900" id="statPending">0</p>
+                        <p class="text-sm text-gray-600">Processing</p>
+                        <p class="text-2xl font-bold text-gray-900" id="statProcessing">0</p>
                     </div>
                 </div>
             </div>
@@ -182,8 +215,8 @@
                         Completed
                     </button>
                     <button class="filter-button px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700"
-                            onclick="filterByStatus('pending')" data-status="pending">
-                        Pending
+                            onclick="filterByStatus('queued')" data-status="queued">
+                        Queued
                     </button>
                     <button class="filter-button px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700"
                             onclick="filterByStatus('processing')" data-status="processing">
@@ -264,11 +297,13 @@
         let filteredCustomers = [];
         let currentFilter = 'all';
         let currentReportUrl = '';
+        let refreshInterval = null;
 
         // Initialize dashboard
         window.addEventListener('load', function() {
             loadCustomers();
             setupEventListeners();
+            startRealTimeUpdates();
         });
 
         function setupEventListeners() {
@@ -288,6 +323,52 @@
                 }
                 renderCustomers();
             });
+
+            // Listen for audit status updates
+            window.addEventListener('auditStatusUpdate', function() {
+                loadCustomers();
+            });
+        }
+
+        function startRealTimeUpdates() {
+            // Check for processing customers and update their status every 10 seconds
+            refreshInterval = setInterval(() => {
+                checkProcessingCustomers();
+            }, 10000); // 10 seconds
+
+            console.log('🔄 Started real-time status monitoring');
+        }
+
+        function checkProcessingCustomers() {
+            if (!window.realAuditProcessor) return;
+
+            let hasUpdates = false;
+            currentCustomers.forEach(customer => {
+                if (customer.status === 'processing' || customer.status === 'queued') {
+                    const auditStatus = window.realAuditProcessor.getAuditStatus(customer.id);
+
+                    if (auditStatus && auditStatus.status !== customer.status) {
+                        customer.status = auditStatus.status;
+                        customer.auditProgress = auditStatus.progress || 0;
+                        customer.currentStage = auditStatus.currentStage || 'unknown';
+                        customer.lastUpdate = new Date().toISOString();
+                        hasUpdates = true;
+                    }
+                }
+            });
+
+            if (hasUpdates) {
+                // Save updated customers
+                if (window.customerManager) {
+                    window.customerManager.saveCustomers();
+                }
+
+                // Refresh display
+                updateStats();
+                renderCustomers();
+
+                console.log('📊 Customer statuses updated');
+            }
         }
 
         function loadCustomers() {
@@ -328,7 +409,7 @@
         function updateStats() {
             const total = currentCustomers.length;
             const completed = currentCustomers.filter(c => c.status === 'completed').length;
-            const pending = currentCustomers.filter(c => c.status === 'pending').length;
+            const processing = currentCustomers.filter(c => c.status === 'processing').length;
 
             // This month (simple approximation)
             const thisMonth = currentCustomers.filter(c => {
@@ -340,7 +421,7 @@
             document.getElementById('totalCustomers').textContent = total;
             document.getElementById('statTotal').textContent = total;
             document.getElementById('statCompleted').textContent = completed;
-            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statProcessing').textContent = processing;
             document.getElementById('statThisMonth').textContent = thisMonth;
         }
 
@@ -359,16 +440,53 @@
             grid.innerHTML = filteredCustomers.map(customer => {
                 const statusClass = `status-${customer.status}`;
                 const createdDate = new Date(customer.createdAt).toLocaleDateString();
+                const progress = customer.auditProgress || 0;
+                const currentStage = customer.currentStage || '';
+                const isProcessing = customer.status === 'processing';
+                const isQueued = customer.status === 'queued';
+
+                // Get stage description
+                const stageDescriptions = {
+                    'initializing': 'Initializing audit...',
+                    'crawling_website': 'Crawling website pages...',
+                    'analyzing_seo': 'Analyzing SEO factors...',
+                    'checking_performance': 'Checking performance metrics...',
+                    'analyzing_competitors': 'Analyzing competitors...',
+                    'generating_report': 'Generating report...',
+                    'finalizing': 'Finalizing audit...'
+                };
+                const stageText = stageDescriptions[currentStage] || currentStage;
 
                 return `
-                    <div class="customer-card bg-white rounded-xl shadow-sm p-6 border">
+                    <div class="customer-card bg-white rounded-xl shadow-sm p-6 border ${isProcessing ? 'ring-2 ring-blue-200' : ''}">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-1">${customer.companyName}</h3>
                                 <p class="text-sm text-gray-600">${customer.email}</p>
                             </div>
-                            <span class="status-badge ${statusClass}">${customer.status}</span>
+                            <span class="status-badge ${statusClass} ${(isProcessing || isQueued) ? 'pulse' : ''}">${customer.status}</span>
                         </div>
+
+                        ${isProcessing ? `
+                        <div class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-blue-900">Progress: ${progress}%</span>
+                                <span class="text-xs text-blue-700">${stageText}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        ${isQueued ? `
+                        <div class="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 bg-purple-500 rounded-full pulse"></div>
+                                <span class="text-sm font-medium text-purple-900">Queued for processing...</span>
+                            </div>
+                        </div>
+                        ` : ''}
 
                         <div class="space-y-2 mb-6">
                             <div class="flex items-center text-sm text-gray-600">
@@ -396,8 +514,12 @@
                                         class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
                                     📊 View Report
                                 </button>` :
+                                customer.status === 'failed' ?
+                                `<button class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed opacity-50" disabled>
+                                    ❌ Failed
+                                </button>` :
                                 `<button class="flex-1 bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed opacity-50" disabled>
-                                    ⏳ Processing
+                                    ⏳ ${customer.status === 'processing' ? 'Processing' : 'Queued'}
                                 </button>`
                             }
                         </div>
@@ -457,6 +579,17 @@
                                 <p class="mt-1">
                                     <span class="status-badge status-${customer.status}">${customer.status}</span>
                                 </p>
+                                ${customer.status === 'processing' && customer.auditProgress ? `
+                                    <div class="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
+                                        <div class="text-xs font-medium text-blue-900 mb-1">Progress: ${customer.auditProgress}%</div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: ${customer.auditProgress}%"></div>
+                                        </div>
+                                        ${customer.currentStage ? `
+                                            <div class="text-xs text-blue-700 mt-1">${customer.currentStage.replace(/_/g, ' ')}</div>
+                                        ` : ''}
+                                    </div>
+                                ` : ''}
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Created Date</label>
@@ -555,8 +688,16 @@
 
         function refreshDashboard() {
             loadCustomers();
+            checkProcessingCustomers(); // Force immediate check
             showNotification('Dashboard refreshed!', 'success');
         }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
 
         function exportCustomers() {
             if (window.customerManager) {

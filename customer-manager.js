@@ -63,7 +63,8 @@ class CustomerManager {
             competitors: formData.competitors || [],
             targetKeywords: formData.targetKeywords || [],
             createdAt: new Date().toISOString(),
-            status: 'pending',
+            status: 'queued',
+            auditProgress: 0,
             reportUrl: `customers/${customerSlug}/${customerSlug}-report.html`,
             auditData: null
         };
@@ -72,8 +73,21 @@ class CustomerManager {
         this.customers.push(customer);
         this.saveCustomers();
 
-        // Generate the audit report
-        await this.generateCustomerReport(customer, formData);
+        console.log(`📋 Customer created: ${customer.companyName} (${customer.id})`);
+
+        // Queue for real audit processing instead of generating fake report
+        if (window.realAuditProcessor) {
+            console.log(`🔄 Queuing real audit for ${customer.companyName}...`);
+            const auditId = await window.realAuditProcessor.queueCustomerAudit(customer);
+            customer.auditId = auditId;
+            customer.status = 'processing';
+            this.saveCustomers();
+
+            console.log(`✅ Audit queued with ID: ${auditId}`);
+        } else {
+            console.warn('⚠️ Real Audit Processor not available, keeping customer in queued state');
+            // Don't generate fake report immediately
+        }
 
         return customer;
     }
@@ -328,6 +342,77 @@ class CustomerManager {
         return text.toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-+|-+$/g, '');
+    }
+
+    /**
+     * Generate final report with real audit data
+     */
+    async generateFinalReportWithRealData(customerId, auditResults) {
+        console.log(`📊 Generating final report with real data for customer ${customerId}`);
+
+        const customer = this.getCustomerById(customerId);
+        if (!customer) {
+            console.error('Customer not found for final report generation');
+            return;
+        }
+
+        try {
+            // Use report generator with real data
+            if (window.customerReportGenerator) {
+                // Update the report generator to use real audit results
+                const reportHtml = await window.customerReportGenerator.generateCustomerReportWithRealData(
+                    customer,
+                    auditResults
+                );
+
+                // Store the final report
+                const reportsKey = 'customer_reports';
+                const reports = JSON.parse(localStorage.getItem(reportsKey) || '{}');
+                reports[customer.slug] = reportHtml;
+                localStorage.setItem(reportsKey, JSON.stringify(reports));
+
+                // Update customer status
+                customer.status = 'completed';
+                customer.auditProgress = 100;
+                customer.auditData = auditResults;
+                customer.reportGeneratedAt = new Date().toISOString();
+
+                this.saveCustomers();
+
+                console.log(`✅ Final report generated for ${customer.companyName}`);
+                return reportHtml;
+
+            } else {
+                throw new Error('Report generator not available');
+            }
+
+        } catch (error) {
+            console.error('Error generating final report:', error);
+            customer.status = 'failed';
+            customer.auditProgress = 100;
+            this.saveCustomers();
+        }
+    }
+
+    /**
+     * Check and process completed audits
+     */
+    async processCompletedAudits() {
+        if (!window.realAuditProcessor) return;
+
+        for (const customer of this.customers) {
+            if (customer.status === 'processing' && customer.auditId) {
+                const auditStatus = window.realAuditProcessor.getAuditStatus(customer.id);
+
+                if (auditStatus && auditStatus.status === 'completed') {
+                    const auditResults = window.realAuditProcessor.getAuditResults(customer.id);
+
+                    if (auditResults) {
+                        await this.generateFinalReportWithRealData(customer.id, auditResults);
+                    }
+                }
+            }
+        }
     }
 
     /**
