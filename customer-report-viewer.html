@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Report</title>
+    <script src="customer-audit-data-manager.js"></script>
     <script src="customer-report-generator-enhanced.js"></script>
     <style>
         body {
@@ -101,10 +102,13 @@
                 const response = await fetch('promac-report-rebuild.html');
                 let template = await response.text();
                 
-                // Use the enhanced generator to inject real audit data
-                if (window.customerReportGeneratorEnhanced) {
+                // Use the data manager to inject real audit data
+                if (window.customerAuditDataManager) {
+                    template = window.customerAuditDataManager.generateReportWithData(customer.slug, template);
+                    console.log('✅ Report generated with comprehensive audit data');
+                } else if (window.customerReportGeneratorEnhanced) {
                     template = await window.customerReportGeneratorEnhanced.generateReportWithRealData(customer, template);
-                    console.log('✅ Report generated with real audit data');
+                    console.log('✅ Report generated with enhanced generator');
                 } else {
                     // Fallback to basic customization
                     template = template.replace(/Promac Paints/g, customer.companyName);
