@@ -112,18 +112,78 @@ class AutomatedAuditSystem {
             if (window.comprehensiveAuditDataCollector) {
                 console.log('✅ Using Comprehensive Audit Data Collector');
 
-                // Show progress for data collection
-                this.updateCustomerStatus(audit.customerId, 'processing', 10);
+                // Initialize data collection with progress tracking
+                this.updateCustomerStatus(audit.customerId, 'processing', 5);
                 console.log(`📊 ${audit.customer.companyName}: Initializing comprehensive data collection...`);
-                await this.delay(2000);
+                await this.delay(1000);
 
-                // Collect all comprehensive data at once
-                this.updateCustomerStatus(audit.customerId, 'processing', 20);
-                console.log(`📊 ${audit.customer.companyName}: Collecting performance, SEO, and technical data...`);
-                const comprehensiveData = await window.comprehensiveAuditDataCollector.collectComprehensiveData(audit.customer);
+                // Step-by-step data collection with progress updates
+                const data = JSON.parse(JSON.stringify(window.comprehensiveAuditDataCollector.reportStructure));
+
+                // Step 1: Header Information (5%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 10);
+                console.log(`📋 ${audit.customer.companyName}: Collecting basic information and header data...`);
+                await window.comprehensiveAuditDataCollector.collectHeaderData(data, audit.customer);
+                await this.delay(500);
+
+                // Step 2: Performance Analysis using MCP Lighthouse (15%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 25);
+                console.log(`⚡ ${audit.customer.companyName}: Running performance analysis with Lighthouse...`);
+                await window.comprehensiveAuditDataCollector.collectPerformanceData(data, audit.customer);
+                await this.delay(1000);
+
+                // Step 3: Technical SEO Analysis (15%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 40);
+                console.log(`🔧 ${audit.customer.companyName}: Analyzing technical SEO and metadata...`);
+                await window.comprehensiveAuditDataCollector.collectTechnicalSEOData(data, audit.customer);
+                await this.delay(800);
+
+                // Step 4: Content Analysis (10%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 50);
+                console.log(`📝 ${audit.customer.companyName}: Analyzing content quality and structure...`);
+                await window.comprehensiveAuditDataCollector.collectContentData(data, audit.customer);
+                await this.delay(600);
+
+                // Step 5: Backlink Analysis using MCP DataForSEO (15%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 65);
+                console.log(`🔗 ${audit.customer.companyName}: Collecting backlink data with DataForSEO...`);
+                await window.comprehensiveAuditDataCollector.collectBacklinkData(data, audit.customer);
+                await this.delay(1200);
+
+                // Step 6: Keyword Analysis using MCP DataForSEO (10%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 75);
+                console.log(`🔑 ${audit.customer.companyName}: Analyzing keyword rankings and opportunities...`);
+                await window.comprehensiveAuditDataCollector.collectKeywordData(data, audit.customer);
+                await this.delay(1000);
+
+                // Step 7: Social Media Analysis (10%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 85);
+                console.log(`📱 ${audit.customer.companyName}: Collecting social media presence data...`);
+                await window.comprehensiveAuditDataCollector.collectSocialMediaData(data, audit.customer);
+                await this.delay(800);
+
+                // Step 8: Competitor Analysis (5%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 90);
+                console.log(`🏢 ${audit.customer.companyName}: Analyzing competitor positioning...`);
+                await window.comprehensiveAuditDataCollector.collectCompetitorData(data, audit.customer);
+                await this.delay(600);
+
+                // Step 9: Traffic Analysis (5%)
+                this.updateCustomerStatus(audit.customerId, 'processing', 95);
+                console.log(`📈 ${audit.customer.companyName}: Collecting traffic and analytics data...`);
+                await window.comprehensiveAuditDataCollector.collectTrafficData(data, audit.customer);
+
+                // Step 10: Final calculations and report preparation
+                console.log(`🎯 ${audit.customer.companyName}: Calculating scores and generating recommendations...`);
+                window.comprehensiveAuditDataCollector.calculateOverallScore(data);
+                window.comprehensiveAuditDataCollector.generateRecommendations(data);
+                window.comprehensiveAuditDataCollector.prepareChartData(data);
+
+                // Save data to customer folder
+                await window.comprehensiveAuditDataCollector.saveToCustomerFolder(audit.customer, data);
 
                 // Store the comprehensive data
-                audit.data = comprehensiveData;
+                audit.data = data;
 
                 // Show progress updates for different stages
                 const stages = [
@@ -372,22 +432,18 @@ class AutomatedAuditSystem {
             const templateResponse = await fetch('promac-report-rebuild.html');
             let template = await templateResponse.text();
 
-            // Use comprehensive data injection if available
-            if (window.customerAuditDataManager && audit.data.header) {
-                console.log('✅ Using Customer Audit Data Manager for report generation');
-                template = window.customerAuditDataManager.generateReportWithData(audit.customer.slug, template);
-            } else {
-                // Fallback to basic data injection
-                console.log('⚠️ Using fallback data injection');
-                template = this.injectRealData(template, audit.data, audit.customer);
-            }
+            // Inject comprehensive audit data into template
+            template = this.injectComprehensiveData(template, audit.data, audit.customer);
 
-            // Store the report
+            // Store the report with viewable URL
             const reports = JSON.parse(localStorage.getItem('customer_reports') || '{}');
             reports[audit.customer.slug] = template;
             localStorage.setItem('customer_reports', JSON.stringify(reports));
 
-            // Update customer with audit data
+            // Create a viewable report URL that can be accessed
+            const reportUrl = `customers/${audit.customer.slug}/${audit.customer.slug}-report.html`;
+
+            // Update customer with complete audit data and report link
             const customers = JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
             const customer = customers.find(c => c.id === audit.customerId);
             if (customer) {
@@ -395,10 +451,14 @@ class AutomatedAuditSystem {
                 customer.reportGeneratedAt = new Date().toISOString();
                 customer.status = 'completed';
                 customer.auditProgress = 100;
+                customer.reportUrl = reportUrl;
+                customer.reportViewUrl = `view-report.html?customer=${audit.customer.slug}`;
+                customer.hasComprehensiveData = true;
                 localStorage.setItem('website_audit_customers', JSON.stringify(customers));
             }
 
             console.log(`✅ Final report generated and saved for ${audit.customer.companyName}`);
+            console.log(`📄 Report URL: ${customer.reportViewUrl}`);
 
         } catch (error) {
             console.error(`❌ Error generating final report for ${audit.customer.companyName}:`, error);
@@ -407,27 +467,99 @@ class AutomatedAuditSystem {
     }
 
     /**
-     * Inject real data into template
+     * Inject comprehensive audit data into report template
      */
-    injectRealData(template, data, customer) {
+    injectComprehensiveData(template, data, customer) {
+        if (!data.header) {
+            // Fallback to basic injection if comprehensive data not available
+            return this.injectBasicData(template, data, customer);
+        }
+
+        // Header Section - Replace company information
+        template = template.replace(/Promac Paints/g, data.header.companyName);
+        template = template.replace(/promacpaints\.co\.za/g, data.header.website);
+        template = template.replace(/Manufacturing - Paint & Coatings/g, data.header.industry);
+        template = template.replace(/South Africa/g, data.header.location);
+        
+        // Overall Score
+        template = template.replace(/>72\.4</g, `>${data.header.overallScore}<`);
+        
+        // Update generation dates
+        template = template.replace(/Generated September \d+, \d+/g, `Generated ${data.header.reportDate}`);
+        template = template.replace(/07\/09\/2025/g, new Date().toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit', 
+            year: 'numeric'
+        }));
+
+        // KPI Cards Section
+        template = template.replace(/>8<\/div>\s*<p class="text-xs text-gray-500">Immediate action required/g,
+            `>${data.kpiCards.criticalIssues.value}</div>\n<p class="text-xs text-gray-500">Immediate action required`);
+        template = template.replace(/>15<\/div>\s*<p class="text-xs text-gray-500">Should be addressed soon/g,
+            `>${data.kpiCards.majorIssues.value}</div>\n<p class="text-xs text-gray-500">Should be addressed soon`);
+        template = template.replace(/>12<\/div>\s*<p class="text-xs text-gray-500">Total pages crawled/g,
+            `>${data.kpiCards.pagesAnalyzed.value}</div>\n<p class="text-xs text-gray-500">Total pages crawled`);
+        template = template.replace(/>2\.4s</g, `>${data.performance.averageLoadTime}<`);
+
+        // Performance Metrics - Desktop
+        template = template.replace(/"text-3xl font-bold text-orange-500">68</g, 
+            `"text-3xl font-bold text-orange-500">${data.performance.desktop.score}<`);
+        template = template.replace(/FCP:<\/div>\s*<div class="font-semibold">1\.8s/g, 
+            `FCP:</div>\n<div class="font-semibold">${data.performance.desktop.fcp}s`);
+        template = template.replace(/LCP:<\/div>\s*<div class="font-semibold">2\.9s/g, 
+            `LCP:</div>\n<div class="font-semibold">${data.performance.desktop.lcp}s`);
+        template = template.replace(/CLS:<\/div>\s*<div class="font-semibold">0\.08/g, 
+            `CLS:</div>\n<div class="font-semibold">${data.performance.desktop.cls}`);
+
+        // Performance Metrics - Mobile
+        template = template.replace(/"text-3xl font-bold text-red-500">53</g, 
+            `"text-3xl font-bold text-red-500">${data.performance.mobile.score}<`);
+        template = template.replace(/FCP:<\/div>\s*<div class="font-semibold">2\.7s/g, 
+            `FCP:</div>\n<div class="font-semibold">${data.performance.mobile.fcp}s`);
+        template = template.replace(/LCP:<\/div>\s*<div class="font-semibold">5\.22s/g, 
+            `LCP:</div>\n<div class="font-semibold">${data.performance.mobile.lcp}s`);
+
+        // Social Media Data - Update total followers and competitive analysis
+        if (data.socialMediaAnalysis) {
+            const totalFollowers = Object.values(data.socialMediaAnalysis.platforms)
+                .reduce((sum, platform) => sum + (platform.followers || 0), 0);
+            
+            template = template.replace(/"text-2xl font-bold text-red-700 mb-2">2,416</g,
+                `"text-2xl font-bold text-red-700 mb-2">${totalFollowers.toLocaleString()}<`);
+        }
+
+        // Backlink Data
+        if (data.backlinkAnalysis) {
+            // Replace backlink metrics in the report
+            template = template.replace(/Total Backlinks[\s\S]*?(\d+,?\d*)/g, 
+                `Total Backlinks: ${data.backlinkAnalysis.totalBacklinks.toLocaleString()}`);
+            template = template.replace(/Referring Domains[\s\S]*?(\d+,?\d*)/g, 
+                `Referring Domains: ${data.backlinkAnalysis.referringDomains.toLocaleString()}`);
+        }
+
+        return template;
+    }
+
+    /**
+     * Fallback basic data injection for when comprehensive data isn't available
+     */
+    injectBasicData(template, data, customer) {
         // Replace company info
         template = template.replace(/Promac Paints/g, customer.companyName);
-        template = template.replace(/promacpaints\.co\.za/g, data.basic.domain);
+        template = template.replace(/promacpaints\.co\.za/g, customer.website?.replace(/^https?:\/\//, '') || 'example.com');
         
-        // Replace scores
-        template = template.replace(/>72\.4</g, `>${data.overallScore}<`);
+        // Replace scores if available
+        if (data.overallScore) {
+            template = template.replace(/>72\.4</g, `>${data.overallScore}<`);
+        }
         
-        // Replace issues
-        template = template.replace(/>8<\/div>\s*<\/div>\s*<div class="text-xs text-gray-500">Critical Issues/g,
-            `>${data.issues.critical}</div></div><div class="text-xs text-gray-500">Critical Issues`);
-        template = template.replace(/>15<\/div>\s*<\/div>\s*<div class="text-xs text-gray-500">Major Issues/g,
-            `>${data.issues.high}</div></div><div class="text-xs text-gray-500">Major Issues`);
-        
-        // Replace performance
-        template = template.replace(/>68<\/div>\s*<\/div>\s*<div class="text-xs text-gray-500">Desktop Score/g,
-            `>${data.performance.desktop.score}</div></div><div class="text-xs text-gray-500">Desktop Score`);
-        template = template.replace(/>53<\/div>\s*<\/div>\s*<div class="text-xs text-gray-500">Mobile Score/g,
-            `>${data.performance.mobile.score}</div></div><div class="text-xs text-gray-500">Mobile Score`);
+        // Replace issues if available
+        if (data.issues) {
+            template = template.replace(/>8<\/div>\s*<p class="text-xs text-gray-500">Immediate action required/g,
+                `>${data.issues.critical}</div>\n<p class="text-xs text-gray-500">Immediate action required`);
+            template = template.replace(/>15<\/div>\s*<p class="text-xs text-gray-500">Should be addressed soon/g,
+                `>${data.issues.high}</div>\n<p class="text-xs text-gray-500">Should be addressed soon`);
+        }
         
         // Update dates
         const today = new Date().toLocaleDateString('en-US', {
