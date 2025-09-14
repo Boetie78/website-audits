@@ -14,6 +14,7 @@
     <script src="audit-automation-hub.js"></script>
     <script src="customer-manager.js"></script>
     <script src="customer-report-generator.js"></script>
+    <script src="real-audit-processor.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -404,21 +405,32 @@ website optimization"></textarea>
             // Process the audit request
             processAuditRequest(auditData).then((result) => {
                 if (result && result.success) {
-                    showSuccess(`✅ Customer "${auditData.customerName}" added successfully! Report generation started.`);
+                    // Clear loading state first
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
 
-                    // Show detailed success info
+                    // Show immediate success notification
+                    showSuccess(`✅ Customer "${auditData.customerName}" added successfully! Real audit processing started.`);
+
+                    // Show detailed success dialog
                     setTimeout(() => {
-                        const message = `Customer Added: ${auditData.customerName}\nEmail: ${auditData.contactEmail}\nWebsite: ${auditData.primaryDomain}\n\n✅ Report is being generated...\n\nClick OK to view Customer Dashboard\nClick Cancel to submit another audit`;
-                        const continueActions = confirm(message);
-                        if (continueActions) {
+                        const message = `🎉 SUCCESS!\n\nCustomer: ${auditData.customerName}\nEmail: ${auditData.contactEmail}\nWebsite: ${auditData.primaryDomain}\n\n✅ Real audit processing has started!\n📊 View live progress on dashboard\n\nClick OK to go to Dashboard\nClick Cancel to create another audit`;
+                        const goToDashboard = confirm(message);
+                        if (goToDashboard) {
                             window.location.href = 'customers-dashboard.html';
                         } else {
+                            // Clear form for new entry
                             e.target.reset();
-                            submitBtn.innerHTML = originalText;
-                            submitBtn.disabled = false;
+                            clearDraft(); // Clear saved draft too
                         }
-                    }, 2000);
+                    }, 800);
                 } else {
+                    console.warn('⚠️ Customer Manager returned no success result:', result);
+
+                    // Clear loading state
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+
                     showSuccess('Customer data saved. Processing audit in background...');
                     setTimeout(() => {
                         const continueActions = confirm('Customer data saved!\n\nClick OK to view Dashboard\nClick Cancel to submit another audit');
@@ -426,10 +438,9 @@ website optimization"></textarea>
                             window.location.href = 'customers-dashboard.html';
                         } else {
                             e.target.reset();
-                            submitBtn.innerHTML = originalText;
-                            submitBtn.disabled = false;
+                            clearDraft();
                         }
-                    }, 2000);
+                    }, 800);
                 }
 
             }).catch(error => {
@@ -450,8 +461,14 @@ website optimization"></textarea>
             // Check if required modules are loaded
             if (!window.customerManager) {
                 console.error('❌ Customer Manager not loaded');
+                // Show immediate error feedback
+                setTimeout(() => {
+                    showError('Customer management system not ready. Please refresh the page and try again.');
+                }, 100);
                 throw new Error('Customer management system not ready. Please refresh and try again.');
             }
+
+            console.log('✅ Customer Manager ready:', typeof window.customerManager);
 
             try {
                 // Format data for customer manager
