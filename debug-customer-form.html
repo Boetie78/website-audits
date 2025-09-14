@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="customer-manager.js"></script>
     <script src="customer-report-generator.js"></script>
+    <script src="real-audit-processor.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .debug-log {
@@ -34,6 +35,10 @@
                 <div id="reportGeneratorStatus" class="flex items-center gap-2">
                     <span class="w-3 h-3 bg-gray-400 rounded-full"></span>
                     <span>Report Generator: Loading...</span>
+                </div>
+                <div id="auditProcessorStatus" class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-gray-400 rounded-full"></span>
+                    <span>Audit Processor: Loading...</span>
                 </div>
             </div>
         </div>
@@ -68,6 +73,10 @@
                     <button type="button" onclick="viewStorage()"
                             class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
                         View Storage
+                    </button>
+                    <button type="button" onclick="checkAuditStatus()"
+                            class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">
+                        Check Audit Status
                     </button>
                 </div>
             </form>
@@ -125,6 +134,17 @@
                 document.querySelector('#reportGeneratorStatus span:first-child').className = 'w-3 h-3 bg-red-500 rounded-full';
                 document.querySelector('#reportGeneratorStatus span:last-child').textContent = 'Report Generator: ❌ Not loaded';
                 log('❌ Report Generator not loaded', 'error');
+            }
+
+            // Check Audit Processor
+            if (window.realAuditProcessor) {
+                document.querySelector('#auditProcessorStatus span:first-child').className = 'w-3 h-3 bg-green-500 rounded-full';
+                document.querySelector('#auditProcessorStatus span:last-child').textContent = 'Audit Processor: ✅ Loaded';
+                log('✅ Real Audit Processor loaded', 'success');
+            } else {
+                document.querySelector('#auditProcessorStatus span:first-child').className = 'w-3 h-3 bg-red-500 rounded-full';
+                document.querySelector('#auditProcessorStatus span:last-child').textContent = 'Audit Processor: ❌ Not loaded';
+                log('❌ Real Audit Processor not loaded', 'error');
             }
         }
 
@@ -207,12 +227,53 @@
             });
         }
 
+        function checkAuditStatus() {
+            log('🔍 Checking all audit statuses...');
+
+            if (!window.customerManager) {
+                log('❌ Customer Manager not available', 'error');
+                return;
+            }
+
+            const customers = window.customerManager.getAllCustomers();
+            if (customers.length === 0) {
+                log('📭 No customers found');
+                return;
+            }
+
+            log(`📊 Found ${customers.length} customers:`);
+
+            customers.forEach(customer => {
+                log(`\n📋 ${customer.companyName}:`);
+                log(`   ID: ${customer.id}`);
+                log(`   Status: ${customer.status}`);
+                log(`   Progress: ${customer.auditProgress || 0}%`);
+                log(`   Stage: ${customer.currentStage || 'N/A'}`);
+                log(`   Created: ${new Date(customer.createdAt).toLocaleString()}`);
+
+                // Check real audit processor status
+                if (window.realAuditProcessor && customer.auditId) {
+                    const auditStatus = window.realAuditProcessor.getAuditStatus(customer.id);
+                    if (auditStatus) {
+                        log(`   🔍 Processor Status: ${auditStatus.status}`);
+                        log(`   🎯 Processor Progress: ${auditStatus.progress}%`);
+                        log(`   ⚙️ Current Stage: ${auditStatus.currentStage}`);
+                        if (auditStatus.errors && auditStatus.errors.length > 0) {
+                            log(`   ❌ Errors: ${auditStatus.errors.join(', ')}`, 'error');
+                        }
+                    }
+                }
+                log('---');
+            });
+        }
+
         // Initialize
         window.addEventListener('load', function() {
             setTimeout(() => {
                 checkSystemStatus();
                 log('🎯 Debug system ready');
                 log('💡 Fill the form above and click "Test Customer Creation" to debug the process');
+                log('🔍 Use "Check Audit Status" to monitor processing customers');
             }, 1000);
         });
     </script>
