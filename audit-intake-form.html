@@ -543,13 +543,19 @@ website optimization"></textarea>
             // Simulate processing time
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            return { auditId, customerFolder: data.customerFolder, customerId: data.customerId, reportUrl: data.reportUrl };
+            return { 
+                success: true, 
+                auditId, 
+                customerFolder: data.customerFolder, 
+                customerId: data.customerId, 
+                reportUrl: data.reportUrl 
+            };
         }
         
         function addCustomerToCRM(auditData) {
             // Load existing CRM data
             let crmCustomers = [];
-            const existingData = localStorage.getItem('crm_customers');
+            const existingData = localStorage.getItem('website_audit_customers');
             if (existingData) {
                 crmCustomers = JSON.parse(existingData);
             }
@@ -602,7 +608,7 @@ website optimization"></textarea>
             }
             
             // Save updated CRM data
-            localStorage.setItem('crm_customers', JSON.stringify(crmCustomers));
+            localStorage.setItem('website_audit_customers', JSON.stringify(crmCustomers));
         }
         
         function saveDraft() {
