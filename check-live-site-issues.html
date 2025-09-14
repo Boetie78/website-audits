@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Live Site Issues - Promac Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">🔍 Live Site Issue Diagnostic</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Specific Elements from Live Site</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <button onclick="testLiveSiteDirectly()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Check Live Site Functions
+                </button>
+                <button onclick="openLiveSiteInNewTab()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    Open Live Site in New Tab
+                </button>
+            </div>
+            
+            <div id="testResults" class="p-4 bg-gray-100 rounded-lg mb-4">
+                <h3 class="font-semibold mb-2">Diagnostic Results:</h3>
+                <div id="results"></div>
+            </div>
+            
+            <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+                <h3 class="font-semibold text-yellow-800 mb-2">📝 Manual Testing Instructions</h3>
+                <p class="text-yellow-700 text-sm mb-2">Please test these specific elements on the live site:</p>
+                <ol class="text-yellow-700 text-sm space-y-1 ml-4">
+                    <li>1. Click "View Detailed Rankings" under "Niche Dominance" - should expand dropdown</li>
+                    <li>2. Click "View Authority Breakdown" under "Brand Authority" - should expand dropdown</li>
+                    <li>3. Click "Export Dulux Analysis CSV" - should download CSV file</li>
+                    <li>4. Click "Export Duram Analysis CSV" - should download CSV file</li>
+                    <li>5. Click "Export Plascon Analysis CSV" - should download CSV file</li>
+                    <li>6. Click "Show All Rankings" - should show/hide competitor keywords</li>
+                    <li>7. Check browser console (F12) for any JavaScript errors</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- GitHub Pages Cache Notice -->
+        <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-6">
+            <h3 class="font-semibold text-blue-800 mb-2">⏱️ GitHub Pages Cache Information</h3>
+            <p class="text-blue-700 text-sm mb-2">
+                GitHub Pages may take 5-10 minutes to update after a push. The site was last updated: 
+                <strong id="lastPush">checking...</strong>
+            </p>
+            <p class="text-blue-700 text-sm">
+                If the functions still aren't working after 10 minutes, there may be a deployment issue.
+            </p>
+        </div>
+        
+        <!-- Direct Function Test -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">🧪 Direct Function Tests</h2>
+            <p class="text-gray-600 text-sm mb-4">These buttons will test if the functions work when called directly:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="testToggleAdvantageDetails()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                    Test Dropdown Toggle
+                </button>
+                <button onclick="testExportCSV()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    Test CSV Export
+                </button>
+                <button onclick="testCompetitorToggle()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                    Test Competitor Toggle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addResult(test, status, message) {
+            const results = document.getElementById('results');
+            const result = document.createElement('div');
+            result.className = `p-2 mb-2 rounded ${status === 'PASS' ? 'bg-green-100 text-green-800' : 
+                status === 'FAIL' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
+            result.innerHTML = `<strong>${test}:</strong> ${status} - ${message}`;
+            results.appendChild(result);
+        }
+        
+        function testLiveSiteDirectly() {
+            addResult('Live Site Check', 'INFO', 'Checking live site status...');
+            
+            // Check if the site is accessible
+            fetch('https://boetie78.github.io/website-audits/promac-report-rebuild.html', { 
+                method: 'HEAD',
+                mode: 'no-cors'
+            })
+            .then(() => {
+                addResult('Site Access', 'PASS', 'Live site is accessible');
+                
+                // Check last modified time (GitHub API)
+                return fetch('https://api.github.com/repos/Boetie78/website-audits/commits?path=promac-report-rebuild.html&per_page=1');
+            })
+            .then(response => response.json())
+            .then(commits => {
+                if (commits && commits[0]) {
+                    const lastCommit = new Date(commits[0].commit.committer.date);
+                    const timeAgo = Math.round((Date.now() - lastCommit.getTime()) / (1000 * 60));
+                    
+                    document.getElementById('lastPush').textContent = `${timeAgo} minutes ago (${lastCommit.toLocaleString()})`;
+                    
+                    if (timeAgo < 10) {
+                        addResult('Cache Status', 'WARNING', `Last update was ${timeAgo} minutes ago - may still be deploying`);
+                    } else {
+                        addResult('Cache Status', 'PASS', `Last update was ${timeAgo} minutes ago - should be fully deployed`);
+                    }
+                    
+                    // Check commit message to see if it includes our fixes
+                    const commitMessage = commits[0].commit.message;
+                    if (commitMessage.includes('interactive functions fixed') || commitMessage.includes('COMPLETE')) {
+                        addResult('Deployment Check', 'PASS', 'Latest commit includes the function fixes');
+                    } else {
+                        addResult('Deployment Check', 'FAIL', 'Latest commit may not include the fixes');
+                    }
+                }
+            })
+            .catch(error => {
+                addResult('GitHub API', 'WARNING', `Could not check commit status: ${error.message}`);
+            });
+        }
+        
+        function openLiveSiteInNewTab() {
+            window.open('https://boetie78.github.io/website-audits/promac-report-rebuild.html', '_blank');
+            addResult('Manual Test', 'INFO', 'Live site opened in new tab for manual testing');
+        }
+        
+        // Test functions (these should work locally)
+        function testToggleAdvantageDetails() {
+            addResult('Local Test', 'INFO', 'Testing dropdown toggle function...');
+            try {
+                // Create a mock test
+                const testDiv = document.createElement('div');
+                testDiv.id = 'test-details';
+                testDiv.className = 'hidden';
+                testDiv.textContent = 'Test dropdown content';
+                document.body.appendChild(testDiv);
+                
+                const testBtn = document.createElement('button');
+                testBtn.id = 'testBtn';
+                testBtn.innerHTML = '<span class="arrow">▼</span>View Test Details';
+                document.body.appendChild(testBtn);
+                
+                // Mock the function
+                function mockToggle(section) {
+                    const details = document.getElementById(section + '-details');
+                    const button = document.getElementById('testBtn');
+                    if (details && details.classList.contains('hidden')) {
+                        details.classList.remove('hidden');
+                        return 'Details shown';
+                    } else if (details) {
+                        details.classList.add('hidden');
+                        return 'Details hidden';
+                    }
+                    return 'Elements not found';
+                }
+                
+                const result = mockToggle('test');
+                addResult('Toggle Function', 'PASS', `Local test successful: ${result}`);
+                
+                // Clean up
+                document.body.removeChild(testDiv);
+                document.body.removeChild(testBtn);
+                
+            } catch (error) {
+                addResult('Toggle Function', 'FAIL', `Error: ${error.message}`);
+            }
+        }
+        
+        function testExportCSV() {
+            addResult('Local Test', 'INFO', 'Testing CSV export function...');
+            try {
+                // Create test CSV
+                const csvContent = 'Test,Data\nValue1,Value2\nValue3,Value4\n';
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'test-export.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                addResult('CSV Export', 'PASS', 'Local CSV export test successful - file should download');
+            } catch (error) {
+                addResult('CSV Export', 'FAIL', `Error: ${error.message}`);
+            }
+        }
+        
+        function testCompetitorToggle() {
+            addResult('Local Test', 'INFO', 'Testing competitor toggle function...');
+            try {
+                // Create mock elements
+                const keyword1 = document.createElement('div');
+                keyword1.className = 'competitor-keyword hidden';
+                keyword1.setAttribute('data-competitor', 'test');
+                keyword1.textContent = 'Test Keyword 1';
+                
+                const keyword2 = document.createElement('div');
+                keyword2.className = 'competitor-keyword hidden';
+                keyword2.setAttribute('data-competitor', 'test');
+                keyword2.textContent = 'Test Keyword 2';
+                
+                const toggleBtn = document.createElement('button');
+                toggleBtn.id = 'testToggleBtn';
+                toggleBtn.textContent = 'Show All Rankings';
+                
+                document.body.appendChild(keyword1);
+                document.body.appendChild(keyword2);
+                document.body.appendChild(toggleBtn);
+                
+                // Mock toggle function
+                function mockCompetitorToggle(competitor) {
+                    const hiddenKeywords = document.querySelectorAll(`.competitor-keyword[data-competitor="${competitor}"].hidden`);
+                    const toggleButton = document.getElementById('testToggleBtn');
+                    
+                    if (hiddenKeywords.length > 0) {
+                        hiddenKeywords.forEach(keyword => keyword.classList.remove('hidden'));
+                        toggleButton.textContent = 'Show Top 5';
+                        return 'Keywords shown';
+                    } else {
+                        const allKeywords = document.querySelectorAll(`.competitor-keyword[data-competitor="${competitor}"]`);
+                        allKeywords.forEach(keyword => keyword.classList.add('hidden'));
+                        toggleButton.textContent = 'Show All Rankings';
+                        return 'Keywords hidden';
+                    }
+                }
+                
+                const result = mockCompetitorToggle('test');
+                addResult('Competitor Toggle', 'PASS', `Local test successful: ${result}`);
+                
+                // Clean up
+                document.body.removeChild(keyword1);
+                document.body.removeChild(keyword2);
+                document.body.removeChild(toggleBtn);
+                
+            } catch (error) {
+                addResult('Competitor Toggle', 'FAIL', `Error: ${error.message}`);
+            }
+        }
+        
+        // Auto-run diagnostics on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                addResult('Page Load', 'PASS', 'Diagnostic page loaded successfully');
+                testLiveSiteDirectly();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

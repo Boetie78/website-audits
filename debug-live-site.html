@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Live Site - Promac Functions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Debug Live Site Functions</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Live Site Functions</h2>
+            
+            <div class="mb-4">
+                <button onclick="testLiveSiteFunctions()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Test Functions from Live Site
+                </button>
+            </div>
+            
+            <div id="testResults" class="p-4 bg-gray-100 rounded-lg">
+                <h3 class="font-semibold mb-2">Test Results:</h3>
+                <div id="results"></div>
+            </div>
+        </div>
+        
+        <!-- Test elements that mimic the main report -->
+        <div class="bg-white p-6 rounded-lg shadow-lg" style="display: none;">
+            <div id="niche-dominance-details" class="hidden">
+                <h4>Detailed Niche Dominance Rankings:</h4>
+                <p>Test content here...</p>
+            </div>
+            <button id="nicheDominanceBtn" onclick="toggleAdvantageDetails('niche-dominance')" class="dropdown-btn">
+                <span class="arrow">▼</span>
+                View Detailed Rankings
+            </button>
+            
+            <button onclick="exportCompetitorCSV('Dulux')" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">
+                Export Dulux Analysis CSV
+            </button>
+            
+            <button onclick="exportCompetitorCSV('Duram')" class="bg-red-600 text-white px-4 py-2 rounded mt-4">
+                Export Duram Analysis CSV
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function addResult(test, status, message) {
+            const results = document.getElementById('results');
+            const result = document.createElement('div');
+            result.className = `p-2 mb-2 rounded ${status === 'PASS' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            result.innerHTML = `<strong>${test}:</strong> ${status} - ${message}`;
+            results.appendChild(result);
+        }
+
+        function testLiveSiteFunctions() {
+            addResult('Live Site Test', 'INFO', 'Testing functions that should be on live site...');
+            
+            // Test if we can access the main site via iframe or fetch
+            // First check if functions exist in global scope
+            const functionsToTest = [
+                'toggleAdvantageDetails',
+                'exportCompetitorCSV', 
+                'exportCSV',
+                'toggleView',
+                'toggleCompetitorView'
+            ];
+            
+            let foundFunctions = 0;
+            functionsToTest.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    addResult('Function Check', 'PASS', `${funcName} is available globally`);
+                    foundFunctions++;
+                } else {
+                    addResult('Function Check', 'FAIL', `${funcName} is not available globally`);
+                }
+            });
+            
+            if (foundFunctions === 0) {
+                addResult('Function Availability', 'FAIL', 'No functions found - need to load from main report');
+                // Try to load the functions from the main report
+                loadMainReportFunctions();
+            } else {
+                addResult('Function Availability', 'PASS', `${foundFunctions}/${functionsToTest.length} functions available`);
+            }
+        }
+        
+        function loadMainReportFunctions() {
+            addResult('Loading', 'INFO', 'Attempting to load functions from main report...');
+            
+            // Try to fetch the main report and extract the JavaScript
+            fetch('https://boetie78.github.io/website-audits/promac-report-rebuild.html')
+                .then(response => response.text())
+                .then(html => {
+                    addResult('Fetch', 'PASS', 'Successfully fetched main report HTML');
+                    
+                    // Extract the script section
+                    const scriptMatch = html.match(/<script[^>]*>([\s\S]*?)<\/script>/);
+                    if (scriptMatch) {
+                        addResult('Script Extract', 'PASS', 'Found script section in HTML');
+                        
+                        // Check if functions are defined in the script
+                        const scriptContent = scriptMatch[1];
+                        const hasFunctions = [
+                            'function toggleAdvantageDetails',
+                            'function exportCompetitorCSV',
+                            'function exportCSV'
+                        ].every(funcDef => scriptContent.includes(funcDef));
+                        
+                        if (hasFunctions) {
+                            addResult('Function Definition', 'PASS', 'All required functions found in script');
+                        } else {
+                            addResult('Function Definition', 'FAIL', 'Some functions missing from script');
+                        }
+                        
+                        // Check for global scope issues
+                        if (scriptContent.includes('DOMContentLoaded')) {
+                            addResult('Scope Check', 'WARNING', 'Found DOMContentLoaded - checking if functions are outside it');
+                            
+                            // Check if functions are defined before DOMContentLoaded
+                            const domContentIndex = scriptContent.indexOf('DOMContentLoaded');
+                            const functionsBeforeDom = scriptContent.substring(0, domContentIndex).includes('function toggleAdvantageDetails');
+                            
+                            if (functionsBeforeDom) {
+                                addResult('Scope Check', 'PASS', 'Functions defined before DOMContentLoaded');
+                            } else {
+                                addResult('Scope Check', 'FAIL', 'Functions may be trapped inside DOMContentLoaded');
+                            }
+                        } else {
+                            addResult('Scope Check', 'PASS', 'No DOMContentLoaded event listener found');
+                        }
+                        
+                    } else {
+                        addResult('Script Extract', 'FAIL', 'No script section found in HTML');
+                    }
+                })
+                .catch(error => {
+                    addResult('Fetch', 'FAIL', `Error fetching main report: ${error.message}`);
+                });
+        }
+        
+        // Mock functions for testing if they don't exist
+        if (typeof toggleAdvantageDetails === 'undefined') {
+            window.toggleAdvantageDetails = function(section) {
+                addResult('Mock Function', 'INFO', `toggleAdvantageDetails called with: ${section}`);
+                const detailsDiv = document.getElementById(section + '-details');
+                if (detailsDiv) {
+                    detailsDiv.classList.toggle('hidden');
+                    return 'Toggle successful';
+                }
+                return 'Element not found';
+            };
+        }
+        
+        if (typeof exportCompetitorCSV === 'undefined') {
+            window.exportCompetitorCSV = function(competitor) {
+                addResult('Mock Function', 'INFO', `exportCompetitorCSV called with: ${competitor}`);
+                // Create a simple test CSV
+                const csvContent = `Competitor,Test Data\n${competitor},Sample Export\n`;
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${competitor.toLowerCase()}-test.csv`;
+                link.click();
+                URL.revokeObjectURL(url);
+                return 'Export successful';
+            };
+        }
+        
+        // Auto-run test on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                addResult('Page Load', 'PASS', 'Debug page loaded successfully');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

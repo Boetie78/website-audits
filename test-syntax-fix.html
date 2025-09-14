@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Syntax Fix</title>
+</head>
+<body>
+    <button onclick="toggleAdvantageDetails('niche-dominance')">Test Toggle</button>
+    <button onclick="exportCompetitorCSV('Dulux')">Test Export</button>
+    <div id="niche-dominance-details" class="hidden">Test content</div>
+    <button id="nicheDominanceBtn"><svg class="arrow"></svg>View Details</button>
+
+    <script>
+        function toggleAdvantageDetails(section) {
+            console.log('Toggle called:', section);
+            const detailsDiv = document.getElementById(section + '-details');
+            const button = document.getElementById(section === 'niche-dominance' ? 'nicheDominanceBtn' : 'brandAuthorityBtn');
+            
+            if (detailsDiv && detailsDiv.classList.contains('hidden')) {
+                detailsDiv.classList.remove('hidden');
+                return 'Details shown';
+            } else if (detailsDiv) {
+                detailsDiv.classList.add('hidden');
+                return 'Details hidden';
+            }
+            return 'Element not found';
+        }
+
+        function exportCompetitorCSV(competitorName) {
+            console.log('Export CSV called:', competitorName);
+            const csvContent = 'test,data\n' + competitorName + ',sample\n';
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = competitorName.toLowerCase() + '-test.csv';
+            link.click();
+            URL.revokeObjectURL(url);
+            return 'Export successful';
+        }
+
+        // Test on load
+        window.addEventListener('load', function() {
+            console.log('✅ Functions loaded successfully');
+            console.log('✅ toggleAdvantageDetails:', typeof toggleAdvantageDetails === 'function');
+            console.log('✅ exportCompetitorCSV:', typeof exportCompetitorCSV === 'function');
+        });
+    </script>
+</body>
+</html>

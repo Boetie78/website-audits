@@ -196,7 +196,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Issue Distribution</h3>
                     <div class="space-y-6">
                         <div class="flex justify-center">
-                            <canvas id="issueChart" width="300" height="300"></canvas>
+                            <canvas id="issueChart" width="200" height="200"></canvas>
                         </div>
                         <!-- Legend -->
                         <div class="flex justify-center space-x-6">
@@ -1268,7 +1268,7 @@
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">🎯 Search Intent Distribution</h3>
                         <div class="bg-gray-50 rounded-lg p-6">
                             <div class="flex justify-center mb-4">
-                                <canvas id="intentChart" width="250" height="250"></canvas>
+                                <canvas id="intentChart" width="180" height="180"></canvas>
                             </div>
                             <div class="grid grid-cols-2 gap-4 text-center">
                                 <div>
@@ -1599,7 +1599,8 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
                     plugins: {
                         legend: {
                             display: false
@@ -1626,7 +1627,8 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
                     plugins: {
                         legend: {
                             display: false
