@@ -459,11 +459,7 @@ class SEOReportGenerator {
         return {
             currentTrafficEstimate: Math.floor(1000 * (score / 100)),
             potentialTrafficIncrease: Math.floor(1000 * (improvementPotential / 100) * 2.5),
-<<<<<<< Updated upstream
-            estimatedRevenueIncrease: Math.floor(improvementPotential * 500 * usdToZarRate), // Convert to ZAR
-=======
             estimatedRevenueIncrease: Math.floor(improvementPotential * 9000), // Using ZAR conversion (~18:1 USD to ZAR)
->>>>>>> Stashed changes
             timeToResults: score < 50 ? '3-6 months' : '2-3 months',
             confidenceLevel: score < 50 ? 'High' : 'Moderate',
             currency: 'ZAR'
@@ -728,19 +724,11 @@ class SEOReportGenerator {
                         </svg>
                         Export PDF
                     </button>
-<<<<<<< Updated upstream
-                    <button onclick="openDetailedIssuesReport()" class="action-button bg-red-600 text-white hover:bg-red-700">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        Detailed Issues Report
-=======
                     <button onclick="saveHTMLReport()" class="action-button bg-purple-600 text-white hover:bg-purple-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
                         Save HTML
->>>>>>> Stashed changes
                     </button>
                     <button onclick="shareReport()" class="action-button bg-green-600 text-white hover:bg-green-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1096,10 +1084,6 @@ class SEOReportGenerator {
                 </div>
             </div>
 
-<<<<<<< Updated upstream
-            ${data.seoAnalysis ? this.generateSEOAnalysisSection(data.seoAnalysis) : ''}
-            
-=======
             <!-- Competitor Analysis Section -->
             <div class="card">
                 <div class="p-6 border-b border-gray-200">
@@ -1388,7 +1372,6 @@ class SEOReportGenerator {
                 </div>
             </div>
 
->>>>>>> Stashed changes
             <!-- Recommendations & Action Plan -->
             <div class="card">
                 <div class="p-6 border-b border-gray-200">
@@ -1480,11 +1463,7 @@ class SEOReportGenerator {
                         </div>
                         <div class="bg-white rounded-lg p-4">
                             <div class="text-sm text-gray-600 mb-1">Est. Revenue Impact</div>
-<<<<<<< Updated upstream
-                            <div class="text-2xl font-bold text-green-600">R${(data.roiPotential?.estimatedRevenueIncrease || 0).toLocaleString()}/mo</div>
-=======
                             <div class="text-2xl font-bold text-green-600">+R${(data.roiPotential?.estimatedRevenueIncrease || 0).toLocaleString()}/mo</div>
->>>>>>> Stashed changes
                         </div>
                     </div>
                     <div class="bg-white rounded-lg p-4">
@@ -1545,20 +1524,8 @@ class SEOReportGenerator {
     </footer>
 
     <script>
-<<<<<<< Updated upstream
-        // Set global data for detailed reports
-        window.currentCustomerData = ${JSON.stringify(customer)};
-        window.currentAuditData = ${JSON.stringify(data)};
-        window.currentSeoAnalysisData = ${data.seoAnalysis ? JSON.stringify(data.seoAnalysis) : 'null'};
-        
-        // Initialize charts with better timing and error handling
-        function initializeCharts() {
-            console.log('Chart initialization starting...');
-            
-=======
         // Initialize charts immediately (since HTML is dynamically inserted)
         setTimeout(function() {
->>>>>>> Stashed changes
             // Issue Distribution Chart
             const ctx = document.getElementById('issueChart');
             console.log('Canvas element found:', !!ctx);
@@ -1622,173 +1589,14 @@ class SEOReportGenerator {
                 console.error('Chart.js not loaded or canvas not found');
                 console.log('ctx:', ctx, 'Chart defined:', typeof Chart !== 'undefined');
             }
-<<<<<<< Updated upstream
-        }
-        
-        // Initialize charts after page load with multiple timing strategies
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, attempting chart initialization...');
-            
-            // Try immediately
-            initializeCharts();
-            
-            // Try after short delay
-            setTimeout(initializeCharts, 500);
-            
-            // Try after longer delay to ensure Chart.js is loaded
-            setTimeout(initializeCharts, 1500);
-        });
-        
-        // Also try when window is fully loaded
-        window.addEventListener('load', function() {
-            console.log('Window fully loaded, attempting chart initialization...');
-            setTimeout(initializeCharts, 100);
-        });
-=======
         }, 100); // Small delay to ensure DOM is ready
->>>>>>> Stashed changes
 
         // Export functions - make them globally accessible
         window.exportPDF = function() {
             window.print();
         };
 
-<<<<<<< Updated upstream
-        // Redirect old function to new one for compatibility
-        function generateDetailedIssuesReport() {
-            openDetailedIssuesReport();
-        }
-        
-        function openDetailedIssuesReport() {
-            console.log('🔧 Opening detailed issues report...');
-            
-            try {
-                // Get customer data for URL parameters
-                const customerData = window.currentCustomerData || ${JSON.stringify(customer)};
-                
-                // Save data to localStorage for the detailed report to access
-                window.currentCustomer = customerData;
-                window.currentAuditData = window.currentAuditData || ${JSON.stringify(data)};
-                window.currentSeoAnalysisData = window.currentSeoAnalysisData || ${data.seoAnalysis ? JSON.stringify(data.seoAnalysis) : 'null'};
-                
-                // Open the separate detailed report file
-                const reportUrl = 'detailed-issues-report.html?customerId=' + encodeURIComponent(customerData.id || 'default');
-                window.open(reportUrl, '_blank');
-                
-                showNotification('✅ Opening detailed issues report in new tab...');
-            } catch (error) {
-                console.error('Error opening detailed report:', error);
-                showNotification('❌ Error opening detailed report: ' + error.message);
-            }
-        }
-        
-        function generateDetailedReportHTML(customer, auditData, seoAnalysisData) {
-            // Use proper string concatenation without template literals inside templates
-            const customerName = customer.customerName || 'Client';
-            const website = (customer.website || customer.primaryDomain || '').replace(/https?:\/\/(www\.)?/, '');
-            const currentDate = new Date().toLocaleDateString();
-            
-            return '<!DOCTYPE html>' +
-'<html lang="en">' +
-'<head>' +
-    '<meta charset="UTF-8">' +
-    '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-    '<title>Detailed Issues Report - ' + customerName + '</title>' +
-    '<script src="https://cdn.tailwindcss.com"></script>' +
-    '<style>' +
-        '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");' +
-        'body { font-family: "Inter", sans-serif; }' +
-        '@media print { .no-print { display: none !important; } }' +
-    '</style>' +
-'</head>' +
-'<body class="bg-gray-50">' +
-    '<div class="bg-gradient-to-r from-red-600 to-red-700 text-white py-8">' +
-        '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">' +
-            '<div class="text-center">' +
-                '<h1 class="text-4xl font-black mb-4">🔧 Detailed Issues & Fix Guide</h1>' +
-                '<p class="text-xl text-white/90 mb-2">Complete step-by-step instructions for ' + customerName + '</p>' +
-                '<p class="text-white/80 mb-6">' + website + ' • Generated ' + currentDate + '</p>' +
-            '</div>' +
-        '</div>' +
-    '</div>' +
-    '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">' +
-        '<div class="bg-white rounded-xl shadow-lg p-8">' +
-            '<h2 class="text-2xl font-bold text-gray-800 mb-6">Priority Issues Found</h2>' +
-            '<div class="space-y-6">' +
-                '<div class="border-l-4 border-red-500 bg-red-50 p-4 rounded-lg">' +
-                    '<h3 class="text-lg font-semibold text-red-800 mb-2">Critical: Slow Page Load Times</h3>' +
-                    '<p class="text-red-700 mb-3">Pages are loading slower than optimal, affecting user experience and search rankings.</p>' +
-                    '<div class="bg-white p-4 rounded border">' +
-                        '<h4 class="font-semibold text-gray-800 mb-2">🔧 How to Fix:</h4>' +
-                        '<ol class="list-decimal list-inside text-sm text-gray-700 space-y-1">' +
-                            '<li>Run Google PageSpeed Insights to identify bottlenecks</li>' +
-                            '<li>Compress images using TinyPNG or WebP format</li>' +
-                            '<li>Enable browser caching with Cache-Control headers</li>' +
-                            '<li>Minify CSS, JavaScript, and HTML files</li>' +
-                            '<li>Consider implementing a CDN for faster global loading</li>' +
-                        '</ol>' +
-                        '<div class="mt-3 text-xs text-gray-600"><strong>Time:</strong> 4-8 hours | <strong>Difficulty:</strong> Hard</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-lg">' +
-                    '<h3 class="text-lg font-semibold text-orange-800 mb-2">High: Missing Meta Descriptions</h3>' +
-                    '<p class="text-orange-700 mb-3">Pages lack compelling meta descriptions that appear in search results.</p>' +
-                    '<div class="bg-white p-4 rounded border">' +
-                        '<h4 class="font-semibold text-gray-800 mb-2">🔧 How to Fix:</h4>' +
-                        '<ol class="list-decimal list-inside text-sm text-gray-700 space-y-1">' +
-                            '<li>Write compelling 150-160 character descriptions</li>' +
-                            '<li>Include target keywords naturally</li>' +
-                            '<li>Add call-to-action words to encourage clicks</li>' +
-                            '<li>Ensure each page has unique description</li>' +
-                            '<li>Add to HTML: &lt;meta name="description" content="Your description"&gt;</li>' +
-                        '</ol>' +
-                        '<div class="mt-3 text-xs text-gray-600"><strong>Time:</strong> 15-30 min per page | <strong>Difficulty:</strong> Easy</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded-lg">' +
-                    '<h3 class="text-lg font-semibold text-yellow-800 mb-2">Medium: Missing H1 Tags</h3>' +
-                    '<p class="text-yellow-700 mb-3">Pages are missing or have incorrect H1 heading tags for SEO structure.</p>' +
-                    '<div class="bg-white p-4 rounded border">' +
-                        '<h4 class="font-semibold text-gray-800 mb-2">🔧 How to Fix:</h4>' +
-                        '<ol class="list-decimal list-inside text-sm text-gray-700 space-y-1">' +
-                            '<li>Identify the main topic of the page</li>' +
-                            '<li>Write clear, keyword-rich heading (50-60 characters)</li>' +
-                            '<li>Use only one H1 tag per page</li>' +
-                            '<li>Place as first heading: &lt;h1&gt;Your Main Heading&lt;/h1&gt;</li>' +
-                            '<li>Follow with H2-H6 tags hierarchically</li>' +
-                        '</ol>' +
-                        '<div class="mt-3 text-xs text-gray-600"><strong>Time:</strong> 10-15 min per page | <strong>Difficulty:</strong> Easy</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-            '<div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">' +
-                '<h3 class="text-lg font-semibold text-blue-800 mb-2">📋 Next Steps</h3>' +
-                '<p class="text-blue-700 text-sm">' +
-                    'Start with critical issues first, then work through high and medium priority items. ' +
-                    'Each fix will improve your search rankings and user experience. ' +
-                    'Consider implementing changes in phases to manage workload effectively.' +
-                '</p>' +
-            '</div>' +
-        '</div>' +
-    '</div>' +
-'</body>' +
-'</html>';
-        }
-        
-        
-        function getSEOFixTime(severity) {
-            switch (severity?.toLowerCase()) {
-                case 'critical': return '2-4 hours';
-                case 'high': return '1-2 hours';
-                case 'medium': return '30-60 minutes';
-                default: return '15-30 minutes';
-            }
-        }
-        
-        function shareReport() {
-=======
         window.shareReport = function() {
->>>>>>> Stashed changes
             if (navigator.share) {
                 navigator.share({
                     title: 'SEO Audit Report',
@@ -1801,11 +1609,6 @@ class SEOReportGenerator {
             }
         };
 
-<<<<<<< Updated upstream
-        function exportTableCSV(tableType) {
-            showNotification('CSV export feature coming soon!');
-        }
-=======
         window.exportTableCSV = function(tableType) {
             let csvContent = '';
             let filename = '';
@@ -1840,7 +1643,6 @@ class SEOReportGenerator {
             
             window.showNotification('CSV exported successfully!');
         };
->>>>>>> Stashed changes
 
         window.exportCompetitorCSV = function() {
             let csvContent = 'Keyword,Competitor,Their Position,Your Position,Monthly Volume,Opportunity Score,Priority\\n';
@@ -1920,22 +1722,6 @@ document.body.outerHTML +
             }
         };
 
-<<<<<<< Updated upstream
-        function scheduleConsultation() {
-            window.open('mailto:info@example.com?subject=SEO Audit Consultation Request&body=I would like to schedule a consultation to discuss the SEO audit findings.', '_blank');
-        }
-
-        function downloadFullReport() {
-            showNotification('Full report download ready!');
-            window.print();
-        }
-
-        function shareWithTeam() {
-            const subject = encodeURIComponent('SEO Audit Report');
-            const body = encodeURIComponent('Please review the SEO audit report: ' + window.location.href);
-            window.open('mailto:?subject=' + subject + '&body=' + body, '_blank');
-        }
-=======
         window.scheduleConsultation = function() {
             window.open('mailto:${customer.email || 'info@example.com'}?subject=SEO Audit Consultation Request&body=I would like to schedule a consultation to discuss the SEO audit findings.', '_blank');
         };
@@ -1963,7 +1749,6 @@ document.body.outerHTML +
             const body = encodeURIComponent('Please review the attached SEO audit report: ' + window.location.href);
             window.open('mailto:?subject=' + subject + '&body=' + body, '_blank');
         };
->>>>>>> Stashed changes
 
         window.showNotification = function(message) {
             const notification = document.createElement('div');

@@ -385,7 +385,7 @@ website optimization"></textarea>
             const formData = new FormData(e.target);
             const auditData = {};
             
-            for (let [key, value] = formData.entries()) {
+            for (let [key, value] of formData.entries()) {
                 if (auditData[key]) {
                     if (Array.isArray(auditData[key])) {
                         auditData[key].push(value);
