@@ -402,58 +402,87 @@ website optimization"></textarea>
             auditData.timestamp = new Date().toISOString();
             
             // Process the audit request
-            processAuditRequest(auditData).then(() => {
-                showSuccess('Audit request submitted successfully! Customer added to CRM and audit process started.');
-                
-                // Show success actions
-                setTimeout(() => {
-                    const continueActions = confirm('Customer added successfully!\n\nClick OK to view CRM Dashboard\nClick Cancel to submit another audit');
-                    if (continueActions) {
-                        window.location.href = 'customers-dashboard.html';
-                    } else {
-                        e.target.reset();
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    }
-                }, 2000);
-                
+            processAuditRequest(auditData).then((result) => {
+                if (result && result.success) {
+                    showSuccess(`✅ Customer "${auditData.customerName}" added successfully! Report generation started.`);
+
+                    // Show detailed success info
+                    setTimeout(() => {
+                        const message = `Customer Added: ${auditData.customerName}\nEmail: ${auditData.contactEmail}\nWebsite: ${auditData.primaryDomain}\n\n✅ Report is being generated...\n\nClick OK to view Customer Dashboard\nClick Cancel to submit another audit`;
+                        const continueActions = confirm(message);
+                        if (continueActions) {
+                            window.location.href = 'customers-dashboard.html';
+                        } else {
+                            e.target.reset();
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }
+                    }, 2000);
+                } else {
+                    showSuccess('Customer data saved. Processing audit in background...');
+                    setTimeout(() => {
+                        const continueActions = confirm('Customer data saved!\n\nClick OK to view Dashboard\nClick Cancel to submit another audit');
+                        if (continueActions) {
+                            window.location.href = 'customers-dashboard.html';
+                        } else {
+                            e.target.reset();
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }
+                    }, 2000);
+                }
+
             }).catch(error => {
-                showError('Error submitting audit request: ' + error.message);
+                console.error('Form submission error:', error);
+                showError(`Error submitting request: ${error.message}. Please try again or check browser console for details.`);
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             });
         });
         
         async function processAuditRequest(data) {
+            console.log('🔄 Processing audit request:', data);
+
             // Store audit data in localStorage
             const auditId = 'audit_' + Date.now();
             localStorage.setItem(auditId, JSON.stringify(data));
 
-            // Use the new Customer Manager to create customer project
-            if (window.customerManager) {
-                try {
-                    // Format data for customer manager
-                    const customerData = {
-                        companyName: data.customerName,
-                        contactName: data.contactEmail.split('@')[0], // Extract name from email
-                        email: data.contactEmail,
-                        phone: '', // Add phone field if needed
-                        website: data.primaryDomain,
-                        industry: data.industry,
-                        location: data.location,
-                        competitors: [data.competitor1, data.competitor2, data.competitor3, data.competitor4].filter(Boolean),
-                        targetKeywords: data.targetKeywords ? data.targetKeywords.split('\n').filter(Boolean) : []
-                    };
+            // Check if required modules are loaded
+            if (!window.customerManager) {
+                console.error('❌ Customer Manager not loaded');
+                throw new Error('Customer management system not ready. Please refresh and try again.');
+            }
 
-                    const customer = await window.customerManager.createCustomerProject(customerData);
-                    console.log('✅ Customer project created:', customer);
+            try {
+                // Format data for customer manager
+                const customerData = {
+                    companyName: data.customerName || 'Unknown Company',
+                    contactName: (data.contactEmail || '').split('@')[0] || 'Contact',
+                    email: data.contactEmail || '',
+                    phone: data.phone || '',
+                    website: data.primaryDomain || '',
+                    industry: data.industry || '',
+                    location: data.location || '',
+                    competitors: [data.competitor1, data.competitor2, data.competitor3, data.competitor4].filter(Boolean),
+                    targetKeywords: data.targetKeywords ? data.targetKeywords.split(/[,\n]/).map(k => k.trim()).filter(Boolean) : []
+                };
 
-                    // Store the customer ID for reference
-                    data.customerId = customer.id;
-                    data.reportUrl = customer.reportUrl;
-                } catch (error) {
-                    console.error('Error creating customer project:', error);
-                }
+                console.log('📋 Customer data formatted:', customerData);
+
+                // Create customer project
+                const customer = await window.customerManager.createCustomerProject(customerData);
+                console.log('✅ Customer project created:', customer);
+
+                // Store the customer ID for reference
+                data.customerId = customer.id;
+                data.reportUrl = customer.reportUrl;
+
+                return { success: true, customer: customer };
+
+            } catch (error) {
+                console.error('❌ Error creating customer project:', error);
+                // Don't throw error, continue with fallback CRM
+                console.log('⚠️ Falling back to basic CRM storage...');
             }
 
             // Process customer through automation hub

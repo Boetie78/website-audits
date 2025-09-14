@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Customer Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="customer-manager.js"></script>
+    <script src="customer-report-generator.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .debug-log {
+            background: #1e1e1e;
+            color: #00ff00;
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Debug Customer Form Submission</h1>
+
+        <!-- Debug Status -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8 border">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">System Status</h2>
+            <div id="systemStatus" class="space-y-2">
+                <div id="customerManagerStatus" class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-gray-400 rounded-full"></span>
+                    <span>Customer Manager: Loading...</span>
+                </div>
+                <div id="reportGeneratorStatus" class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-gray-400 rounded-full"></span>
+                    <span>Report Generator: Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Test Form -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8 border">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Test Customer</h2>
+            <form id="testForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" name="customerName" placeholder="Company Name"
+                           value="L&G Tools" class="border rounded px-3 py-2">
+                    <input type="email" name="contactEmail" placeholder="Email"
+                           value="boetiefischer@gmail.com" class="border rounded px-3 py-2">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" name="industry" placeholder="Industry"
+                           value="E-commerce" class="border rounded px-3 py-2">
+                    <input type="text" name="location" placeholder="Location"
+                           value="South Africa" class="border rounded px-3 py-2">
+                </div>
+                <input type="url" name="primaryDomain" placeholder="Website URL"
+                       value="https://www.lgtools.co.za/" class="w-full border rounded px-3 py-2">
+
+                <div class="flex gap-4">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                        Test Customer Creation
+                    </button>
+                    <button type="button" onclick="clearStorage()"
+                            class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
+                        Clear Storage
+                    </button>
+                    <button type="button" onclick="viewStorage()"
+                            class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                        View Storage
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Debug Log -->
+        <div class="bg-white rounded-lg shadow-sm p-6 border">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Debug Log</h2>
+            <div id="debugLog" class="debug-log p-4 rounded border">
+                <div class="text-green-400">Debug log initialized...</div>
+            </div>
+            <button onclick="clearLog()" class="mt-2 text-sm bg-gray-500 text-white px-3 py-1 rounded">
+                Clear Log
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let logContainer;
+
+        function log(message, type = 'info') {
+            if (!logContainer) logContainer = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'text-red-400' : type === 'success' ? 'text-green-400' : 'text-blue-400';
+            logContainer.innerHTML += `<div class="${color}">[${timestamp}] ${message}</div>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function clearLog() {
+            document.getElementById('debugLog').innerHTML = '<div class="text-green-400">Debug log cleared...</div>';
+        }
+
+        // Check system status
+        function checkSystemStatus() {
+            log('🔍 Checking system status...');
+
+            // Check Customer Manager
+            if (window.customerManager) {
+                document.querySelector('#customerManagerStatus span:first-child').className = 'w-3 h-3 bg-green-500 rounded-full';
+                document.querySelector('#customerManagerStatus span:last-child').textContent = 'Customer Manager: ✅ Loaded';
+                log('✅ Customer Manager loaded', 'success');
+            } else {
+                document.querySelector('#customerManagerStatus span:first-child').className = 'w-3 h-3 bg-red-500 rounded-full';
+                document.querySelector('#customerManagerStatus span:last-child').textContent = 'Customer Manager: ❌ Not loaded';
+                log('❌ Customer Manager not loaded', 'error');
+            }
+
+            // Check Report Generator
+            if (window.customerReportGenerator) {
+                document.querySelector('#reportGeneratorStatus span:first-child').className = 'w-3 h-3 bg-green-500 rounded-full';
+                document.querySelector('#reportGeneratorStatus span:last-child').textContent = 'Report Generator: ✅ Loaded';
+                log('✅ Report Generator loaded', 'success');
+            } else {
+                document.querySelector('#reportGeneratorStatus span:first-child').className = 'w-3 h-3 bg-red-500 rounded-full';
+                document.querySelector('#reportGeneratorStatus span:last-child').textContent = 'Report Generator: ❌ Not loaded';
+                log('❌ Report Generator not loaded', 'error');
+            }
+        }
+
+        // Test form submission
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            log('📝 Test form submitted');
+
+            const formData = new FormData(e.target);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+
+            log('📋 Form data collected:', 'info');
+            log(JSON.stringify(data, null, 2));
+
+            try {
+                if (!window.customerManager) {
+                    throw new Error('Customer Manager not available');
+                }
+
+                log('🚀 Creating customer project...');
+
+                const customerData = {
+                    companyName: data.customerName,
+                    contactName: data.contactEmail.split('@')[0],
+                    email: data.contactEmail,
+                    website: data.primaryDomain,
+                    industry: data.industry,
+                    location: data.location,
+                    competitors: [],
+                    targetKeywords: []
+                };
+
+                log('📊 Customer data formatted:');
+                log(JSON.stringify(customerData, null, 2));
+
+                const customer = await window.customerManager.createCustomerProject(customerData);
+                log('✅ Customer created successfully!', 'success');
+                log(`Customer ID: ${customer.id}`);
+                log(`Customer Slug: ${customer.slug}`);
+                log(`Status: ${customer.status}`);
+
+                // Show in storage
+                viewStorage();
+
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                log(`Stack: ${error.stack}`, 'error');
+            }
+        });
+
+        function clearStorage() {
+            localStorage.clear();
+            log('🗑️ All storage cleared', 'success');
+        }
+
+        function viewStorage() {
+            log('💾 Current storage contents:');
+
+            const keys = Object.keys(localStorage);
+            if (keys.length === 0) {
+                log('(Storage is empty)');
+                return;
+            }
+
+            keys.forEach(key => {
+                if (key.includes('customer') || key.includes('audit')) {
+                    const value = localStorage.getItem(key);
+                    log(`${key}:`);
+                    try {
+                        const parsed = JSON.parse(value);
+                        log(JSON.stringify(parsed, null, 2));
+                    } catch {
+                        log(value);
+                    }
+                    log('---');
+                }
+            });
+        }
+
+        // Initialize
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                checkSystemStatus();
+                log('🎯 Debug system ready');
+                log('💡 Fill the form above and click "Test Customer Creation" to debug the process');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
