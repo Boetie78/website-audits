@@ -420,6 +420,43 @@ class RealAuditProcessor {
         }));
     }
 
+    /**
+     * Generate final report with completed audit data
+     */
+    async generateFinalReport(job) {
+        console.log(`📊 Generating final report for ${job.customer.companyName}...`);
+        
+        try {
+            // Use customer manager to generate final report if available
+            if (window.customerManager && window.customerManager.generateFinalReportWithRealData) {
+                await window.customerManager.generateFinalReportWithRealData(job.customerId, job.results);
+                console.log(`✅ Final report generated via Customer Manager`);
+            } else {
+                // Fallback: store results directly
+                console.log(`⚠️ Customer Manager not available, storing results directly`);
+                
+                // Store the final audit results
+                const reportsKey = 'customer_reports';
+                const reports = JSON.parse(localStorage.getItem(reportsKey) || '{}');
+                
+                // Create a basic report structure
+                reports[job.customer.slug] = {
+                    customerName: job.customer.companyName,
+                    auditDate: job.results.auditDate,
+                    overallScore: job.results.overallScore,
+                    results: job.results,
+                    status: 'completed'
+                };
+                
+                localStorage.setItem(reportsKey, JSON.stringify(reports));
+                console.log(`📋 Results stored for ${job.customer.companyName}`);
+            }
+        } catch (error) {
+            console.error(`❌ Error generating final report:`, error);
+            // Don't throw - allow status update to proceed
+        }
+    }
+
     // Status management
     updateCustomerStatus(customerId, status, progress = 0) {
         // Update in customer manager
