@@ -12,6 +12,8 @@
     <script src="seo-audit-processor.js"></script>
     <script src="scripts/create-seo-audit.js"></script>
     <script src="audit-automation-hub.js"></script>
+    <script src="customer-manager.js"></script>
+    <script src="customer-report-generator.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -78,7 +80,7 @@
             <div class="flex justify-center gap-4 text-white/80 text-sm">
                 <a href="index.html" class="hover:text-white transition-colors">← Portfolio</a>
                 <span>|</span>
-                <a href="crm-dashboard.html" class="hover:text-white transition-colors">👥 CRM</a>
+                <a href="customers-dashboard.html" class="hover:text-white transition-colors">👥 Customers</a>
             </div>
         </div>
         
@@ -407,7 +409,7 @@ website optimization"></textarea>
                 setTimeout(() => {
                     const continueActions = confirm('Customer added successfully!\n\nClick OK to view CRM Dashboard\nClick Cancel to submit another audit');
                     if (continueActions) {
-                        window.location.href = 'crm-dashboard.html';
+                        window.location.href = 'customers-dashboard.html';
                     } else {
                         e.target.reset();
                         submitBtn.innerHTML = originalText;
@@ -426,7 +428,34 @@ website optimization"></textarea>
             // Store audit data in localStorage
             const auditId = 'audit_' + Date.now();
             localStorage.setItem(auditId, JSON.stringify(data));
-            
+
+            // Use the new Customer Manager to create customer project
+            if (window.customerManager) {
+                try {
+                    // Format data for customer manager
+                    const customerData = {
+                        companyName: data.customerName,
+                        contactName: data.contactEmail.split('@')[0], // Extract name from email
+                        email: data.contactEmail,
+                        phone: '', // Add phone field if needed
+                        website: data.primaryDomain,
+                        industry: data.industry,
+                        location: data.location,
+                        competitors: [data.competitor1, data.competitor2, data.competitor3, data.competitor4].filter(Boolean),
+                        targetKeywords: data.targetKeywords ? data.targetKeywords.split('\n').filter(Boolean) : []
+                    };
+
+                    const customer = await window.customerManager.createCustomerProject(customerData);
+                    console.log('✅ Customer project created:', customer);
+
+                    // Store the customer ID for reference
+                    data.customerId = customer.id;
+                    data.reportUrl = customer.reportUrl;
+                } catch (error) {
+                    console.error('Error creating customer project:', error);
+                }
+            }
+
             // Process customer through automation hub
             if (typeof window.processIntakeForm === 'function') {
                 const automationResult = await window.processIntakeForm(data);
@@ -440,13 +469,13 @@ website optimization"></textarea>
                 // Fallback: Add customer to CRM manually
                 addCustomerToCRM(data);
             }
-            
+
             console.log('Audit request processed:', data);
-            
+
             // Simulate processing time
             await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            return { auditId, customerFolder: data.customerFolder };
+
+            return { auditId, customerFolder: data.customerFolder, customerId: data.customerId, reportUrl: data.reportUrl };
         }
         
         function addCustomerToCRM(auditData) {

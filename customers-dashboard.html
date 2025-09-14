@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management Dashboard</title>
+    <meta name="description" content="Customer management dashboard for website audit projects">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="customer-manager.js"></script>
+    <script src="customer-report-generator.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👥</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-processing {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .customer-card {
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
+        }
+
+        .customer-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .filter-button {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .filter-button.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .modal {
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <div class="bg-white shadow-sm border-b sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <!-- Left Side -->
+                <div class="flex items-center gap-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Customer Dashboard</h1>
+                    <div class="flex items-center gap-4 text-sm text-gray-600">
+                        <a href="index.html" class="hover:text-blue-600">← Portfolio</a>
+                        <span>|</span>
+                        <a href="audit-intake-form.html" class="hover:text-blue-600">📋 New Audit</a>
+                    </div>
+                </div>
+
+                <!-- Right Side -->
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <span id="totalCustomers">0</span>
+                        <span>customers</span>
+                    </div>
+                    <button onclick="exportCustomers()"
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                        📊 Export List
+                    </button>
+                    <button onclick="refreshDashboard()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <span class="text-2xl">👥</span>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Total Customers</p>
+                        <p class="text-2xl font-bold text-gray-900" id="statTotal">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <span class="text-2xl">✅</span>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Completed</p>
+                        <p class="text-2xl font-bold text-gray-900" id="statCompleted">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border">
+                <div class="flex items-center">
+                    <div class="p-2 bg-yellow-100 rounded-lg">
+                        <span class="text-2xl">⏳</span>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Pending</p>
+                        <p class="text-2xl font-bold text-gray-900" id="statPending">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <span class="text-2xl">📈</span>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">This Month</p>
+                        <p class="text-2xl font-bold text-gray-900" id="statThisMonth">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border">
+            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                <!-- Search -->
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search customers..."
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div class="absolute left-3 top-2.5">
+                            <span class="text-gray-400">🔍</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Filters -->
+                <div class="flex gap-2 flex-wrap">
+                    <button class="filter-button active px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700"
+                            onclick="filterByStatus('all')" data-status="all">
+                        All
+                    </button>
+                    <button class="filter-button px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700"
+                            onclick="filterByStatus('completed')" data-status="completed">
+                        Completed
+                    </button>
+                    <button class="filter-button px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700"
+                            onclick="filterByStatus('pending')" data-status="pending">
+                        Pending
+                    </button>
+                    <button class="filter-button px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700"
+                            onclick="filterByStatus('processing')" data-status="processing">
+                        Processing
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Grid -->
+        <div id="customersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Customer cards will be populated here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16">
+            <div class="max-w-md mx-auto">
+                <div class="text-6xl mb-4">📋</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No customers yet</h3>
+                <p class="text-gray-600 mb-6">Start by creating your first customer audit project</p>
+                <a href="audit-intake-form.html"
+                   class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium">
+                    📋 Create First Audit
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Details Modal -->
+    <div id="customerModal" class="fixed inset-0 modal z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white" id="modalTitle">Customer Details</h3>
+                        <button onclick="closeModal()" class="text-white hover:bg-white/20 rounded-full p-2">
+                            <span class="text-xl">×</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                    <div id="modalContent">
+                        <!-- Content will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Viewer Modal -->
+    <div id="reportModal" class="fixed inset-0 modal z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] overflow-hidden">
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white">Audit Report</h3>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openReportInNewTab()" class="text-white hover:bg-white/20 rounded-lg px-3 py-2 text-sm">
+                            🔗 Open in New Tab
+                        </button>
+                        <button onclick="closeReportModal()" class="text-white hover:bg-white/20 rounded-full p-2">
+                            <span class="text-xl">×</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report Iframe -->
+                <iframe id="reportIframe" class="w-full h-full" style="height: calc(90vh - 80px);"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCustomers = [];
+        let filteredCustomers = [];
+        let currentFilter = 'all';
+        let currentReportUrl = '';
+
+        // Initialize dashboard
+        window.addEventListener('load', function() {
+            loadCustomers();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                if (query) {
+                    filteredCustomers = currentCustomers.filter(customer =>
+                        customer.companyName.toLowerCase().includes(query) ||
+                        customer.contactName.toLowerCase().includes(query) ||
+                        customer.email.toLowerCase().includes(query) ||
+                        customer.website.toLowerCase().includes(query)
+                    );
+                } else {
+                    applyStatusFilter();
+                }
+                renderCustomers();
+            });
+        }
+
+        function loadCustomers() {
+            if (window.customerManager) {
+                currentCustomers = window.customerManager.getAllCustomers();
+            } else {
+                // Fallback to localStorage
+                const stored = localStorage.getItem('website_audit_customers');
+                currentCustomers = stored ? JSON.parse(stored) : [];
+            }
+
+            applyStatusFilter();
+            updateStats();
+            renderCustomers();
+        }
+
+        function applyStatusFilter() {
+            if (currentFilter === 'all') {
+                filteredCustomers = [...currentCustomers];
+            } else {
+                filteredCustomers = currentCustomers.filter(c => c.status === currentFilter);
+            }
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+
+            // Update active filter button
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-status="${status}"]`).classList.add('active');
+
+            applyStatusFilter();
+            renderCustomers();
+        }
+
+        function updateStats() {
+            const total = currentCustomers.length;
+            const completed = currentCustomers.filter(c => c.status === 'completed').length;
+            const pending = currentCustomers.filter(c => c.status === 'pending').length;
+
+            // This month (simple approximation)
+            const thisMonth = currentCustomers.filter(c => {
+                const created = new Date(c.createdAt);
+                const now = new Date();
+                return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+            }).length;
+
+            document.getElementById('totalCustomers').textContent = total;
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statCompleted').textContent = completed;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statThisMonth').textContent = thisMonth;
+        }
+
+        function renderCustomers() {
+            const grid = document.getElementById('customersGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredCustomers.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filteredCustomers.map(customer => {
+                const statusClass = `status-${customer.status}`;
+                const createdDate = new Date(customer.createdAt).toLocaleDateString();
+
+                return `
+                    <div class="customer-card bg-white rounded-xl shadow-sm p-6 border">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">${customer.companyName}</h3>
+                                <p class="text-sm text-gray-600">${customer.email}</p>
+                            </div>
+                            <span class="status-badge ${statusClass}">${customer.status}</span>
+                        </div>
+
+                        <div class="space-y-2 mb-6">
+                            <div class="flex items-center text-sm text-gray-600">
+                                <span class="w-16">Website:</span>
+                                <a href="//${customer.website.replace(/^https?:\/\//, '')}" target="_blank"
+                                   class="text-blue-600 hover:underline">${customer.website.replace(/^https?:\/\//, '')}</a>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600">
+                                <span class="w-16">Industry:</span>
+                                <span>${customer.industry || 'Not specified'}</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600">
+                                <span class="w-16">Created:</span>
+                                <span>${createdDate}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="viewCustomerDetails('${customer.id}')"
+                                    class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                👁️ Details
+                            </button>
+                            ${customer.status === 'completed' ?
+                                `<button onclick="viewReport('${customer.slug}')"
+                                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    📊 View Report
+                                </button>` :
+                                `<button class="flex-1 bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed opacity-50" disabled>
+                                    ⏳ Processing
+                                </button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function viewCustomerDetails(customerId) {
+            const customer = currentCustomers.find(c => c.id === customerId);
+            if (!customer) return;
+
+            document.getElementById('modalTitle').textContent = customer.companyName;
+
+            const content = `
+                <div class="space-y-6">
+                    <!-- Basic Info -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-3">Basic Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Company Name</label>
+                                <p class="mt-1 text-sm text-gray-900">${customer.companyName}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Contact Name</label>
+                                <p class="mt-1 text-sm text-gray-900">${customer.contactName}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email</label>
+                                <p class="mt-1 text-sm text-gray-900">${customer.email}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Website</label>
+                                <p class="mt-1 text-sm text-gray-900">
+                                    <a href="//${customer.website.replace(/^https?:\/\//, '')}" target="_blank"
+                                       class="text-blue-600 hover:underline">${customer.website}</a>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Industry</label>
+                                <p class="mt-1 text-sm text-gray-900">${customer.industry || 'Not specified'}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Location</label>
+                                <p class="mt-1 text-sm text-gray-900">${customer.location || 'Not specified'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Info -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-3">Project Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Status</label>
+                                <p class="mt-1">
+                                    <span class="status-badge status-${customer.status}">${customer.status}</span>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Created Date</label>
+                                <p class="mt-1 text-sm text-gray-900">${new Date(customer.createdAt).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEO Data -->
+                    ${customer.competitors && customer.competitors.length > 0 ? `
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-3">Competitors</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${customer.competitors.map(comp => `
+                                <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">${comp}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${customer.targetKeywords && customer.targetKeywords.length > 0 ? `
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-3">Target Keywords</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${customer.targetKeywords.map(keyword => `
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">${keyword}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Actions -->
+                    <div class="border-t pt-6">
+                        <div class="flex gap-3">
+                            ${customer.status === 'completed' ?
+                                `<button onclick="viewReport('${customer.slug}')"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
+                                    📊 View Full Report
+                                </button>` :
+                                `<button class="bg-yellow-500 text-white px-6 py-2 rounded-lg font-medium opacity-50 cursor-not-allowed" disabled>
+                                    ⏳ Report Processing
+                                </button>`
+                            }
+                            <button onclick="window.open('mailto:${customer.email}', '_blank')"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium">
+                                📧 Send Email
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('customerModal').classList.remove('hidden');
+        }
+
+        function viewReport(customerSlug) {
+            // For now, we'll show the report in a modal
+            // In a real implementation, this would load the actual generated report
+            const customer = currentCustomers.find(c => c.slug === customerSlug);
+            if (!customer) return;
+
+            // Check if report exists in localStorage
+            const reports = JSON.parse(localStorage.getItem('customer_reports') || '{}');
+            const reportHtml = reports[customerSlug];
+
+            if (reportHtml) {
+                // Create a blob URL for the report
+                const blob = new Blob([reportHtml], { type: 'text/html' });
+                currentReportUrl = URL.createObjectURL(blob);
+
+                document.getElementById('reportIframe').src = currentReportUrl;
+                document.getElementById('reportModal').classList.remove('hidden');
+            } else {
+                alert('Report not yet generated. Please try again later.');
+            }
+        }
+
+        function openReportInNewTab() {
+            if (currentReportUrl) {
+                window.open(currentReportUrl, '_blank');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('customerModal').classList.add('hidden');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+            if (currentReportUrl) {
+                URL.revokeObjectURL(currentReportUrl);
+                currentReportUrl = '';
+            }
+        }
+
+        function refreshDashboard() {
+            loadCustomers();
+            showNotification('Dashboard refreshed!', 'success');
+        }
+
+        function exportCustomers() {
+            if (window.customerManager) {
+                window.customerManager.exportCustomersList('csv');
+            } else {
+                // Fallback export
+                const csv = generateCSV(currentCustomers);
+                downloadFile(csv, 'customers.csv', 'text/csv');
+            }
+            showNotification('Customer list exported!', 'success');
+        }
+
+        function generateCSV(customers) {
+            const headers = ['Company', 'Contact', 'Email', 'Website', 'Status', 'Created', 'Industry', 'Location'];
+            const rows = customers.map(c => [
+                c.companyName,
+                c.contactName,
+                c.email,
+                c.website,
+                c.status,
+                new Date(c.createdAt).toLocaleDateString(),
+                c.industry || '',
+                c.location || ''
+            ]);
+
+            return [headers, ...rows].map(row => row.join(',')).join('\n');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-4 rounded-lg font-semibold z-50 transition-all transform translate-x-full max-w-md`;
+            notification.className += type === 'success' ? ' bg-green-600 text-white' : ' bg-red-600 text-white';
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('customerModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('reportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeReportModal();
+            }
+        });
+    </script>
+</body>
+</html>

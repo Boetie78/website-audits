@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management System Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="customer-manager.js"></script>
+    <script src="customer-report-generator.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Customer Management System Test</h1>
+
+        <!-- Test Controls -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8 border">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Test Functions</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="createTestCustomer()"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700">
+                    Create Test Customer
+                </button>
+                <button onclick="viewAllCustomers()"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700">
+                    View All Customers
+                </button>
+                <button onclick="clearAllData()"
+                        class="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700">
+                    Clear All Data
+                </button>
+                <button onclick="testReportGeneration()"
+                        class="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700">
+                    Test Report Gen
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Display -->
+        <div class="bg-white rounded-lg shadow-sm p-6 border">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Test Results</h2>
+            <div id="results" class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-auto max-h-96">
+                <div class="text-gray-500">Click a test button to see results...</div>
+            </div>
+        </div>
+
+        <!-- Customer List -->
+        <div id="customerList" class="mt-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Current Customers</h2>
+            <div id="customerGrid" class="grid gap-4"></div>
+        </div>
+    </div>
+
+    <script>
+        function log(message) {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.innerHTML += `<div class="text-gray-700">[${timestamp}] ${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function createTestCustomer() {
+            clearLog();
+            log('🧪 Creating test customer...');
+
+            try {
+                // Wait for systems to initialize
+                if (!window.customerManager) {
+                    log('❌ Customer Manager not initialized');
+                    return;
+                }
+
+                if (!window.customerReportGenerator) {
+                    log('❌ Report Generator not initialized');
+                    return;
+                }
+
+                const testData = {
+                    companyName: 'Tech Solutions Inc',
+                    contactName: 'John Smith',
+                    email: 'john@techsolutions.com',
+                    phone: '+1 (555) 123-4567',
+                    website: 'https://techsolutions.com',
+                    industry: 'Technology Services',
+                    location: 'New York, USA',
+                    competitors: ['microsoft.com', 'google.com', 'amazon.com'],
+                    targetKeywords: ['tech solutions', 'enterprise software', 'consulting services']
+                };
+
+                log('📋 Customer data prepared');
+                log(`Company: ${testData.companyName}`);
+                log(`Email: ${testData.email}`);
+                log(`Website: ${testData.website}`);
+
+                const customer = await window.customerManager.createCustomerProject(testData);
+
+                if (customer) {
+                    log('✅ Customer created successfully!');
+                    log(`Customer ID: ${customer.id}`);
+                    log(`Customer Slug: ${customer.slug}`);
+                    log(`Report URL: ${customer.reportUrl}`);
+                    log(`Status: ${customer.status}`);
+
+                    // Check if report was generated
+                    const report = window.customerReportGenerator.getCustomerReport(customer.slug);
+                    if (report) {
+                        log('📊 Report generated successfully!');
+                        log(`Report size: ${Math.round(report.length / 1024)} KB`);
+                    } else {
+                        log('⚠️ Report not found in storage');
+                    }
+
+                    // Refresh customer list if visible
+                    if (!document.getElementById('customerList').classList.contains('hidden')) {
+                        viewAllCustomers();
+                    }
+                } else {
+                    log('❌ Failed to create customer');
+                }
+
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                console.error('Test error:', error);
+            }
+        }
+
+        function viewAllCustomers() {
+            clearLog();
+            log('👥 Loading all customers...');
+
+            try {
+                const customers = window.customerManager ?
+                    window.customerManager.getAllCustomers() :
+                    JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
+
+                log(`Found ${customers.length} customers`);
+
+                if (customers.length === 0) {
+                    log('📭 No customers found');
+                    document.getElementById('customerList').classList.add('hidden');
+                    return;
+                }
+
+                // Show customer list
+                document.getElementById('customerList').classList.remove('hidden');
+                const grid = document.getElementById('customerGrid');
+
+                grid.innerHTML = customers.map((customer, index) => `
+                    <div class="bg-white rounded-lg shadow-sm p-4 border">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">${customer.companyName}</h3>
+                            <span class="px-2 py-1 bg-${customer.status === 'completed' ? 'green' : 'yellow'}-100
+                                         text-${customer.status === 'completed' ? 'green' : 'yellow'}-800
+                                         rounded-full text-xs font-medium">${customer.status}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">${customer.email}</p>
+                        <p class="text-sm text-gray-600 mb-3">${customer.website}</p>
+                        <div class="flex gap-2">
+                            <button onclick="viewCustomerReport('${customer.slug}')"
+                                    class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700
+                                           ${customer.status !== 'completed' ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${customer.status !== 'completed' ? 'disabled' : ''}>
+                                View Report
+                            </button>
+                            <button onclick="downloadReport('${customer.slug}')"
+                                    class="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                                Download
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                customers.forEach((customer, index) => {
+                    log(`${index + 1}. ${customer.companyName} (${customer.status}) - ${customer.email}`);
+                });
+
+            } catch (error) {
+                log(`❌ Error loading customers: ${error.message}`);
+            }
+        }
+
+        function viewCustomerReport(customerSlug) {
+            log(`🔍 Opening report for customer: ${customerSlug}`);
+
+            try {
+                const report = window.customerReportGenerator.getCustomerReport(customerSlug);
+                if (report) {
+                    const blob = new Blob([report], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    window.open(url, '_blank');
+                    log('✅ Report opened in new tab');
+                } else {
+                    log('❌ Report not found');
+                }
+            } catch (error) {
+                log(`❌ Error opening report: ${error.message}`);
+            }
+        }
+
+        function downloadReport(customerSlug) {
+            log(`📥 Downloading report for customer: ${customerSlug}`);
+
+            try {
+                const success = window.customerReportGenerator.downloadCustomerReport(customerSlug);
+                if (success) {
+                    log('✅ Report download started');
+                } else {
+                    log('❌ Report download failed');
+                }
+            } catch (error) {
+                log(`❌ Error downloading report: ${error.message}`);
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all customer data? This cannot be undone.')) {
+                clearLog();
+                log('🗑️ Clearing all data...');
+
+                // Clear all storage
+                localStorage.removeItem('website_audit_customers');
+                localStorage.removeItem('customer_reports');
+                localStorage.removeItem('customer_data');
+                localStorage.removeItem('customer_audit_data');
+                localStorage.removeItem('customer_downloads');
+                localStorage.removeItem('crm_customers');
+
+                // Reload customer manager
+                if (window.customerManager) {
+                    window.customerManager.customers = [];
+                }
+
+                log('✅ All data cleared');
+                document.getElementById('customerList').classList.add('hidden');
+            }
+        }
+
+        async function testReportGeneration() {
+            clearLog();
+            log('🧪 Testing report generation system...');
+
+            try {
+                // Check if template loads
+                log('📄 Testing template loading...');
+                if (window.customerReportGenerator) {
+                    await window.customerReportGenerator.init();
+                    log('✅ Report generator initialized');
+
+                    // Test sample data generation
+                    const sampleCustomer = {
+                        id: 'test-123',
+                        slug: 'test-company',
+                        companyName: 'Test Company',
+                        website: 'https://test.com',
+                        industry: 'Testing',
+                        location: 'Test City'
+                    };
+
+                    const sampleData = window.customerReportGenerator.generateSampleAuditData(sampleCustomer);
+                    log('📊 Sample audit data generated:');
+                    log(`  Overall Score: ${sampleData.overallScore}`);
+                    log(`  Critical Issues: ${sampleData.criticalIssues}`);
+                    log(`  Pages Analyzed: ${sampleData.pagesAnalyzed}`);
+                    log(`  Load Time: ${sampleData.avgLoadTime}s`);
+
+                    log('✅ Report generation system working correctly');
+                } else {
+                    log('❌ Report generator not available');
+                }
+
+            } catch (error) {
+                log(`❌ Error testing report generation: ${error.message}`);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('🚀 Customer Management System Test Ready');
+                log('💡 Click buttons above to test functionality');
+
+                // Check system status
+                if (window.customerManager) {
+                    log('✅ Customer Manager loaded');
+                } else {
+                    log('❌ Customer Manager not loaded');
+                }
+
+                if (window.customerReportGenerator) {
+                    log('✅ Report Generator loaded');
+                } else {
+                    log('❌ Report Generator not loaded');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
