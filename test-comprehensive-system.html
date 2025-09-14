@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Comprehensive Audit System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Load all necessary scripts -->
+    <script src="customer-audit-data-manager.js"></script>
+    <script src="comprehensive-audit-data-collector.js"></script>
+    <script src="automated-audit-system.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">🧪 Test Comprehensive Audit System</h1>
+
+        <div class="space-y-4">
+            <div class="bg-blue-50 p-4 rounded">
+                <h2 class="font-semibold mb-2">System Status</h2>
+                <div id="systemStatus" class="space-y-2"></div>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded">
+                <h2 class="font-semibold mb-2">Test Actions</h2>
+                <div class="space-x-2">
+                    <button onclick="testSystemLoad()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        Test System Load
+                    </button>
+                    <button onclick="testDataCollection()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        Test Data Collection
+                    </button>
+                    <button onclick="viewSystemData()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                        View System Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded">
+                <h2 class="font-semibold mb-2">Test Results</h2>
+                <div id="testResults" class="space-y-2 font-mono text-sm"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('testResults');
+            const div = document.createElement('div');
+            div.className = type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600';
+            div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('systemStatus');
+            const div = document.createElement('div');
+            div.className = type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600';
+            div.textContent = message;
+            status.appendChild(div);
+        }
+
+        function testSystemLoad() {
+            log('🔍 Testing system component loading...');
+
+            // Test if all components are loaded
+            const components = {
+                'Customer Audit Data Manager': window.customerAuditDataManager,
+                'Comprehensive Audit Data Collector': window.comprehensiveAuditDataCollector,
+                'Automated Audit System': window.automatedAuditSystem
+            };
+
+            let allLoaded = true;
+            for (const [name, component] of Object.entries(components)) {
+                if (component) {
+                    log(`✅ ${name}: Loaded`, 'success');
+                } else {
+                    log(`❌ ${name}: Not found`, 'error');
+                    allLoaded = false;
+                }
+            }
+
+            if (allLoaded) {
+                log('🎉 All system components loaded successfully!', 'success');
+            } else {
+                log('⚠️ Some components failed to load', 'error');
+            }
+        }
+
+        async function testDataCollection() {
+            log('🧪 Testing comprehensive data collection...');
+
+            if (!window.comprehensiveAuditDataCollector) {
+                log('❌ Comprehensive Data Collector not available', 'error');
+                return;
+            }
+
+            // Create a test customer
+            const testCustomer = {
+                id: 'test_' + Date.now(),
+                slug: 'test-company',
+                companyName: 'Test Company Ltd',
+                website: 'https://testcompany.co.za',
+                industry: 'E-commerce',
+                location: 'South Africa',
+                email: 'test@testcompany.co.za',
+                contactName: 'John Doe',
+                targetKeywords: ['test products', 'online shopping', 'e-commerce'],
+                competitors: ['https://competitor1.com', 'https://competitor2.com']
+            };
+
+            try {
+                log('📊 Starting comprehensive data collection...');
+                const startTime = Date.now();
+
+                const comprehensiveData = await window.comprehensiveAuditDataCollector.collectComprehensiveData(testCustomer);
+
+                const endTime = Date.now();
+                const duration = (endTime - startTime) / 1000;
+
+                log(`✅ Data collection completed in ${duration}s`, 'success');
+                log(`📈 Overall Score: ${comprehensiveData.header.overallScore}`);
+                log(`🔥 Critical Issues: ${comprehensiveData.kpiCards.criticalIssues.value}`);
+                log(`🚀 Desktop Performance: ${comprehensiveData.performance.desktop.score}`);
+                log(`📱 Mobile Performance: ${comprehensiveData.performance.mobile.score}`);
+                log(`🔗 Total Backlinks: ${comprehensiveData.backlinkAnalysis.totalBacklinks}`);
+                log(`🎯 Keywords Tracked: ${comprehensiveData.keywordAnalysis.trackedKeywords.length}`);
+
+                // Test data saving
+                const folderKey = await window.comprehensiveAuditDataCollector.saveToCustomerFolder(testCustomer, comprehensiveData);
+                log(`💾 Data saved to: ${folderKey}`, 'success');
+
+                log('🎉 Comprehensive data collection test PASSED!', 'success');
+
+            } catch (error) {
+                log(`❌ Data collection test failed: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+
+        function viewSystemData() {
+            log('👀 Viewing system data...');
+
+            // Check localStorage data
+            const keys = Object.keys(localStorage).filter(key =>
+                key.includes('customer') || key.includes('audit') || key.includes('report')
+            );
+
+            if (keys.length === 0) {
+                log('📭 No system data found in localStorage');
+                return;
+            }
+
+            log(`📦 Found ${keys.length} data entries:`);
+            keys.forEach(key => {
+                const data = localStorage.getItem(key);
+                const size = new Blob([data]).size;
+                log(`  📄 ${key}: ${Math.round(size / 1024)}KB`);
+            });
+
+            // Display customers
+            const customers = JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
+            log(`👥 Customers: ${customers.length}`);
+
+            customers.forEach(customer => {
+                const status = customer.status || 'unknown';
+                const progress = customer.auditProgress || 0;
+                log(`  🏢 ${customer.companyName}: ${status} (${progress}%)`);
+            });
+
+            log('✅ System data review completed');
+        }
+
+        // Auto-run system check on load
+        window.addEventListener('load', () => {
+            updateStatus('🚀 Test page loaded');
+            updateStatus('🔍 Checking system components...');
+
+            setTimeout(() => {
+                testSystemLoad();
+                updateStatus('✅ System check completed', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

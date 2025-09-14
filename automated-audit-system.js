@@ -102,32 +102,93 @@ class AutomatedAuditSystem {
     }
 
     /**
-     * Run all audit stages with real data collection
+     * Run comprehensive audit using the new data collector
      */
     async runAuditStages(audit) {
+        console.log(`🚀 Starting comprehensive audit for ${audit.customer.companyName}`);
+
+        try {
+            // Check if comprehensive data collector is available
+            if (window.comprehensiveAuditDataCollector) {
+                console.log('✅ Using Comprehensive Audit Data Collector');
+
+                // Show progress for data collection
+                this.updateCustomerStatus(audit.customerId, 'processing', 10);
+                console.log(`📊 ${audit.customer.companyName}: Initializing comprehensive data collection...`);
+                await this.delay(2000);
+
+                // Collect all comprehensive data at once
+                this.updateCustomerStatus(audit.customerId, 'processing', 20);
+                console.log(`📊 ${audit.customer.companyName}: Collecting performance, SEO, and technical data...`);
+                const comprehensiveData = await window.comprehensiveAuditDataCollector.collectComprehensiveData(audit.customer);
+
+                // Store the comprehensive data
+                audit.data = comprehensiveData;
+
+                // Show progress updates for different stages
+                const stages = [
+                    { name: 'Performance Analysis', progress: 35 },
+                    { name: 'Technical SEO Analysis', progress: 50 },
+                    { name: 'Content & Backlink Analysis', progress: 65 },
+                    { name: 'Social Media & Competitor Analysis', progress: 80 },
+                    { name: 'Traffic & Keyword Analysis', progress: 90 },
+                    { name: 'Generating Recommendations', progress: 95 },
+                    { name: 'Finalizing Report Data', progress: 100 }
+                ];
+
+                for (const stage of stages) {
+                    console.log(`📊 ${audit.customer.companyName}: ${stage.name}`);
+                    this.updateCustomerStatus(audit.customerId, 'processing', stage.progress);
+                    await this.delay(1500 + Math.random() * 2000);
+                }
+
+                // Save to customer folder
+                await window.comprehensiveAuditDataCollector.saveToCustomerFolder(audit.customer, comprehensiveData);
+
+                console.log(`✅ Comprehensive audit completed for ${audit.customer.companyName}`);
+
+            } else {
+                // Fallback to original stages if comprehensive collector not available
+                console.log('⚠️ Falling back to original audit stages');
+                await this.runOriginalAuditStages(audit);
+            }
+
+        } catch (error) {
+            console.error(`❌ Error in comprehensive audit for ${audit.customer.companyName}:`, error);
+            // Fallback to original stages on error
+            await this.runOriginalAuditStages(audit);
+        }
+    }
+
+    /**
+     * Original audit stages as fallback
+     */
+    async runOriginalAuditStages(audit) {
         const stages = [
-            { name: 'Basic Analysis', weight: 10, fn: () => this.stageBasicAnalysis(audit) },
-            { name: 'Performance Check', weight: 20, fn: () => this.stagePerformanceCheck(audit) },
-            { name: 'SEO Analysis', weight: 30, fn: () => this.stageSEOAnalysis(audit) },
-            { name: 'Competitor Analysis', weight: 20, fn: () => this.stageCompetitorAnalysis(audit) },
-            { name: 'Keyword Research', weight: 10, fn: () => this.stageKeywordResearch(audit) },
-            { name: 'Report Generation', weight: 10, fn: () => this.stageReportGeneration(audit) }
+            { name: 'Basic Analysis', weight: 8, fn: () => this.stageBasicAnalysis(audit) },
+            { name: 'Performance Check', weight: 15, fn: () => this.stagePerformanceCheck(audit) },
+            { name: 'SEO Analysis', weight: 20, fn: () => this.stageSEOAnalysis(audit) },
+            { name: 'Social Media Analysis', weight: 10, fn: () => this.stageSocialMediaAnalysis(audit) },
+            { name: 'Backlink Analysis', weight: 12, fn: () => this.stageBacklinkAnalysis(audit) },
+            { name: 'Traffic Analysis', weight: 10, fn: () => this.stageTrafficAnalysis(audit) },
+            { name: 'Competitor Analysis', weight: 15, fn: () => this.stageCompetitorAnalysis(audit) },
+            { name: 'Keyword Research', weight: 10, fn: () => this.stageKeywordResearch(audit) }
         ];
-        
+
         let totalProgress = 0;
-        
+
         for (const stage of stages) {
             console.log(`📊 ${audit.customer.companyName}: ${stage.name}`);
-            
+
             try {
                 await stage.fn();
                 totalProgress += stage.weight;
                 audit.progress = totalProgress;
                 this.updateCustomerStatus(audit.customerId, 'processing', totalProgress);
-                
+
                 // Simulate realistic processing time
                 await this.delay(2000 + Math.random() * 3000);
-                
+
             } catch (error) {
                 console.error(`Error in ${stage.name}:`, error);
                 // Continue with other stages even if one fails
@@ -301,28 +362,47 @@ class AutomatedAuditSystem {
     }
 
     /**
-     * Generate the final HTML report
+     * Generate the final HTML report with comprehensive data
      */
     async generateFinalReport(audit) {
-        // Load the template
-        const templateResponse = await fetch('promac-report-rebuild.html');
-        let template = await templateResponse.text();
-        
-        // Replace with actual audit data
-        template = this.injectRealData(template, audit.data, audit.customer);
-        
-        // Store the report
-        const reports = JSON.parse(localStorage.getItem('customer_reports') || '{}');
-        reports[audit.customer.slug] = template;
-        localStorage.setItem('customer_reports', JSON.stringify(reports));
-        
-        // Update customer with audit data
-        const customers = JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
-        const customer = customers.find(c => c.id === audit.customerId);
-        if (customer) {
-            customer.auditData = audit.data;
-            customer.reportGeneratedAt = new Date().toISOString();
-            localStorage.setItem('website_audit_customers', JSON.stringify(customers));
+        try {
+            console.log(`📄 Generating final report for ${audit.customer.companyName}...`);
+
+            // Load the template
+            const templateResponse = await fetch('promac-report-rebuild.html');
+            let template = await templateResponse.text();
+
+            // Use comprehensive data injection if available
+            if (window.customerAuditDataManager && audit.data.header) {
+                console.log('✅ Using Customer Audit Data Manager for report generation');
+                template = window.customerAuditDataManager.generateReportWithData(audit.customer.slug, template);
+            } else {
+                // Fallback to basic data injection
+                console.log('⚠️ Using fallback data injection');
+                template = this.injectRealData(template, audit.data, audit.customer);
+            }
+
+            // Store the report
+            const reports = JSON.parse(localStorage.getItem('customer_reports') || '{}');
+            reports[audit.customer.slug] = template;
+            localStorage.setItem('customer_reports', JSON.stringify(reports));
+
+            // Update customer with audit data
+            const customers = JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
+            const customer = customers.find(c => c.id === audit.customerId);
+            if (customer) {
+                customer.auditData = audit.data;
+                customer.reportGeneratedAt = new Date().toISOString();
+                customer.status = 'completed';
+                customer.auditProgress = 100;
+                localStorage.setItem('website_audit_customers', JSON.stringify(customers));
+            }
+
+            console.log(`✅ Final report generated and saved for ${audit.customer.companyName}`);
+
+        } catch (error) {
+            console.error(`❌ Error generating final report for ${audit.customer.companyName}:`, error);
+            throw error;
         }
     }
 
