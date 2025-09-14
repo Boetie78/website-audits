@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Report</title>
+    <script src="customer-report-generator-enhanced.js"></script>
     <style>
         body {
             margin: 0;
@@ -100,25 +101,31 @@
                 const response = await fetch('promac-report-rebuild.html');
                 let template = await response.text();
                 
-                // Customize the template with customer data
-                template = template.replace(/Promac Paints/g, customer.companyName);
-                template = template.replace(/promacpaints\.co\.za/g, 
-                    customer.website.replace(/^https?:\/\//, '').replace(/\/$/, ''));
-                
-                // Update dates
-                const today = new Date().toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
-                });
-                template = template.replace(/Generated September \d+, \d+/g, `Generated ${today}`);
-                
-                // Update industry and location
-                if (customer.industry) {
-                    template = template.replace(/Manufacturing - Paint & Coatings/g, customer.industry);
-                }
-                if (customer.location) {
-                    template = template.replace(/South Africa/g, customer.location);
+                // Use the enhanced generator to inject real audit data
+                if (window.customerReportGeneratorEnhanced) {
+                    template = await window.customerReportGeneratorEnhanced.generateReportWithRealData(customer, template);
+                    console.log('✅ Report generated with real audit data');
+                } else {
+                    // Fallback to basic customization
+                    template = template.replace(/Promac Paints/g, customer.companyName);
+                    template = template.replace(/promacpaints\.co\.za/g, 
+                        customer.website.replace(/^https?:\/\//, '').replace(/\/$/, ''));
+                    
+                    // Update dates
+                    const today = new Date().toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    template = template.replace(/Generated September \d+, \d+/g, `Generated ${today}`);
+                    
+                    // Update industry and location
+                    if (customer.industry) {
+                        template = template.replace(/Manufacturing - Paint & Coatings/g, customer.industry);
+                    }
+                    if (customer.location) {
+                        template = template.replace(/South Africa/g, customer.location);
+                    }
                 }
                 
                 // Display the customized report
