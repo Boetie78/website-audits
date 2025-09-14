@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Form Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="customer-manager.js"></script>
+    <script src="real-audit-processor.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">🧪 Simple Form Test</h1>
+        
+        <div class="bg-white rounded-lg p-6 shadow">
+            <form id="testForm">
+                <div class="space-y-4">
+                    <input type="text" name="customerName" placeholder="Company Name" 
+                           value="Simple Test Co" class="w-full border rounded px-3 py-2">
+                    <input type="email" name="contactEmail" placeholder="Email" 
+                           value="test@simple.com" class="w-full border rounded px-3 py-2">
+                    <input type="url" name="primaryDomain" placeholder="Website" 
+                           value="https://simple-test.com" class="w-full border rounded px-3 py-2">
+                    
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                        Submit Test
+                    </button>
+                </div>
+            </form>
+            
+            <div id="messages" class="mt-6 p-4 bg-gray-50 rounded">
+                <h3 class="font-bold mb-2">Messages:</h3>
+                <div id="messagesList"></div>
+            </div>
+            
+            <div id="status" class="mt-4 p-4 bg-blue-50 rounded">
+                <h3 class="font-bold mb-2">System Status:</h3>
+                <div id="statusList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Simple form test loaded');
+        
+        function addMessage(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const messagesList = document.getElementById('messagesList');
+            const colors = {
+                info: 'text-blue-600',
+                success: 'text-green-600',
+                error: 'text-red-600',
+                warning: 'text-yellow-600'
+            };
+            
+            const div = document.createElement('div');
+            div.className = `mb-2 ${colors[type]}`;
+            div.textContent = `[${timestamp}] ${message}`;
+            messagesList.appendChild(div);
+            
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function showStatus() {
+            const statusList = document.getElementById('statusList');
+            statusList.innerHTML = '';
+            
+            const checks = [
+                { name: 'customerManager', obj: window.customerManager },
+                { name: 'realAuditProcessor', obj: window.realAuditProcessor },
+                { name: 'testForm element', obj: document.getElementById('testForm') }
+            ];
+            
+            checks.forEach(check => {
+                const div = document.createElement('div');
+                div.className = `mb-1 ${check.obj ? 'text-green-600' : 'text-red-600'}`;
+                div.textContent = `${check.name}: ${check.obj ? '✅ Available' : '❌ Missing'}`;
+                statusList.appendChild(div);
+                
+                addMessage(`${check.name}: ${check.obj ? 'Available' : 'Missing'}`, check.obj ? 'success' : 'error');
+            });
+        }
+        
+        // Show success notification
+        function showSuccess(message) {
+            addMessage('🎉 SUCCESS: ' + message, 'success');
+            
+            // Also show visual alert
+            alert('✅ SUCCESS: ' + message);
+        }
+        
+        // Show error notification  
+        function showError(message) {
+            addMessage('❌ ERROR: ' + message, 'error');
+            
+            // Also show visual alert
+            alert('❌ ERROR: ' + message);
+        }
+        
+        // Initialize
+        window.addEventListener('load', function() {
+            addMessage('Page loaded, checking system status...', 'info');
+            
+            setTimeout(() => {
+                showStatus();
+                
+                // Add form event listener
+                const form = document.getElementById('testForm');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        addMessage('🚀 Form submitted!', 'info');
+                        
+                        // Show immediate feedback
+                        showSuccess('Form submitted successfully!');
+                        
+                        // Test customer creation
+                        if (window.customerManager) {
+                            const formData = new FormData(e.target);
+                            const customerData = {
+                                companyName: formData.get('customerName'),
+                                contactName: formData.get('customerName'),
+                                email: formData.get('contactEmail'),
+                                website: formData.get('primaryDomain'),
+                                industry: 'Testing',
+                                location: 'Test Location',
+                                competitors: [],
+                                targetKeywords: []
+                            };
+                            
+                            addMessage('Creating customer with customerManager...', 'info');
+                            
+                            window.customerManager.createCustomerProject(customerData)
+                                .then(result => {
+                                    if (result) {
+                                        addMessage(`Customer created: ${result.id}`, 'success');
+                                        showSuccess(`Customer created with ID: ${result.id}`);
+                                    } else {
+                                        addMessage('Customer creation returned null', 'error');
+                                        showError('Customer creation failed - returned null');
+                                    }
+                                })
+                                .catch(error => {
+                                    addMessage(`Customer creation error: ${error.message}`, 'error');
+                                    showError(`Customer creation error: ${error.message}`);
+                                });
+                        } else {
+                            addMessage('customerManager not available', 'error');
+                            showError('customerManager not available');
+                        }
+                    });
+                    
+                    addMessage('Form event listener added', 'success');
+                } else {
+                    addMessage('Form element not found!', 'error');
+                }
+            }, 1000);
+        });
+        
+        // Catch errors
+        window.addEventListener('error', function(e) {
+            addMessage(`JavaScript Error: ${e.message}`, 'error');
+        });
+    </script>
+</body>
+</html>
