@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Debug Test - Step by Step Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load all the same scripts as main form -->
+    <script src="seo-report-generator.js"></script>
+    <script src="seo-audit-processor.js"></script>
+    <script src="scripts/create-seo-audit.js"></script>
+    <script src="audit-automation-hub.js"></script>
+    <script src="customer-manager.js"></script>
+    <script src="customer-report-generator.js"></script>
+    <script src="real-audit-processor.js"></script>
+    
+    <style>
+        .debug-section { 
+            border: 2px solid #10b981; 
+            background: #f0fdf4; 
+        }
+        .error-section { 
+            border: 2px solid #ef4444; 
+            background: #fef2f2; 
+        }
+        .warning-section { 
+            border: 2px solid #f59e0b; 
+            background: #fffbeb; 
+        }
+        .log-entry {
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+            padding: 4px 8px;
+            margin: 2px 0;
+            border-radius: 4px;
+        }
+        .log-info { background: #dbeafe; color: #1d4ed8; }
+        .log-success { background: #dcfce7; color: #166534; }
+        .log-error { background: #fee2e2; color: #dc2626; }
+        .log-warning { background: #fef3c7; color: #d97706; }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">🔍 Form Debug Test - Complete Analysis</h1>
+        
+        <!-- Test Controls -->
+        <div class="debug-section rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">🎯 Test Controls</h2>
+            <div class="flex gap-4 mb-4">
+                <button onclick="runFullDiagnostic()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                    🔬 Run Full Diagnostic
+                </button>
+                <button onclick="testFormSubmission()" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                    📝 Test Form Submission
+                </button>
+                <button onclick="clearAllLogs()" class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700">
+                    🗑️ Clear Logs
+                </button>
+                <button onclick="exportDebugReport()" class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">
+                    📊 Export Debug Report
+                </button>
+            </div>
+        </div>
+
+        <!-- JavaScript Dependencies Status -->
+        <div id="dependencyStatus" class="debug-section rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">📚 JavaScript Dependencies Status</h2>
+            <div id="dependencyResults" class="grid grid-cols-2 gap-4">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- DOM Elements Check -->
+        <div id="domStatus" class="debug-section rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">🏗️ DOM Elements Status</h2>
+            <div id="domResults">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Event Listener Test -->
+        <div id="eventStatus" class="debug-section rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">👂 Event Listeners Test</h2>
+            <form id="testForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" name="customerName" placeholder="Test Company" value="Debug Test Company" class="border rounded px-3 py-2">
+                    <input type="email" name="contactEmail" placeholder="test@example.com" value="debug@test.com" class="border rounded px-3 py-2">
+                </div>
+                <input type="url" name="primaryDomain" placeholder="https://example.com" value="https://debug-test.com" class="w-full border rounded px-3 py-2">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                    🧪 Test Submit
+                </button>
+            </form>
+            <div id="eventResults" class="mt-4">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Live Debug Log -->
+        <div class="debug-section rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">📝 Live Debug Log</h2>
+            <div id="debugLog" class="bg-black text-green-400 p-4 rounded h-96 overflow-y-auto font-mono text-sm">
+                <div class="text-yellow-400">[SYSTEM] Debug test initialized...</div>
+            </div>
+        </div>
+
+        <!-- Browser Information -->
+        <div id="browserInfo" class="debug-section rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">🌐 Browser Environment</h2>
+            <div id="browserResults">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Storage Analysis -->
+        <div id="storageInfo" class="debug-section rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">💾 Storage Analysis</h2>
+            <div id="storageResults">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let debugReport = {
+            timestamp: new Date().toISOString(),
+            tests: {},
+            errors: [],
+            warnings: [],
+            summary: {}
+        };
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('debugLog');
+            const colors = {
+                info: 'text-blue-400',
+                success: 'text-green-400', 
+                error: 'text-red-400',
+                warning: 'text-yellow-400',
+                system: 'text-purple-400'
+            };
+            
+            const entry = document.createElement('div');
+            entry.className = colors[type] || 'text-white';
+            entry.textContent = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            logElement.appendChild(entry);
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(`[${timestamp}] [${type.toUpperCase()}] ${message}`);
+            
+            // Store in debug report
+            if (type === 'error') debugReport.errors.push(message);
+            if (type === 'warning') debugReport.warnings.push(message);
+        }
+
+        function runFullDiagnostic() {
+            log('🚀 Starting full diagnostic...', 'system');
+            clearAllLogs();
+            
+            checkDependencies();
+            checkDOMElements();
+            checkEventListeners();
+            checkBrowserEnvironment();
+            checkStorage();
+            
+            setTimeout(() => {
+                generateSummary();
+                log('✅ Full diagnostic completed!', 'success');
+            }, 1000);
+        }
+
+        function checkDependencies() {
+            log('📚 Checking JavaScript dependencies...', 'system');
+            
+            const dependencies = [
+                { name: 'customerManager', global: 'window.customerManager' },
+                { name: 'customerReportGenerator', global: 'window.customerReportGenerator' },
+                { name: 'realAuditProcessor', global: 'window.realAuditProcessor' },
+                { name: 'AuditAutomationHub', global: 'window.AuditAutomationHub' },
+                { name: 'seoAuditProcessor', global: 'window.seoAuditProcessor' },
+                { name: 'seoReportGenerator', global: 'window.seoReportGenerator' }
+            ];
+            
+            const resultsDiv = document.getElementById('dependencyResults');
+            resultsDiv.innerHTML = '';
+            
+            let loadedCount = 0;
+            
+            dependencies.forEach(dep => {
+                const exists = eval(dep.global);
+                const statusDiv = document.createElement('div');
+                statusDiv.className = `p-3 rounded ${exists ? 'bg-green-100 border border-green-300' : 'bg-red-100 border border-red-300'}`;
+                
+                const status = exists ? '✅ LOADED' : '❌ MISSING';
+                statusDiv.innerHTML = `<strong>${dep.name}</strong><br><span class="text-sm text-gray-600">${status}</span>`;
+                
+                if (exists) {
+                    loadedCount++;
+                    log(`✅ ${dep.name} loaded successfully`, 'success');
+                } else {
+                    log(`❌ ${dep.name} not found`, 'error');
+                }
+                
+                resultsDiv.appendChild(statusDiv);
+            });
+            
+            debugReport.tests.dependencies = {
+                total: dependencies.length,
+                loaded: loadedCount,
+                missing: dependencies.length - loadedCount,
+                details: dependencies.map(dep => ({
+                    name: dep.name,
+                    loaded: !!eval(dep.global)
+                }))
+            };
+            
+            log(`📊 Dependencies check: ${loadedCount}/${dependencies.length} loaded`, loadedCount === dependencies.length ? 'success' : 'warning');
+        }
+
+        function checkDOMElements() {
+            log('🏗️ Checking DOM elements...', 'system');
+            
+            const elements = [
+                'auditIntakeForm',
+                'testForm'
+            ];
+            
+            const resultsDiv = document.getElementById('domResults');
+            resultsDiv.innerHTML = '';
+            
+            let foundCount = 0;
+            
+            elements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                const statusDiv = document.createElement('div');
+                statusDiv.className = `p-2 mb-2 rounded ${element ? 'bg-green-100 border border-green-300' : 'bg-red-100 border border-red-300'}`;
+                
+                if (element) {
+                    foundCount++;
+                    statusDiv.innerHTML = `✅ <strong>#${elementId}</strong> - Found (${element.tagName})`;
+                    log(`✅ Element #${elementId} found`, 'success');
+                } else {
+                    statusDiv.innerHTML = `❌ <strong>#${elementId}</strong> - Not found`;
+                    log(`❌ Element #${elementId} not found`, 'error');
+                }
+                
+                resultsDiv.appendChild(statusDiv);
+            });
+            
+            debugReport.tests.domElements = {
+                total: elements.length,
+                found: foundCount,
+                missing: elements.length - foundCount
+            };
+        }
+
+        function checkEventListeners() {
+            log('👂 Testing event listeners...', 'system');
+            
+            const testForm = document.getElementById('testForm');
+            if (!testForm) {
+                log('❌ Test form not found for event listener testing', 'error');
+                return;
+            }
+            
+            // Add event listener to test form
+            testForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                log('🎯 Test form submit event triggered!', 'success');
+                
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                log(`📋 Form data collected: ${JSON.stringify(data)}`, 'info');
+                
+                // Test showSuccess function if it exists
+                if (typeof showSuccess === 'function') {
+                    showSuccess('✅ Test form submission successful!');
+                    log('✅ showSuccess function works correctly', 'success');
+                } else {
+                    log('❌ showSuccess function not available', 'error');
+                }
+                
+                debugReport.tests.eventListeners = {
+                    submitEvent: true,
+                    showSuccessFunction: typeof showSuccess === 'function',
+                    formDataCollection: true
+                };
+            });
+            
+            log('✅ Event listener added to test form', 'success');
+        }
+
+        function checkBrowserEnvironment() {
+            log('🌐 Checking browser environment...', 'system');
+            
+            const info = {
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                localStorage: typeof(Storage) !== "undefined",
+                sessionStorage: typeof(Storage) !== "undefined" && typeof(sessionStorage) !== "undefined",
+                console: typeof console !== "undefined",
+                fetch: typeof fetch !== "undefined",
+                Promise: typeof Promise !== "undefined"
+            };
+            
+            const resultsDiv = document.getElementById('browserResults');
+            resultsDiv.innerHTML = '';
+            
+            Object.entries(info).forEach(([key, value]) => {
+                const div = document.createElement('div');
+                div.className = 'mb-2 p-2 bg-gray-50 rounded';
+                div.innerHTML = `<strong>${key}:</strong> <span class="font-mono text-sm">${value}</span>`;
+                resultsDiv.appendChild(div);
+            });
+            
+            debugReport.tests.browserEnvironment = info;
+            log('✅ Browser environment check completed', 'success');
+        }
+
+        function checkStorage() {
+            log('💾 Analyzing storage...', 'system');
+            
+            const storageInfo = {
+                localStorage: {
+                    available: typeof(Storage) !== "undefined",
+                    keys: [],
+                    customerData: null
+                }
+            };
+            
+            if (storageInfo.localStorage.available) {
+                storageInfo.localStorage.keys = Object.keys(localStorage);
+                
+                // Check for customer-related data
+                const customerKeys = storageInfo.localStorage.keys.filter(key => 
+                    key.includes('customer') || key.includes('audit')
+                );
+                
+                if (customerKeys.length > 0) {
+                    storageInfo.localStorage.customerData = customerKeys.map(key => ({
+                        key,
+                        preview: localStorage.getItem(key).substring(0, 100) + '...'
+                    }));
+                }
+            }
+            
+            const resultsDiv = document.getElementById('storageResults');
+            resultsDiv.innerHTML = `
+                <div class="mb-4">
+                    <strong>LocalStorage Available:</strong> ${storageInfo.localStorage.available ? '✅ Yes' : '❌ No'}
+                </div>
+                <div class="mb-4">
+                    <strong>Total Keys:</strong> ${storageInfo.localStorage.keys.length}
+                </div>
+                <div class="mb-4">
+                    <strong>Customer-related Keys:</strong> ${storageInfo.localStorage.customerData?.length || 0}
+                </div>
+            `;
+            
+            if (storageInfo.localStorage.customerData && storageInfo.localStorage.customerData.length > 0) {
+                const dataDiv = document.createElement('div');
+                dataDiv.innerHTML = '<strong>Customer Data Preview:</strong>';
+                storageInfo.localStorage.customerData.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'ml-4 mt-2 p-2 bg-gray-50 rounded text-sm';
+                    itemDiv.innerHTML = `<strong>${item.key}:</strong><br>${item.preview}`;
+                    dataDiv.appendChild(itemDiv);
+                });
+                resultsDiv.appendChild(dataDiv);
+            }
+            
+            debugReport.tests.storage = storageInfo;
+            log('✅ Storage analysis completed', 'success');
+        }
+
+        function testFormSubmission() {
+            log('🧪 Testing form submission...', 'system');
+            
+            if (!window.customerManager) {
+                log('❌ customerManager not available - this will cause form submission to fail', 'error');
+                return;
+            }
+            
+            const testData = {
+                companyName: 'Debug Test Company',
+                contactName: 'Debug Tester',
+                email: 'debug@test.com',
+                website: 'https://debug-test.com',
+                industry: 'Testing',
+                location: 'Debug Land',
+                competitors: [],
+                targetKeywords: ['debug', 'test']
+            };
+            
+            log('📋 Creating test customer with customerManager...', 'info');
+            
+            window.customerManager.createCustomerProject(testData)
+                .then(result => {
+                    if (result) {
+                        log('✅ Customer creation successful!', 'success');
+                        log(`Customer ID: ${result.id}`, 'info');
+                        log(`Customer Status: ${result.status}`, 'info');
+                        debugReport.tests.customerCreation = { success: true, customerId: result.id };
+                    } else {
+                        log('❌ Customer creation returned null/undefined', 'error');
+                        debugReport.tests.customerCreation = { success: false, error: 'Null result' };
+                    }
+                })
+                .catch(error => {
+                    log(`❌ Customer creation failed: ${error.message}`, 'error');
+                    log(`Stack trace: ${error.stack}`, 'error');
+                    debugReport.tests.customerCreation = { success: false, error: error.message };
+                });
+        }
+
+        function generateSummary() {
+            log('📊 Generating diagnostic summary...', 'system');
+            
+            const tests = debugReport.tests;
+            let issues = [];
+            let recommendations = [];
+            
+            // Analyze dependencies
+            if (tests.dependencies && tests.dependencies.missing > 0) {
+                issues.push(`${tests.dependencies.missing} JavaScript dependencies are missing`);
+                recommendations.push('Check that all script tags are properly loaded and files exist');
+            }
+            
+            // Analyze DOM elements
+            if (tests.domElements && tests.domElements.missing > 0) {
+                issues.push(`${tests.domElements.missing} required DOM elements are missing`);
+                recommendations.push('Verify that HTML elements have correct IDs');
+            }
+            
+            // Analyze browser environment
+            if (tests.browserEnvironment) {
+                if (!tests.browserEnvironment.localStorage) {
+                    issues.push('localStorage is not available');
+                    recommendations.push('Check browser settings or try a different browser');
+                }
+                if (!tests.browserEnvironment.fetch) {
+                    issues.push('fetch API is not available');
+                    recommendations.push('Use a modern browser that supports fetch API');
+                }
+            }
+            
+            debugReport.summary = {
+                totalTests: Object.keys(tests).length,
+                issues: issues,
+                recommendations: recommendations,
+                overallStatus: issues.length === 0 ? 'HEALTHY' : issues.length < 3 ? 'NEEDS_ATTENTION' : 'CRITICAL'
+            };
+            
+            log(`🎯 Summary: ${issues.length} issues found`, issues.length === 0 ? 'success' : 'warning');
+            issues.forEach(issue => log(`⚠️ ${issue}`, 'warning'));
+            recommendations.forEach(rec => log(`💡 ${rec}`, 'info'));
+        }
+
+        function clearAllLogs() {
+            document.getElementById('debugLog').innerHTML = '<div class="text-yellow-400">[SYSTEM] Debug log cleared...</div>';
+            debugReport = {
+                timestamp: new Date().toISOString(),
+                tests: {},
+                errors: [],
+                warnings: [],
+                summary: {}
+            };
+        }
+
+        function exportDebugReport() {
+            const reportText = JSON.stringify(debugReport, null, 2);
+            const blob = new Blob([reportText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `form-debug-report-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            log('📊 Debug report exported', 'success');
+        }
+
+        // Define showSuccess function for testing
+        function showSuccess(message) {
+            log(`🎉 Success notification: ${message}`, 'success');
+            // You could also show a visual notification here
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            log('🚀 Debug test page loaded', 'system');
+            
+            setTimeout(() => {
+                log('⏰ Auto-running initial diagnostic...', 'system');
+                runFullDiagnostic();
+            }, 1000);
+        });
+
+        // Catch all errors
+        window.addEventListener('error', function(e) {
+            log(`❌ JavaScript Error: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
+            debugReport.errors.push(`${e.message} at ${e.filename}:${e.lineno}`);
+        });
+    </script>
+</body>
+</html>
