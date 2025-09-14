@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Audit Report Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .report-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .report-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="report-container">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Website Audit Report</h1>
+                    <p class="text-gray-600" id="customer-info">Loading customer information...</p>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="customers-dashboard.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        ← Back to Dashboard
+                    </a>
+                    <button id="download-report" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        📄 Download Report
+                    </button>
+                    <button id="share-report" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        🔗 Share Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-12">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-gray-600">Loading your audit report...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" style="display: none;">
+            <div class="flex items-center">
+                <span class="text-red-500 mr-3">⚠️</span>
+                <div>
+                    <strong>Report Not Found</strong>
+                    <p id="error-message">The requested report could not be found or is not yet ready.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Content -->
+        <div id="report-content" class="report-content" style="display: none;">
+            <!-- The actual report HTML will be injected here -->
+        </div>
+
+        <!-- Report Actions Footer -->
+        <div id="report-footer" class="bg-white rounded-lg shadow-md p-6 mt-6" style="display: none;">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Need Help with These Recommendations?</h3>
+                    <p class="text-gray-600">Our team can help implement these improvements for your website.</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="schedule-consultation" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        📅 Schedule Consultation
+                    </button>
+                    <button id="request-quote" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                        💰 Request Quote
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ReportViewer {
+            constructor() {
+                this.customerSlug = null;
+                this.reportData = null;
+                this.init();
+            }
+
+            init() {
+                this.parseURLParams();
+                this.loadReport();
+                this.setupEventListeners();
+            }
+
+            parseURLParams() {
+                const urlParams = new URLSearchParams(window.location.search);
+                this.customerSlug = urlParams.get('customer');
+                
+                if (!this.customerSlug) {
+                    this.showError('No customer specified in URL parameters.');
+                    return;
+                }
+            }
+
+            async loadReport() {
+                try {
+                    // Get customer information
+                    const customers = JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
+                    const customer = customers.find(c => c.slug === this.customerSlug);
+
+                    if (!customer) {
+                        this.showError('Customer not found. Please check the URL and try again.');
+                        return;
+                    }
+
+                    // Update customer info in header
+                    document.getElementById('customer-info').textContent = 
+                        `${customer.companyName} - Report generated ${new Date(customer.reportGeneratedAt || customer.createdAt).toLocaleDateString()}`;
+
+                    // Check if report is completed
+                    if (customer.status !== 'completed') {
+                        this.showError(`Report is not ready yet. Current status: ${customer.status}. Please check back in a few minutes.`);
+                        return;
+                    }
+
+                    // Load the report HTML from storage
+                    const reports = JSON.parse(localStorage.getItem('customer_reports') || '{}');
+                    const reportHTML = reports[this.customerSlug];
+
+                    if (!reportHTML) {
+                        this.showError('Report data not found. The report may still be processing.');
+                        return;
+                    }
+
+                    // Display the report
+                    this.displayReport(reportHTML, customer);
+
+                } catch (error) {
+                    console.error('Error loading report:', error);
+                    this.showError('An error occurred while loading the report. Please try refreshing the page.');
+                }
+            }
+
+            displayReport(reportHTML, customer) {
+                // Hide loading state
+                document.getElementById('loading-state').style.display = 'none';
+                
+                // Show report content
+                const reportContainer = document.getElementById('report-content');
+                reportContainer.innerHTML = reportHTML;
+                reportContainer.style.display = 'block';
+                
+                // Show footer
+                document.getElementById('report-footer').style.display = 'block';
+
+                // Store report data for download/sharing
+                this.reportData = { html: reportHTML, customer: customer };
+
+                console.log(`✅ Report loaded successfully for ${customer.companyName}`);
+            }
+
+            showError(message) {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+                document.getElementById('error-message').textContent = message;
+            }
+
+            setupEventListeners() {
+                // Download Report
+                document.getElementById('download-report').addEventListener('click', () => {
+                    this.downloadReport();
+                });
+
+                // Share Report
+                document.getElementById('share-report').addEventListener('click', () => {
+                    this.shareReport();
+                });
+
+                // Schedule Consultation
+                document.getElementById('schedule-consultation').addEventListener('click', () => {
+                    this.scheduleConsultation();
+                });
+
+                // Request Quote
+                document.getElementById('request-quote').addEventListener('click', () => {
+                    this.requestQuote();
+                });
+            }
+
+            downloadReport() {
+                if (!this.reportData) {
+                    alert('Report data not available for download.');
+                    return;
+                }
+
+                const { html, customer } = this.reportData;
+                const fileName = `${customer.slug}-audit-report.html`;
+                
+                // Create downloadable HTML file
+                const fullHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${customer.companyName} - Website Audit Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-6xl mx-auto p-6">
+        ${html}
+    </div>
+</body>
+</html>`;
+
+                // Create and trigger download
+                const blob = new Blob([fullHTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                console.log(`📄 Report downloaded: ${fileName}`);
+            }
+
+            shareReport() {
+                const shareUrl = window.location.href;
+                
+                if (navigator.share) {
+                    // Use Web Share API if available
+                    navigator.share({
+                        title: `${this.reportData?.customer?.companyName || 'Website'} Audit Report`,
+                        text: 'Check out this comprehensive website audit report',
+                        url: shareUrl
+                    });
+                } else {
+                    // Fallback: copy to clipboard
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        alert('Report link copied to clipboard!');
+                    }).catch(() => {
+                        // Fallback for older browsers
+                        const textArea = document.createElement('textarea');
+                        textArea.value = shareUrl;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        alert('Report link copied to clipboard!');
+                    });
+                }
+            }
+
+            scheduleConsultation() {
+                // In a real implementation, this would integrate with a calendar system
+                const customer = this.reportData?.customer;
+                const subject = `Consultation Request - ${customer?.companyName || 'Website Audit'}`;
+                const body = `Hi,\n\nI would like to schedule a consultation to discuss the audit findings for ${customer?.companyName || 'my website'} (${customer?.website || ''}).\n\nPlease let me know your availability.\n\nBest regards,\n${customer?.contactPerson || ''}`;
+                
+                const mailtoUrl = `mailto:support@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoUrl;
+            }
+
+            requestQuote() {
+                // In a real implementation, this would open a quote request form
+                const customer = this.reportData?.customer;
+                const subject = `Quote Request - ${customer?.companyName || 'Website Improvements'}`;
+                const body = `Hi,\n\nI would like to request a quote for implementing the recommendations in my website audit report for ${customer?.companyName || 'my website'} (${customer?.website || ''}).\n\nPlease provide pricing for the suggested improvements.\n\nBest regards,\n${customer?.contactPerson || ''}`;
+                
+                const mailtoUrl = `mailto:sales@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoUrl;
+            }
+        }
+
+        // Initialize the report viewer when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.reportViewer = new ReportViewer();
+        });
+    </script>
+</body>
+</html>

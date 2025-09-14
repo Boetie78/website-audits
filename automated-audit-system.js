@@ -498,43 +498,91 @@ class AutomatedAuditSystem {
         template = template.replace(/>15<\/div>\s*<p class="text-xs text-gray-500">Should be addressed soon/g,
             `>${data.kpiCards.majorIssues.value}</div>\n<p class="text-xs text-gray-500">Should be addressed soon`);
         template = template.replace(/>12<\/div>\s*<p class="text-xs text-gray-500">Total pages crawled/g,
-            `>${data.kpiCards.pagesAnalyzed.value}</div>\n<p class="text-xs text-gray-500">Total pages crawled`);
-        template = template.replace(/>2\.4s</g, `>${data.performance.averageLoadTime}<`);
-
-        // Performance Metrics - Desktop
-        template = template.replace(/"text-3xl font-bold text-orange-500">68</g, 
-            `"text-3xl font-bold text-orange-500">${data.performance.desktop.score}<`);
-        template = template.replace(/FCP:<\/div>\s*<div class="font-semibold">1\.8s/g, 
-            `FCP:</div>\n<div class="font-semibold">${data.performance.desktop.fcp}s`);
-        template = template.replace(/LCP:<\/div>\s*<div class="font-semibold">2\.9s/g, 
-            `LCP:</div>\n<div class="font-semibold">${data.performance.desktop.lcp}s`);
-        template = template.replace(/CLS:<\/div>\s*<div class="font-semibold">0\.08/g, 
-            `CLS:</div>\n<div class="font-semibold">${data.performance.desktop.cls}`);
-
-        // Performance Metrics - Mobile
-        template = template.replace(/"text-3xl font-bold text-red-500">53</g, 
-            `"text-3xl font-bold text-red-500">${data.performance.mobile.score}<`);
-        template = template.replace(/FCP:<\/div>\s*<div class="font-semibold">2\.7s/g, 
-            `FCP:</div>\n<div class="font-semibold">${data.performance.mobile.fcp}s`);
-        template = template.replace(/LCP:<\/div>\s*<div class="font-semibold">5\.22s/g, 
-            `LCP:</div>\n<div class="font-semibold">${data.performance.mobile.lcp}s`);
-
-        // Social Media Data - Update total followers and competitive analysis
-        if (data.socialMediaAnalysis) {
-            const totalFollowers = Object.values(data.socialMediaAnalysis.platforms)
-                .reduce((sum, platform) => sum + (platform.followers || 0), 0);
-            
-            template = template.replace(/"text-2xl font-bold text-red-700 mb-2">2,416</g,
-                `"text-2xl font-bold text-red-700 mb-2">${totalFollowers.toLocaleString()}<`);
+            `>${data.kpiCards.totalPages.value}</div>\n<p class="text-xs text-gray-500">Total pages crawled`);
+        
+        // Performance Metrics Section
+        if (data.performance) {
+            template = template.replace(/Performance Score: <strong>72\.4%<\/strong>/g,
+                `Performance Score: <strong>${data.performance.overallScore}%</strong>`);
+            template = template.replace(/First Contentful Paint: <strong>1\.8s<\/strong>/g,
+                `First Contentful Paint: <strong>${data.performance.fcp}s</strong>`);
+            template = template.replace(/Largest Contentful Paint: <strong>2\.4s<\/strong>/g,
+                `Largest Contentful Paint: <strong>${data.performance.lcp}s</strong>`);
+            template = template.replace(/Cumulative Layout Shift: <strong>0\.05<\/strong>/g,
+                `Cumulative Layout Shift: <strong>${data.performance.cls}</strong>`);
         }
 
-        // Backlink Data
-        if (data.backlinkAnalysis) {
-            // Replace backlink metrics in the report
-            template = template.replace(/Total Backlinks[\s\S]*?(\d+,?\d*)/g, 
-                `Total Backlinks: ${data.backlinkAnalysis.totalBacklinks.toLocaleString()}`);
-            template = template.replace(/Referring Domains[\s\S]*?(\d+,?\d*)/g, 
-                `Referring Domains: ${data.backlinkAnalysis.referringDomains.toLocaleString()}`);
+        // Technical SEO Section
+        if (data.technicalSeo) {
+            template = template.replace(/Meta Descriptions: <span class=".*?">(\d+)%<\/span>/g,
+                `Meta Descriptions: <span class="${data.technicalSeo.metaDescriptions.score >= 80 ? 'text-green-600' : data.technicalSeo.metaDescriptions.score >= 60 ? 'text-yellow-600' : 'text-red-600'}">${data.technicalSeo.metaDescriptions.score}%</span>`);
+            template = template.replace(/Title Tags: <span class=".*?">(\d+)%<\/span>/g,
+                `Title Tags: <span class="${data.technicalSeo.titleTags.score >= 80 ? 'text-green-600' : data.technicalSeo.titleTags.score >= 60 ? 'text-yellow-600' : 'text-red-600'}">${data.technicalSeo.titleTags.score}%</span>`);
+        }
+
+        // Backlink Analysis Section  
+        if (data.backlinks) {
+            template = template.replace(/Total Backlinks: <strong>(\d+)<\/strong>/g,
+                `Total Backlinks: <strong>${data.backlinks.totalBacklinks}</strong>`);
+            template = template.replace(/Referring Domains: <strong>(\d+)<\/strong>/g,
+                `Referring Domains: <strong>${data.backlinks.referringDomains}</strong>`);
+            template = template.replace(/Domain Authority: <strong>(\d+)<\/strong>/g,
+                `Domain Authority: <strong>${data.backlinks.domainAuthority}</strong>`);
+        }
+
+        // Social Media Section
+        if (data.socialMedia) {
+            // Facebook
+            if (data.socialMedia.facebook.present) {
+                template = template.replace(/Facebook: Not Found/g, `Facebook: <a href="${data.socialMedia.facebook.url}" class="text-blue-600">Found</a>`);
+            }
+            // Instagram  
+            if (data.socialMedia.instagram.present) {
+                template = template.replace(/Instagram: Not Found/g, `Instagram: <a href="${data.socialMedia.instagram.url}" class="text-blue-600">Found</a>`);
+            }
+            // LinkedIn
+            if (data.socialMedia.linkedin.present) {
+                template = template.replace(/LinkedIn: Not Found/g, `LinkedIn: <a href="${data.socialMedia.linkedin.url}" class="text-blue-600">Found</a>`);
+            }
+        }
+
+        // Content Analysis Section
+        if (data.content) {
+            template = template.replace(/Content Quality Score: (\d+)%/g, `Content Quality Score: ${data.content.qualityScore}%`);
+            template = template.replace(/Word Count Average: (\d+) words/g, `Word Count Average: ${data.content.avgWordCount} words`);
+        }
+
+        // Keyword Analysis Section
+        if (data.keywords) {
+            template = template.replace(/Total Keywords Ranking: (\d+)/g, `Total Keywords Ranking: ${data.keywords.totalKeywords}`);
+            template = template.replace(/Top 10 Rankings: (\d+)/g, `Top 10 Rankings: ${data.keywords.top10Rankings}`);
+        }
+
+        // Additional sections for complete report coverage
+        
+        // Competitor Analysis Section
+        if (data.competitor) {
+            template = template.replace(/Competitor Analysis Score: (\d+)%/g, `Competitor Analysis Score: ${data.competitor.competitiveScore}%`);
+        }
+
+        // Traffic Analysis Section  
+        if (data.traffic) {
+            template = template.replace(/Monthly Visitors: (\d+,?\d*)/g, `Monthly Visitors: ${data.traffic.monthlyVisitors.toLocaleString()}`);
+            template = template.replace(/Bounce Rate: (\d+)%/g, `Bounce Rate: ${data.traffic.bounceRate}%`);
+        }
+
+        // Strategic Actions Section - Update recommendations
+        if (data.recommendations && data.recommendations.length > 0) {
+            let recommendationsHTML = data.recommendations.map((rec, index) => `
+                <div class="recommendation-item mb-4 p-4 border rounded-lg">
+                    <h4 class="font-semibold text-lg">${rec.title}</h4>
+                    <p class="text-gray-600">${rec.description}</p>
+                    <span class="inline-block px-2 py-1 text-xs rounded ${rec.priority === 'High' ? 'bg-red-100 text-red-800' : rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">${rec.priority} Priority</span>
+                </div>
+            `).join('');
+            
+            // Replace the recommendations section if it exists in template
+            template = template.replace(/<div class="recommendations-section">.*?<\/div>/s, `<div class="recommendations-section">${recommendationsHTML}</div>`);
         }
 
         return template;
