@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Check Report Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">Report Data Check</h1>
+        <div id="output" class="space-y-4"></div>
+    </div>
+    <script>
+        const output = document.getElementById('output');
+        
+        // Check customer reports
+        const reports = localStorage.getItem('customer_reports');
+        if (reports) {
+            const parsed = JSON.parse(reports);
+            const div = document.createElement('div');
+            div.className = 'bg-green-50 p-4 rounded';
+            div.innerHTML = '<h2 class="font-bold">Customer Reports Found:</h2>';
+            
+            Object.keys(parsed).forEach(key => {
+                const reportDiv = document.createElement('div');
+                reportDiv.className = 'mt-2 p-2 bg-white rounded';
+                
+                // Check if it's HTML or JSON
+                const report = parsed[key];
+                const isHTML = typeof report === 'string' && report.includes('<!DOCTYPE');
+                
+                reportDiv.innerHTML = `
+                    <p><strong>${key}:</strong></p>
+                    <p>Type: ${isHTML ? 'HTML Report (Promac Style)' : 'JSON Data'}</p>
+                    <p>Size: ${JSON.stringify(report).length} characters</p>
+                    ${isHTML ? '<p class="text-green-600">✅ Has full HTML report</p>' : '<p class="text-orange-600">⚠️ Only has data</p>'}
+                `;
+                div.appendChild(reportDiv);
+            });
+            output.appendChild(div);
+        } else {
+            output.innerHTML = '<p class="text-red-600">No customer reports found</p>';
+        }
+        
+        // Check customers
+        const customers = localStorage.getItem('website_audit_customers');
+        if (customers) {
+            const parsed = JSON.parse(customers);
+            const div = document.createElement('div');
+            div.className = 'bg-blue-50 p-4 rounded mt-4';
+            div.innerHTML = `<h2 class="font-bold">Customers Found: ${parsed.length}</h2>`;
+            
+            parsed.forEach(customer => {
+                const custDiv = document.createElement('div');
+                custDiv.className = 'mt-2 p-2 bg-white rounded';
+                custDiv.innerHTML = `
+                    <p><strong>${customer.companyName}</strong> (${customer.slug})</p>
+                    <p>Status: ${customer.status}</p>
+                    <p>Report URL: ${customer.reportUrl || 'Not set'}</p>
+                `;
+                div.appendChild(custDiv);
+            });
+            output.appendChild(div);
+        }
+    </script>
+</body>
+</html>

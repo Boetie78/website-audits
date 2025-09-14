@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Report</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        .no-report {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .no-report h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .generate-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="reportContainer"></div>
+
+    <script>
+        // Get customer slug from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerSlug = urlParams.get('customer') || 'l-g-tools';
+        
+        // Try to load the report
+        function loadReport() {
+            const container = document.getElementById('reportContainer');
+            
+            // First, check if we have an HTML report stored
+            const reports = localStorage.getItem('customer_reports');
+            if (reports) {
+                const parsed = JSON.parse(reports);
+                const report = parsed[customerSlug];
+                
+                if (report && typeof report === 'string' && report.includes('<!DOCTYPE')) {
+                    // We have an HTML report! Display it in an iframe
+                    const blob = new Blob([report], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    container.innerHTML = `<iframe src="${url}" title="Customer Report"></iframe>`;
+                    return;
+                }
+            }
+            
+            // No HTML report found, try to use the existing Promac template
+            // and customize it with customer data
+            const customers = JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
+            const customer = customers.find(c => c.slug === customerSlug);
+            
+            if (customer) {
+                // Generate report using Promac template
+                generateReportFromTemplate(customer);
+            } else {
+                // No customer found
+                container.innerHTML = `
+                    <div class="no-report">
+                        <div>
+                            <h1>Customer Not Found</h1>
+                            <p>The customer "${customerSlug}" was not found in the system.</p>
+                            <button class="generate-btn" onclick="window.location.href='customers-dashboard.html'">
+                                Back to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        async function generateReportFromTemplate(customer) {
+            const container = document.getElementById('reportContainer');
+            
+            try {
+                // Load the Promac template
+                const response = await fetch('promac-report-rebuild.html');
+                let template = await response.text();
+                
+                // Customize the template with customer data
+                template = template.replace(/Promac Paints/g, customer.companyName);
+                template = template.replace(/promacpaints\.co\.za/g, 
+                    customer.website.replace(/^https?:\/\//, '').replace(/\/$/, ''));
+                
+                // Update dates
+                const today = new Date().toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                template = template.replace(/Generated September \d+, \d+/g, `Generated ${today}`);
+                
+                // Update industry and location
+                if (customer.industry) {
+                    template = template.replace(/Manufacturing - Paint & Coatings/g, customer.industry);
+                }
+                if (customer.location) {
+                    template = template.replace(/South Africa/g, customer.location);
+                }
+                
+                // Display the customized report
+                const blob = new Blob([template], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                container.innerHTML = `<iframe src="${url}" title="Customer Report"></iframe>`;
+                
+                // Save the generated report
+                const reports = JSON.parse(localStorage.getItem('customer_reports') || '{}');
+                reports[customer.slug] = template;
+                localStorage.setItem('customer_reports', JSON.stringify(reports));
+                
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="no-report">
+                        <div>
+                            <h1>Report Generation Error</h1>
+                            <p>${error.message}</p>
+                            <button class="generate-btn" onclick="location.reload()">
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load report on page load
+        loadReport();
+    </script>
+</body>
+</html>

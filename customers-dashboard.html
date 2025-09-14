@@ -695,8 +695,8 @@
                 document.getElementById('reportIframe').src = currentReportUrl;
                 document.getElementById('reportModal').classList.remove('hidden');
             } else {
-                // Open the audit report viewer with the customer slug
-                window.open(`view-audit-report.html?customer=${customer.slug}`, '_blank');
+                // Open the customer report viewer that shows the actual Promac-style report
+                window.open(`customer-report-viewer.html?customer=${customer.slug}`, '_blank');
             }
         }
 
