@@ -439,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make it globally accessible
     window.automatedCustomerWorkflow = automatedWorkflow;
+    window.AutomatedCustomerWorkflow = AutomatedCustomerWorkflow;
     // CustomerReportGenerator is loaded from customer-report-generator.js
 
     console.log('🚀 Automated Customer Workflow System initialized and ready');
