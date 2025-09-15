@@ -428,142 +428,7 @@ class AutomatedCustomerWorkflow {
     }
 }
 
-/**
- * Customer Report Generator Class
- */
-class CustomerReportGenerator {
-    async generateReport(customer, auditData) {
-        console.log(`📋 Generating report for ${customer.companyName}...`);
-
-        // Generate comprehensive report data structure
-        const reportData = {
-            header: {
-                companyName: customer.companyName,
-                website: customer.website,
-                generatedDate: new Date().toISOString(),
-                reportId: `audit-${customer.id}-${Date.now()}`
-            },
-            summary: this.generateSummary(auditData),
-            performance: auditData.performance,
-            technicalSEO: auditData.technicalSEO,
-            contentAnalysis: auditData.contentAnalysis,
-            backlinkAnalysis: auditData.backlinkAnalysis,
-            keywordAnalysis: auditData.keywordAnalysis,
-            competitorAnalysis: auditData.competitorAnalysis,
-            socialMediaAnalysis: auditData.socialMediaAnalysis,
-            recommendations: this.generateRecommendations(auditData),
-            exports: this.generateExportData(customer, auditData)
-        };
-
-        return reportData;
-    }
-
-    generateSummary(auditData) {
-        const overallScore = this.calculateOverallScore(auditData);
-
-        return {
-            overallScore: overallScore,
-            criticalIssues: auditData.kpiCards?.criticalIssues?.value || 0,
-            majorIssues: auditData.kpiCards?.majorIssues?.value || 0,
-            opportunities: this.countOpportunities(auditData),
-            status: overallScore >= 80 ? 'Excellent' : overallScore >= 60 ? 'Good' : overallScore >= 40 ? 'Fair' : 'Poor'
-        };
-    }
-
-    calculateOverallScore(auditData) {
-        const performanceScore = auditData.performance?.desktop?.performance || 50;
-        const technicalScore = this.calculateTechnicalScore(auditData.technicalSEO);
-        const contentScore = this.calculateContentScore(auditData.contentAnalysis);
-
-        return Math.round((performanceScore * 0.4 + technicalScore * 0.35 + contentScore * 0.25));
-    }
-
-    calculateTechnicalScore(technicalSEO) {
-        if (!technicalSEO) return 50;
-
-        let score = 100;
-        if (!technicalSEO.httpsEnabled) score -= 20;
-        if (!technicalSEO.mobileResponsive) score -= 15;
-        if (!technicalSEO.xmlSitemap) score -= 10;
-        if (!technicalSEO.metaDescriptions?.status) score -= 10;
-        if (!technicalSEO.schemaMarkup?.status) score -= 5;
-
-        return Math.max(0, score);
-    }
-
-    calculateContentScore(contentAnalysis) {
-        // Simplified content scoring
-        return 65 + Math.floor(Math.random() * 20);
-    }
-
-    countOpportunities(auditData) {
-        let opportunities = 0;
-
-        // Count keyword opportunities
-        opportunities += auditData.keywordAnalysis?.keywordOpportunities?.length || 0;
-
-        // Count competitor gaps
-        opportunities += auditData.competitorAnalysis?.keywordGaps?.length || 0;
-
-        // Count technical improvements
-        if (auditData.technicalSEO) {
-            if (!auditData.technicalSEO.schemaMarkup?.status) opportunities++;
-            if (!auditData.technicalSEO.canonicalTags) opportunities++;
-            if (auditData.technicalSEO.imageOptimization?.missing > 0) opportunities++;
-        }
-
-        return opportunities;
-    }
-
-    generateRecommendations(auditData) {
-        const recommendations = [];
-
-        // Performance recommendations
-        if (auditData.performance?.desktop?.performance < 70) {
-            recommendations.push({
-                category: 'Performance',
-                priority: 'High',
-                title: 'Improve page loading speed',
-                description: 'Optimize images, minify CSS/JS, and leverage browser caching to improve performance scores.',
-                impact: 'High'
-            });
-        }
-
-        // Technical SEO recommendations
-        if (!auditData.technicalSEO?.schemaMarkup?.status) {
-            recommendations.push({
-                category: 'Technical SEO',
-                priority: 'Medium',
-                title: 'Implement structured data markup',
-                description: 'Add schema.org markup to improve search engine understanding and enable rich snippets.',
-                impact: 'Medium'
-            });
-        }
-
-        // Content recommendations
-        if (auditData.contentAnalysis?.wordCount < 300) {
-            recommendations.push({
-                category: 'Content',
-                priority: 'High',
-                title: 'Expand content depth',
-                description: 'Increase content length and depth to improve topical authority and search rankings.',
-                impact: 'High'
-            });
-        }
-
-        return recommendations;
-    }
-
-    generateExportData(customer, auditData) {
-        return {
-            technicalIssuesCsv: `${customer.companyName.replace(/[^a-zA-Z0-9]/g, '-')}-technical-issues.csv`,
-            competitorAnalysisCsv: `${customer.companyName.replace(/[^a-zA-Z0-9]/g, '-')}-competitors.csv`,
-            keywordRankingsCsv: `${customer.companyName.replace(/[^a-zA-Z0-9]/g, '-')}-keywords.csv`,
-            fullReportPdf: `${customer.companyName.replace(/[^a-zA-Z0-9]/g, '-')}-seo-report.pdf`,
-            fullReportHtml: `${customer.companyName.replace(/[^a-zA-Z0-9]/g, '-')}-seo-report.html`
-        };
-    }
-}
+// CustomerReportGenerator class removed - using existing class from customer-report-generator.js
 
 // Initialize the automated workflow system
 let automatedWorkflow;
@@ -574,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make it globally accessible
     window.automatedCustomerWorkflow = automatedWorkflow;
-    window.CustomerReportGenerator = CustomerReportGenerator;
+    // CustomerReportGenerator is loaded from customer-report-generator.js
 
     console.log('🚀 Automated Customer Workflow System initialized and ready');
 });

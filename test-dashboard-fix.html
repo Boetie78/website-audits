@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard Fix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="template-loader-fix.js"></script>
+    <script src="customer-manager.js"></script>
+    <script src="customer-report-generator.js"></script>
+    <script src="comprehensive-audit-data-collector.js"></script>
+    <script src="automated-customer-workflow.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">🔧 Dashboard Fix Test</h1>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">System Status Check</h2>
+            <div id="systemStatus"></div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Test Automated Workflow</h2>
+            <button onclick="testWorkflow()"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                🚀 Test Workflow System
+            </button>
+            <div id="workflowTest" class="mt-4"></div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            checkSystemStatus();
+        });
+
+        function checkSystemStatus() {
+            const statusDiv = document.getElementById('systemStatus');
+            const checks = [
+                { name: 'Customer Manager', exists: !!window.customerManager },
+                { name: 'Customer Report Generator', exists: !!window.customerReportGenerator },
+                { name: 'Comprehensive Audit Data Collector', exists: !!window.comprehensiveAuditDataCollector },
+                { name: 'Automated Customer Workflow Class', exists: !!window.AutomatedCustomerWorkflow },
+                { name: 'Automated Workflow Instance', exists: !!window.automatedCustomerWorkflow }
+            ];
+
+            const statusHtml = checks.map(check => {
+                const status = check.exists ? '✅ Available' : '❌ Missing';
+                const color = check.exists ? 'text-green-600' : 'text-red-600';
+
+                return `
+                    <div class="flex justify-between items-center py-2 border-b">
+                        <span class="font-medium">${check.name}</span>
+                        <span class="${color}">${status}</span>
+                    </div>
+                `;
+            }).join('');
+
+            statusDiv.innerHTML = statusHtml;
+
+            // Check for any JavaScript errors
+            const hasErrors = checks.some(check => !check.exists);
+
+            if (!hasErrors) {
+                statusDiv.innerHTML += `
+                    <div class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800">
+                        ✅ All systems are loaded correctly! The duplicate class error has been fixed.
+                    </div>
+                `;
+            }
+        }
+
+        function testWorkflow() {
+            const resultDiv = document.getElementById('workflowTest');
+
+            try {
+                if (window.automatedCustomerWorkflow) {
+                    resultDiv.innerHTML = `
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+                            ✅ Automated Workflow System is working correctly!<br>
+                            Class: ${window.automatedCustomerWorkflow.constructor.name}<br>
+                            Ready to process customers automatically.
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                            ❌ Automated Workflow System not initialized
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Listen for any JavaScript errors
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error detected:', e.error);
+            const statusDiv = document.getElementById('systemStatus');
+            statusDiv.innerHTML += `
+                <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                    ❌ JavaScript Error: ${e.error.message}
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>

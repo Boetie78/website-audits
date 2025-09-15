@@ -16,10 +16,18 @@ class CustomerReportGenerator {
     }
 
     /**
-     * Load the Promac report template
+     * Load the Promac report template (CORS-safe method)
      */
     async loadTemplate() {
         try {
+            // Use the template loader fix to handle CORS issues
+            if (window.templateLoaderFix) {
+                this.template = await window.templateLoaderFix.loadPromacTemplate();
+                console.log('✅ Report template loaded successfully (CORS-safe)');
+                return;
+            }
+
+            // Fallback to original method
             const response = await fetch(this.templatePath);
             if (!response.ok) {
                 throw new Error(`Failed to load template: ${response.status}`);
@@ -28,10 +36,15 @@ class CustomerReportGenerator {
             console.log('✅ Report template loaded successfully');
         } catch (error) {
             console.error('❌ Error loading report template:', error);
+
             // Fallback - try to get from current page if we're on the report page
             if (document.title.includes('SEO Audit Report')) {
                 this.template = document.documentElement.outerHTML;
                 console.log('✅ Using current page as template');
+            } else if (window.templateLoaderFix) {
+                // Use the embedded fallback template
+                this.template = await window.templateLoaderFix.loadTemplate('basic');
+                console.log('✅ Using embedded fallback template');
             }
         }
     }
