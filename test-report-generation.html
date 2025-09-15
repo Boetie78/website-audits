@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Report Generation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="template-loader-fix.js"></script>
+    <script src="customer-manager.js"></script>
+    <script src="customer-report-generator.js"></script>
+    <script src="customer-report-generator-enhanced.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">🔧 Test Report Generation</h1>
+
+        <!-- Customer Selection -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">1. Select Customer</h2>
+            <div class="mb-4">
+                <select id="customerSelect" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                    <option value="">Loading customers...</option>
+                </select>
+            </div>
+            <button onclick="loadCustomerData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                Load Customer Data
+            </button>
+            <div id="customerInfo" class="mt-4"></div>
+        </div>
+
+        <!-- Sample Audit Data -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">2. Sample Audit Data</h2>
+            <p class="text-gray-600 mb-4">Using sample audit data to test report generation:</p>
+            <div id="auditDataSample" class="bg-gray-50 p-4 rounded-lg text-sm"></div>
+        </div>
+
+        <!-- Report Generation Test -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">3. Generate Report</h2>
+            <button onclick="generateTestReport()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                🚀 Generate Report
+            </button>
+            <div id="reportResult" class="mt-4"></div>
+        </div>
+
+        <!-- Report Preview -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">4. Report Preview</h2>
+            <div class="mb-4">
+                <button onclick="previewReport()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                    👁️ Preview Report
+                </button>
+                <button onclick="downloadReport()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 ml-2">
+                    📥 Download Report
+                </button>
+            </div>
+            <div id="reportPreview" class="border rounded-lg p-4 max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedCustomer = null;
+        let sampleAuditData = null;
+        let generatedReport = null;
+
+        // Sample audit data for testing
+        const testAuditData = {
+            overallScore: 83,
+            issues: {
+                critical: 6,
+                major: 8,
+                minor: 23
+            },
+            pageCount: 15,
+            performance: {
+                desktopScore: 77,
+                mobileScore: 56,
+                loadTime: '1.8',
+                lcp: 2.5,
+                fid: 100,
+                cls: 0.1,
+                fcp: 1.8,
+                ttfb: 0.8
+            },
+            seo: {
+                metaTags: true,
+                headingStructure: true,
+                urlStructure: true,
+                imageAltTags: false,
+                internalLinking: true,
+                schemaMarkup: false,
+                robotsTxt: true,
+                sitemap: true
+            },
+            backlinks: {
+                totalBacklinks: 2456,
+                referringDomains: 342,
+                domainRating: 45,
+                organicTraffic: 12500
+            },
+            keywords: {
+                totalKeywords: 1234,
+                top3Rankings: 45,
+                top10Rankings: 156,
+                averagePosition: 23.4
+            }
+        };
+
+        window.addEventListener('load', function() {
+            loadCustomers();
+            displaySampleAuditData();
+        });
+
+        function loadCustomers() {
+            try {
+                const customers = JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
+                const select = document.getElementById('customerSelect');
+
+                select.innerHTML = '<option value="">Select a customer...</option>';
+
+                customers.forEach((customer, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${customer.companyName} - ${customer.website}`;
+                    select.appendChild(option);
+                });
+
+                if (customers.length === 0) {
+                    select.innerHTML = '<option value="">No customers found</option>';
+                }
+            } catch (error) {
+                console.error('Error loading customers:', error);
+            }
+        }
+
+        function displaySampleAuditData() {
+            const div = document.getElementById('auditDataSample');
+            div.innerHTML = `
+                <pre>${JSON.stringify(testAuditData, null, 2)}</pre>
+            `;
+            sampleAuditData = testAuditData;
+        }
+
+        function loadCustomerData() {
+            const select = document.getElementById('customerSelect');
+            const index = select.value;
+
+            if (!index) {
+                alert('Please select a customer');
+                return;
+            }
+
+            try {
+                const customers = JSON.parse(localStorage.getItem('website_audit_customers') || '[]');
+                selectedCustomer = customers[parseInt(index)];
+
+                const infoDiv = document.getElementById('customerInfo');
+                infoDiv.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-green-800">${selectedCustomer.companyName}</h3>
+                        <p class="text-green-600">Website: ${selectedCustomer.website}</p>
+                        <p class="text-green-600">Industry: ${selectedCustomer.industry}</p>
+                        <p class="text-green-600">Status: ${selectedCustomer.status}</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading customer:', error);
+                alert('Error loading customer data');
+            }
+        }
+
+        async function generateTestReport() {
+            if (!selectedCustomer) {
+                alert('Please select and load a customer first');
+                return;
+            }
+
+            const resultDiv = document.getElementById('reportResult');
+            resultDiv.innerHTML = '<div class="text-blue-600">🔄 Generating report...</div>';
+
+            try {
+                // Test both report generators
+                console.log('🔄 Testing Customer Report Generator...');
+
+                // Try the enhanced generator first
+                if (window.customerReportGeneratorEnhanced) {
+                    console.log('📊 Using Enhanced Report Generator');
+                    const template = await window.templateLoaderFix.loadPromacTemplate();
+                    generatedReport = await window.customerReportGeneratorEnhanced.generateReportWithRealData(selectedCustomer, template);
+                } else if (window.customerReportGenerator) {
+                    console.log('📊 Using Standard Report Generator');
+                    generatedReport = await window.customerReportGenerator.generateCustomerReport(selectedCustomer, sampleAuditData);
+                } else {
+                    throw new Error('No report generator available');
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h4 class="font-semibold text-green-800">✅ Report Generated Successfully!</h4>
+                        <p class="text-green-600">Report length: ${generatedReport.length} characters</p>
+                        <p class="text-green-600">Company: ${selectedCustomer.companyName}</p>
+                        <p class="text-green-600">Generated: ${new Date().toLocaleString()}</p>
+                    </div>
+                `;
+
+                console.log('✅ Report generated successfully');
+                console.log('Report preview:', generatedReport.substring(0, 500) + '...');
+
+            } catch (error) {
+                console.error('❌ Report generation failed:', error);
+                resultDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <h4 class="font-semibold text-red-800">❌ Report Generation Failed</h4>
+                        <p class="text-red-600">Error: ${error.message}</p>
+                        <p class="text-red-600">Check the console for detailed error information</p>
+                    </div>
+                `;
+            }
+        }
+
+        function previewReport() {
+            if (!generatedReport) {
+                alert('Please generate a report first');
+                return;
+            }
+
+            const previewDiv = document.getElementById('reportPreview');
+
+            // Create a safe preview by showing the HTML structure
+            previewDiv.innerHTML = `
+                <div class="mb-4">
+                    <strong>Report HTML Structure Preview:</strong>
+                </div>
+                <textarea readonly class="w-full h-64 p-2 border rounded text-xs font-mono">${generatedReport}</textarea>
+                <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
+                    <p class="text-blue-800">
+                        <strong>Report Stats:</strong><br>
+                        • Total length: ${generatedReport.length} characters<br>
+                        • Contains HTML: ${generatedReport.includes('<html>') ? 'Yes' : 'No'}<br>
+                        • Contains CSS: ${generatedReport.includes('<style>') ? 'Yes' : 'No'}<br>
+                        • Company name replaced: ${generatedReport.includes(selectedCustomer.companyName) ? 'Yes' : 'No'}
+                    </p>
+                </div>
+            `;
+        }
+
+        function downloadReport() {
+            if (!generatedReport || !selectedCustomer) {
+                alert('Please generate a report first');
+                return;
+            }
+
+            const blob = new Blob([generatedReport], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${selectedCustomer.companyName.replace(/[^a-zA-Z0-9]/g, '-')}-seo-audit-report.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            URL.revokeObjectURL(url);
+
+            alert('Report downloaded successfully!');
+        }
+    </script>
+</body>
+</html>
