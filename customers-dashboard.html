@@ -12,6 +12,7 @@
     <script src="customer-audit-data-manager.js"></script>
     <script src="comprehensive-audit-data-collector.js"></script>
     <script src="automated-audit-system.js"></script>
+    <script src="automated-customer-workflow.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👥</text></svg>">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -201,6 +202,42 @@
             </div>
         </div>
 
+        <!-- Automated Workflow Status -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border" id="workflowStatus">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900">🤖 Automated Workflow System</h2>
+                <div class="flex items-center gap-2">
+                    <div id="workflowStatusIndicator" class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <span id="workflowStatusText" class="text-sm text-gray-600">Initializing...</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <div class="text-sm text-blue-700 mb-1">Queued for Processing</div>
+                    <div class="text-2xl font-bold text-blue-900" id="workflowQueued">0</div>
+                </div>
+
+                <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                    <div class="text-sm text-orange-700 mb-1">Currently Processing</div>
+                    <div class="text-2xl font-bold text-orange-900" id="workflowProcessing">0</div>
+                </div>
+
+                <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <div class="text-sm text-green-700 mb-1">Completed Today</div>
+                    <div class="text-2xl font-bold text-green-900" id="workflowCompletedToday">0</div>
+                </div>
+            </div>
+
+            <!-- Current Activity -->
+            <div id="currentActivity" class="mt-4 p-3 bg-gray-50 rounded-lg hidden">
+                <div class="text-sm font-medium text-gray-700 mb-2">Current Activity:</div>
+                <div id="activityList" class="space-y-1 text-xs text-gray-600">
+                    <!-- Activity items will be added here -->
+                </div>
+            </div>
+        </div>
+
         <!-- Filters and Search -->
         <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border">
             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -316,7 +353,7 @@
             setupEventListeners();
             startRealTimeUpdates();
 
-            // Initialize automated audit system
+            // Initialize automated audit system and workflow
             setTimeout(() => {
                 console.log('📊 Dashboard System Status Check:');
                 console.log('Customer Manager:', !!window.customerManager);
@@ -324,6 +361,18 @@
                 console.log('Audit Data Manager:', !!window.customerAuditDataManager);
                 console.log('Comprehensive Collector:', !!window.comprehensiveAuditDataCollector);
                 console.log('Automated Audit System:', !!window.automatedAuditSystem);
+                console.log('Automated Customer Workflow:', !!window.automatedCustomerWorkflow);
+
+                // Initialize the automated customer workflow system
+                if (window.AutomatedCustomerWorkflow) {
+                    window.automatedCustomerWorkflow = new window.AutomatedCustomerWorkflow();
+                    console.log('✅ Automated Customer Workflow System initialized');
+
+                    // Start monitoring for new customers
+                    startWorkflowMonitoring();
+                } else {
+                    console.warn('⚠️ Automated Customer Workflow System not loaded');
+                }
 
                 if (window.automatedAuditSystem) {
                     console.log('✅ Automated Audit System is running and monitoring for customers to process');
@@ -364,6 +413,74 @@
             }, 10000); // 10 seconds
 
             console.log('🔄 Started real-time status monitoring');
+        }
+
+        function startWorkflowMonitoring() {
+            // Monitor for new customers every 5 seconds
+            setInterval(() => {
+                checkForNewCustomers();
+            }, 5000);
+
+            console.log('🔄 Started automated workflow monitoring');
+        }
+
+        async function checkForNewCustomers() {
+            if (!window.automatedCustomerWorkflow) return;
+
+            // Find customers with status 'pending' or 'queued' that haven't been processed
+            const customersToProcess = currentCustomers.filter(customer =>
+                (customer.status === 'pending' || customer.status === 'queued') &&
+                !customer.workflowStarted
+            );
+
+            for (const customer of customersToProcess) {
+                console.log(`🚀 Starting automated workflow for customer: ${customer.companyName}`);
+
+                // Mark as workflow started to prevent duplicate processing
+                customer.workflowStarted = true;
+                customer.status = 'processing';
+                customer.auditProgress = 0;
+                customer.currentStage = 'initializing';
+                customer.lastUpdate = new Date().toISOString();
+
+                // Update display immediately
+                updateStats();
+                renderCustomers();
+
+                try {
+                    // Start the automated workflow (non-blocking)
+                    window.automatedCustomerWorkflow.processCustomerWorkflow(customer.id)
+                        .then(() => {
+                            console.log(`✅ Automated workflow completed for: ${customer.companyName}`);
+                            // Refresh display to show completed status
+                            setTimeout(() => {
+                                loadCustomers();
+                            }, 1000);
+                        })
+                        .catch((error) => {
+                            console.error(`❌ Automated workflow failed for ${customer.companyName}:`, error);
+                            // Mark customer as failed
+                            customer.status = 'failed';
+                            customer.lastUpdate = new Date().toISOString();
+                            updateStats();
+                            renderCustomers();
+                        });
+
+                } catch (error) {
+                    console.error(`❌ Error starting automated workflow for ${customer.companyName}:`, error);
+                    customer.status = 'failed';
+                    customer.lastUpdate = new Date().toISOString();
+                    updateStats();
+                    renderCustomers();
+                }
+
+                // Save updated customer status
+                if (window.customerManager) {
+                    window.customerManager.saveCustomers();
+                } else {
+                    localStorage.setItem('website_audit_customers', JSON.stringify(currentCustomers));
+                }
+            }
         }
 
         function checkProcessingCustomers() {
@@ -450,6 +567,83 @@
             document.getElementById('statCompleted').textContent = completed;
             document.getElementById('statProcessing').textContent = processing;
             document.getElementById('statThisMonth').textContent = thisMonth;
+
+            // Update workflow stats
+            updateWorkflowStats();
+        }
+
+        function updateWorkflowStats() {
+            const queued = currentCustomers.filter(c => c.status === 'queued' || (c.status === 'pending' && !c.workflowStarted)).length;
+            const processing = currentCustomers.filter(c => c.status === 'processing').length;
+
+            // Completed today
+            const today = new Date();
+            const completedToday = currentCustomers.filter(c => {
+                if (c.status !== 'completed' || !c.lastUpdate) return false;
+                const updated = new Date(c.lastUpdate);
+                return updated.toDateString() === today.toDateString();
+            }).length;
+
+            document.getElementById('workflowQueued').textContent = queued;
+            document.getElementById('workflowProcessing').textContent = processing;
+            document.getElementById('workflowCompletedToday').textContent = completedToday;
+
+            // Update workflow status indicator
+            const statusIndicator = document.getElementById('workflowStatusIndicator');
+            const statusText = document.getElementById('workflowStatusText');
+
+            if (window.automatedCustomerWorkflow) {
+                if (processing > 0) {
+                    statusIndicator.className = 'w-3 h-3 bg-orange-500 rounded-full pulse';
+                    statusText.textContent = `Active - Processing ${processing} customer${processing !== 1 ? 's' : ''}`;
+                } else if (queued > 0) {
+                    statusIndicator.className = 'w-3 h-3 bg-blue-500 rounded-full pulse';
+                    statusText.textContent = `Ready - ${queued} customer${queued !== 1 ? 's' : ''} queued`;
+                } else {
+                    statusIndicator.className = 'w-3 h-3 bg-green-500 rounded-full';
+                    statusText.textContent = 'Idle - Monitoring for new customers';
+                }
+            } else {
+                statusIndicator.className = 'w-3 h-3 bg-red-500 rounded-full';
+                statusText.textContent = 'System not initialized';
+            }
+
+            // Update activity list
+            updateActivityList();
+        }
+
+        function updateActivityList() {
+            const activityDiv = document.getElementById('currentActivity');
+            const activityList = document.getElementById('activityList');
+
+            const processingCustomers = currentCustomers.filter(c => c.status === 'processing');
+
+            if (processingCustomers.length > 0) {
+                activityDiv.classList.remove('hidden');
+                activityList.innerHTML = processingCustomers.map(customer => {
+                    const progress = customer.auditProgress || 0;
+                    const stage = customer.currentStage || 'unknown';
+                    const stageText = stage.replace(/_/g, ' ');
+
+                    return `
+                        <div class="flex items-center justify-between p-2 bg-white rounded border">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full pulse"></div>
+                                <span class="font-medium">${customer.companyName}</span>
+                                <span class="text-gray-500">- ${stageText}</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-medium">${progress}%</div>
+                                <div class="w-16 h-1 bg-gray-200 rounded-full">
+                                    <div class="h-1 bg-blue-500 rounded-full transition-all" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                activityDiv.classList.add('hidden');
+            }
         }
 
         function renderCustomers() {
