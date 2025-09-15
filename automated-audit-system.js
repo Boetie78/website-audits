@@ -543,29 +543,31 @@ class AutomatedAuditSystem {
         }));
 
         // KPI Cards Section
-        template = template.replace(/>8<\/div>\s*<p class="text-xs text-gray-500">Immediate action required/g,
-            `>${data.kpiCards.criticalIssues.value}</div>\n<p class="text-xs text-gray-500">Immediate action required`);
-        template = template.replace(/>15<\/div>\s*<p class="text-xs text-gray-500">Should be addressed soon/g,
-            `>${data.kpiCards.majorIssues.value}</div>\n<p class="text-xs text-gray-500">Should be addressed soon`);
-        template = template.replace(/>12<\/div>\s*<p class="text-xs text-gray-500">Total pages crawled/g,
-            `>${data.kpiCards.pagesAnalyzed.value}</div>\n<p class="text-xs text-gray-500">Total pages crawled`);
+        if (data.kpiCards) {
+            template = template.replace(/>8<\/div>\s*<p class="text-xs text-gray-500">Immediate action required/g,
+                `>${data.kpiCards.criticalIssues?.value || 0}</div>\n<p class="text-xs text-gray-500">Immediate action required`);
+            template = template.replace(/>15<\/div>\s*<p class="text-xs text-gray-500">Should be addressed soon/g,
+                `>${data.kpiCards.majorIssues?.value || 0}</div>\n<p class="text-xs text-gray-500">Should be addressed soon`);
+            template = template.replace(/>12<\/div>\s*<p class="text-xs text-gray-500">Total pages crawled/g,
+                `>${data.kpiCards.pagesAnalyzed?.value || 0}</div>\n<p class="text-xs text-gray-500">Total pages crawled`);
+        }
         
         // Performance Metrics Section
-        if (data.performance) {
+        if (data.performance?.desktop) {
             template = template.replace(/Performance Score: <strong>72\.4%<\/strong>/g,
-                `Performance Score: <strong>${data.performance.desktop.score}%</strong>`);
+                `Performance Score: <strong>${data.performance.desktop.score || 0}%</strong>`);
             template = template.replace(/First Contentful Paint: <strong>1\.8s<\/strong>/g,
-                `First Contentful Paint: <strong>${data.performance.desktop.fcp.toFixed(1)}s</strong>`);
+                `First Contentful Paint: <strong>${(data.performance.desktop.fcp || 0).toFixed(1)}s</strong>`);
             template = template.replace(/Largest Contentful Paint: <strong>2\.4s<\/strong>/g,
-                `Largest Contentful Paint: <strong>${data.performance.desktop.lcp.toFixed(1)}s</strong>`);
+                `Largest Contentful Paint: <strong>${(data.performance.desktop.lcp || 0).toFixed(1)}s</strong>`);
             template = template.replace(/Cumulative Layout Shift: <strong>0\.05<\/strong>/g,
-                `Cumulative Layout Shift: <strong>${data.performance.desktop.cls.toFixed(2)}</strong>`);
+                `Cumulative Layout Shift: <strong>${(data.performance.desktop.cls || 0).toFixed(2)}</strong>`);
         }
 
         // Technical SEO Section
         if (data.technicalSEO) {
-            const metaScore = data.technicalSEO.metaDescriptions.missing ? 80 : 95;
-            const titleScore = data.technicalSEO.titleTags.duplicates ? 85 : 95;
+            const metaScore = data.technicalSEO.metaDescriptions?.missing ? 80 : 95;
+            const titleScore = data.technicalSEO.titleTags?.duplicates ? 85 : 95;
             template = template.replace(/Meta Descriptions: <span class=".*?">(\d+)%<\/span>/g,
                 `Meta Descriptions: <span class="${metaScore >= 80 ? 'text-green-600' : metaScore >= 60 ? 'text-yellow-600' : 'text-red-600'}">${metaScore}%</span>`);
             template = template.replace(/Title Tags: <span class=".*?">(\d+)%<\/span>/g,
@@ -575,53 +577,53 @@ class AutomatedAuditSystem {
         // Backlink Analysis Section
         if (data.backlinkAnalysis) {
             template = template.replace(/Total Backlinks: <strong>(\d+)<\/strong>/g,
-                `Total Backlinks: <strong>${data.backlinkAnalysis.totalBacklinks}</strong>`);
+                `Total Backlinks: <strong>${data.backlinkAnalysis.totalBacklinks || 0}</strong>`);
             template = template.replace(/Referring Domains: <strong>(\d+)<\/strong>/g,
-                `Referring Domains: <strong>${data.backlinkAnalysis.referringDomains}</strong>`);
+                `Referring Domains: <strong>${data.backlinkAnalysis.referringDomains || 0}</strong>`);
             template = template.replace(/Domain Authority: <strong>(\d+)<\/strong>/g,
-                `Domain Authority: <strong>${data.backlinkAnalysis.domainAuthority}</strong>`);
+                `Domain Authority: <strong>${data.backlinkAnalysis.domainAuthority || 0}</strong>`);
         }
 
         // Social Media Section
-        if (data.socialMediaAnalysis) {
+        if (data.socialMediaAnalysis?.platforms) {
             // Facebook
-            if (data.socialMediaAnalysis.platforms.facebook.status !== 'Inactive') {
-                template = template.replace(/Facebook: Not Found/g, `Facebook: <a href="${data.socialMediaAnalysis.platforms.facebook.url}" class="text-blue-600">Found</a>`);
+            if (data.socialMediaAnalysis.platforms.facebook?.status !== 'Inactive') {
+                template = template.replace(/Facebook: Not Found/g, `Facebook: <a href="${data.socialMediaAnalysis.platforms.facebook.url || '#'}" class="text-blue-600">Found</a>`);
             }
             // Instagram
-            if (data.socialMediaAnalysis.platforms.instagram.status !== 'Inactive') {
-                template = template.replace(/Instagram: Not Found/g, `Instagram: <a href="${data.socialMediaAnalysis.platforms.instagram.url}" class="text-blue-600">Found</a>`);
+            if (data.socialMediaAnalysis.platforms.instagram?.status !== 'Inactive') {
+                template = template.replace(/Instagram: Not Found/g, `Instagram: <a href="${data.socialMediaAnalysis.platforms.instagram.url || '#'}" class="text-blue-600">Found</a>`);
             }
             // LinkedIn
-            if (data.socialMediaAnalysis.platforms.linkedin.status !== 'Inactive') {
-                template = template.replace(/LinkedIn: Not Found/g, `LinkedIn: <a href="${data.socialMediaAnalysis.platforms.linkedin.url}" class="text-blue-600">Found</a>`);
+            if (data.socialMediaAnalysis.platforms.linkedin?.status !== 'Inactive') {
+                template = template.replace(/LinkedIn: Not Found/g, `LinkedIn: <a href="${data.socialMediaAnalysis.platforms.linkedin.url || '#'}" class="text-blue-600">Found</a>`);
             }
         }
 
         // Content Analysis Section
         if (data.contentAnalysis) {
-            template = template.replace(/Content Quality Score: (\d+)%/g, `Content Quality Score: ${data.contentAnalysis.readabilityScore}%`);
-            template = template.replace(/Word Count Average: (\d+) words/g, `Word Count Average: ${data.contentAnalysis.avgWordsPerPage} words`);
+            template = template.replace(/Content Quality Score: (\d+)%/g, `Content Quality Score: ${data.contentAnalysis.readabilityScore || 0}%`);
+            template = template.replace(/Word Count Average: (\d+) words/g, `Word Count Average: ${data.contentAnalysis.avgWordsPerPage || 0} words`);
         }
 
         // Keyword Analysis Section
         if (data.keywordAnalysis) {
-            template = template.replace(/Total Keywords Ranking: (\d+)/g, `Total Keywords Ranking: ${data.keywordAnalysis.trackedKeywords.length}`);
-            template = template.replace(/Top 10 Rankings: (\d+)/g, `Top 10 Rankings: ${data.keywordAnalysis.rankingDistribution.top10}`);
+            template = template.replace(/Total Keywords Ranking: (\d+)/g, `Total Keywords Ranking: ${data.keywordAnalysis.trackedKeywords?.length || 0}`);
+            template = template.replace(/Top 10 Rankings: (\d+)/g, `Top 10 Rankings: ${data.keywordAnalysis.rankingDistribution?.top10 || 0}`);
         }
 
         // Additional sections for complete report coverage
 
         // Competitor Analysis Section
         if (data.competitorAnalysis) {
-            const competitiveScore = data.competitorAnalysis.marketShare ? data.competitorAnalysis.marketShare.yourShare : 65;
+            const competitiveScore = data.competitorAnalysis.marketShare?.yourShare || 65;
             template = template.replace(/Competitor Analysis Score: (\d+)%/g, `Competitor Analysis Score: ${competitiveScore}%`);
         }
 
         // Traffic Analysis Section
-        if (data.trafficAnalysis) {
-            template = template.replace(/Monthly Visitors: (\d+,?\d*)/g, `Monthly Visitors: ${data.trafficAnalysis.organicTraffic.monthly.toLocaleString()}`);
-            template = template.replace(/Bounce Rate: (\d+)%/g, `Bounce Rate: ${Math.round(data.trafficAnalysis.organicTraffic.growth * 100)}%`);
+        if (data.trafficAnalysis?.organicTraffic) {
+            template = template.replace(/Monthly Visitors: (\d+,?\d*)/g, `Monthly Visitors: ${(data.trafficAnalysis.organicTraffic.monthly || 0).toLocaleString()}`);
+            template = template.replace(/Bounce Rate: (\d+)%/g, `Bounce Rate: ${Math.round((data.trafficAnalysis.organicTraffic.growth || 0) * 100)}%`);
         }
 
         // Strategic Actions Section - Update recommendations
