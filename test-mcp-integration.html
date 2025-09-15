@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Integration Test - Website Audit System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .test-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .test-status { padding: 1rem; margin: 0.5rem 0; border-radius: 0.5rem; }
+        .test-pass { background-color: #d1fae5; border: 1px solid #10b981; color: #065f46; }
+        .test-fail { background-color: #fef2f2; border: 1px solid #ef4444; color: #991b1b; }
+        .test-pending { background-color: #fef3c7; border: 1px solid #f59e0b; color: #92400e; }
+        .api-result { background-color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; font-family: monospace; font-size: 0.875rem; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="test-container">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">🧪 MCP Integration Test Suite</h1>
+
+        <!-- Test Status Overview -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Test Overview</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600" id="testsTotal">0</div>
+                    <div class="text-sm text-gray-600">Total Tests</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600" id="testsPassed">0</div>
+                    <div class="text-sm text-gray-600">Passed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-red-600" id="testsFailed">0</div>
+                    <div class="text-sm text-gray-600">Failed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-yellow-600" id="testsPending">0</div>
+                    <div class="text-sm text-gray-600">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MCP Tool Tests -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">MCP Tool Availability Tests</h2>
+            <div id="mcpTests"></div>
+        </div>
+
+        <!-- Data Collection Tests -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Data Collection Tests</h2>
+            <div id="dataCollectionTests"></div>
+        </div>
+
+        <!-- API Response Tests -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">API Response Tests</h2>
+            <div id="apiResponseTests"></div>
+        </div>
+
+        <!-- Run Tests Button -->
+        <div class="text-center mb-8">
+            <button onclick="runAllTests()" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold">
+                🚀 Run All MCP Integration Tests
+            </button>
+        </div>
+
+        <!-- Test Results -->
+        <div class="bg-white rounded-lg shadow p-6" id="testResults" style="display: none;">
+            <h2 class="text-xl font-semibold mb-4">Test Results</h2>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <!-- Load the audit system scripts -->
+    <script src="comprehensive-audit-data-collector.js"></script>
+    <script src="automated-audit-system.js"></script>
+
+    <script>
+        let testResults = {};
+        let testCounter = 0;
+
+        function createTestElement(testName, status = 'pending') {
+            testCounter++;
+            const div = document.createElement('div');
+            div.id = `test-${testCounter}`;
+            div.className = `test-status test-${status}`;
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">${testName}</span>
+                    <span class="test-indicator">${status === 'pending' ? '⏳' : status === 'pass' ? '✅' : '❌'}</span>
+                </div>
+                <div class="test-details mt-2" style="display: none;"></div>
+            `;
+            return div;
+        }
+
+        function updateTest(testElement, status, details = '') {
+            testElement.className = `test-status test-${status}`;
+            const indicator = testElement.querySelector('.test-indicator');
+            indicator.textContent = status === 'pass' ? '✅' : status === 'fail' ? '❌' : '⏳';
+
+            const detailsDiv = testElement.querySelector('.test-details');
+            if (details) {
+                detailsDiv.innerHTML = `<pre class="api-result mt-2">${details}</pre>`;
+                detailsDiv.style.display = 'block';
+            }
+
+            updateTestCounts();
+        }
+
+        function updateTestCounts() {
+            const total = document.querySelectorAll('.test-status').length;
+            const passed = document.querySelectorAll('.test-pass').length;
+            const failed = document.querySelectorAll('.test-fail').length;
+            const pending = document.querySelectorAll('.test-pending').length;
+
+            document.getElementById('testsTotal').textContent = total;
+            document.getElementById('testsPassed').textContent = passed;
+            document.getElementById('testsFailed').textContent = failed;
+            document.getElementById('testsPending').textContent = pending;
+        }
+
+        async function runAllTests() {
+            console.log('🧪 Starting MCP Integration Test Suite...');
+
+            // Clear previous results
+            document.getElementById('mcpTests').innerHTML = '';
+            document.getElementById('dataCollectionTests').innerHTML = '';
+            document.getElementById('apiResponseTests').innerHTML = '';
+            testCounter = 0;
+
+            // Test 1: Check MCP Tools Availability
+            const mcpContainer = document.getElementById('mcpTests');
+
+            const lighthouseTest = createTestElement('DataForSEO Lighthouse API Availability');
+            mcpContainer.appendChild(lighthouseTest);
+
+            const onPageTest = createTestElement('DataForSEO OnPage API Availability');
+            mcpContainer.appendChild(onPageTest);
+
+            const backlinksTest = createTestElement('DataForSEO Backlinks API Availability');
+            mcpContainer.appendChild(backlinksTest);
+
+            const keywordsTest = createTestElement('DataForSEO Keywords API Availability');
+            mcpContainer.appendChild(keywordsTest);
+
+            // Test MCP tool availability
+            try {
+                const hasLighthouse = typeof mcp__dataforseo__on_page_lighthouse === 'function';
+                updateTest(lighthouseTest, hasLighthouse ? 'pass' : 'fail',
+                    hasLighthouse ? 'Function available' : 'Function not available');
+            } catch (error) {
+                updateTest(lighthouseTest, 'fail', `Error: ${error.message}`);
+            }
+
+            try {
+                const hasOnPage = typeof mcp__dataforseo__on_page_instant_pages === 'function';
+                updateTest(onPageTest, hasOnPage ? 'pass' : 'fail',
+                    hasOnPage ? 'Function available' : 'Function not available');
+            } catch (error) {
+                updateTest(onPageTest, 'fail', `Error: ${error.message}`);
+            }
+
+            try {
+                const hasBacklinks = typeof mcp__dataforseo__backlinks_bulk_referring_domains === 'function';
+                updateTest(backlinksTest, hasBacklinks ? 'pass' : 'fail',
+                    hasBacklinks ? 'Function available' : 'Function not available');
+            } catch (error) {
+                updateTest(backlinksTest, 'fail', `Error: ${error.message}`);
+            }
+
+            try {
+                const hasKeywords = typeof mcp__dataforseo__dataforseo_labs_google_ranked_keywords === 'function';
+                updateTest(keywordsTest, hasKeywords ? 'pass' : 'fail',
+                    hasKeywords ? 'Function available' : 'Function not available');
+            } catch (error) {
+                updateTest(keywordsTest, 'fail', `Error: ${error.message}`);
+            }
+
+            // Test 2: Data Collector Integration
+            const dataContainer = document.getElementById('dataCollectionTests');
+
+            const collectorTest = createTestElement('Comprehensive Data Collector Availability');
+            dataContainer.appendChild(collectorTest);
+
+            try {
+                const hasCollector = typeof window.comprehensiveAuditDataCollector === 'object';
+                updateTest(collectorTest, hasCollector ? 'pass' : 'fail',
+                    hasCollector ? 'Data collector initialized' : 'Data collector not found');
+            } catch (error) {
+                updateTest(collectorTest, 'fail', `Error: ${error.message}`);
+            }
+
+            const structureTest = createTestElement('Report Structure Validation');
+            dataContainer.appendChild(structureTest);
+
+            try {
+                if (window.comprehensiveAuditDataCollector) {
+                    const structure = window.comprehensiveAuditDataCollector.reportStructure;
+                    const hasRequiredSections = structure &&
+                        structure.header &&
+                        structure.performance &&
+                        structure.technicalSEO &&
+                        structure.backlinkAnalysis &&
+                        structure.keywordAnalysis;
+
+                    updateTest(structureTest, hasRequiredSections ? 'pass' : 'fail',
+                        hasRequiredSections ? 'All required sections present' : 'Missing required sections');
+                } else {
+                    updateTest(structureTest, 'fail', 'Data collector not available');
+                }
+            } catch (error) {
+                updateTest(structureTest, 'fail', `Error: ${error.message}`);
+            }
+
+            // Test 3: Mock API Calls (without real data)
+            const apiContainer = document.getElementById('apiResponseTests');
+
+            const mockCustomer = {
+                id: 'test-customer-123',
+                companyName: 'Test Company',
+                website: 'https://example.com',
+                industry: 'Technology',
+                location: 'South Africa'
+            };
+
+            const performanceApiTest = createTestElement('Performance API Method Test');
+            apiContainer.appendChild(performanceApiTest);
+
+            try {
+                if (window.comprehensiveAuditDataCollector &&
+                    typeof window.comprehensiveAuditDataCollector.callLighthouseAPI === 'function') {
+
+                    updateTest(performanceApiTest, 'pass', 'Performance API method available');
+                } else {
+                    updateTest(performanceApiTest, 'fail', 'Performance API method not found');
+                }
+            } catch (error) {
+                updateTest(performanceApiTest, 'fail', `Error: ${error.message}`);
+            }
+
+            const backlinksApiTest = createTestElement('Backlinks API Method Test');
+            apiContainer.appendChild(backlinksApiTest);
+
+            try {
+                if (window.comprehensiveAuditDataCollector &&
+                    typeof window.comprehensiveAuditDataCollector.callBacklinksAPI === 'function') {
+
+                    updateTest(backlinksApiTest, 'pass', 'Backlinks API method available');
+                } else {
+                    updateTest(backlinksApiTest, 'fail', 'Backlinks API method not found');
+                }
+            } catch (error) {
+                updateTest(backlinksApiTest, 'fail', `Error: ${error.message}`);
+            }
+
+            // Show results
+            document.getElementById('testResults').style.display = 'block';
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="bg-green-50 border border-green-200 rounded p-4">
+                    <h3 class="font-semibold text-green-800">✅ MCP Integration Test Suite Complete</h3>
+                    <p class="text-green-700 mt-2">
+                        The system has been updated to use real MCP API calls for data collection.
+                        Check the console for detailed logs during actual audit processing.
+                    </p>
+                    <div class="mt-3 text-sm text-green-600">
+                        <strong>Next Steps:</strong>
+                        <ul class="list-disc list-inside mt-1">
+                            <li>Run a real audit with a customer to test live MCP integration</li>
+                            <li>Monitor console for "✅ Real [api] data collected successfully" messages</li>
+                            <li>Verify that fallback data is used when MCP calls fail</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            console.log('✅ MCP Integration Test Suite completed');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 MCP Integration Test Page loaded');
+            updateTestCounts();
+        });
+    </script>
+</body>
+</html>
