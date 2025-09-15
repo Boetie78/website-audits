@@ -203,7 +203,7 @@ class AutomatedAuditSystem {
                 }
 
                 // Save to customer folder
-                await window.comprehensiveAuditDataCollector.saveToCustomerFolder(audit.customer, comprehensiveData);
+                await window.comprehensiveAuditDataCollector.saveToCustomerFolder(audit.customer, data);
 
                 console.log(`✅ Comprehensive audit completed for ${audit.customer.companyName}`);
 
@@ -358,7 +358,57 @@ class AutomatedAuditSystem {
     }
 
     /**
-     * Stage 4: Competitor Analysis
+     * Stage 4: Social Media Analysis
+     */
+    async stageSocialMediaAnalysis(audit) {
+        console.log(`📱 Analyzing social media presence for ${audit.customer.companyName}...`);
+
+        // Simulate social media data collection
+        audit.data.socialMedia = {
+            facebook: { exists: true, followers: Math.floor(Math.random() * 5000), engagement: Math.random() },
+            instagram: { exists: true, followers: Math.floor(Math.random() * 3000), engagement: Math.random() },
+            linkedin: { exists: true, followers: Math.floor(Math.random() * 1000), engagement: Math.random() },
+            twitter: { exists: false, followers: 0, engagement: 0 }
+        };
+    }
+
+    /**
+     * Stage 5: Backlink Analysis
+     */
+    async stageBacklinkAnalysis(audit) {
+        console.log(`🔗 Analyzing backlinks for ${audit.customer.companyName}...`);
+
+        // Simulate backlink data
+        audit.data.backlinks = {
+            total: Math.floor(Math.random() * 1000),
+            dofollow: Math.floor(Math.random() * 800),
+            nofollow: Math.floor(Math.random() * 200),
+            domains: Math.floor(Math.random() * 100),
+            score: Math.floor(Math.random() * 100)
+        };
+    }
+
+    /**
+     * Stage 6: Traffic Analysis
+     */
+    async stageTrafficAnalysis(audit) {
+        console.log(`📈 Analyzing traffic for ${audit.customer.companyName}...`);
+
+        // Simulate traffic data
+        audit.data.traffic = {
+            monthly: Math.floor(Math.random() * 50000),
+            sources: {
+                organic: Math.random() * 0.6,
+                direct: Math.random() * 0.3,
+                social: Math.random() * 0.1
+            },
+            bounceRate: Math.random() * 0.8,
+            avgSession: Math.floor(Math.random() * 300)
+        };
+    }
+
+    /**
+     * Stage 7: Competitor Analysis
      */
     async stageCompetitorAnalysis(audit) {
         // In real implementation, would use:
